@@ -1,0 +1,565 @@
+"use strict";
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   5. RENDER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+function render() {
+  renderFields();
+  renderAudienceCopy();
+  renderTopbarSnapshot();
+  renderMaaser(AppState.result);
+  renderPreAllocation(AppState.result);
+  renderActions(AppState.result);
+  renderFinancialPages();
+}
+
+function renderAudienceCopy() {
+  var calendarChoice = el("calendar-choice-copy");
+  var calendarCustom = el("calendar-custom-copy");
+  var allocationQuestion = el("allocation-mode-question");
+  var incomeExplainer = el("income-stage-explainer");
+  var variableExpensesExplainer = el("variable-expenses-stage-explainer");
+  var fixedExpensesExplainer = el("fixed-expenses-stage-explainer");
+  var specialExpensesExplainer = el("special-expenses-stage-explainer");
+  var specialExpensesTitle = el("special-expenses-stage-title");
+  var incomeBackToDebts = el("income-back-to-debts");
+  var clearLoansButton = el("clear-loans-button");
+  if (calendarChoice) calendarChoice.textContent = audienceText("בחר תאריך בחודש הבא", "בחרו תאריך בחודש הבא");
+  if (calendarCustom) calendarCustom.textContent = audienceText("בחר תאריך", "בחרו תאריך");
+  if (incomeExplainer) incomeExplainer.textContent = audienceText("הזן את כל הכסף שנכנס לחשבון עבור תקציב החודש.", "הזינו את כל הכסף שנכנס לחשבון עבור תקציב החודש.");
+  if (variableExpensesExplainer) variableExpensesExplainer.textContent = audienceText("הזן הוצאות קבועות, אך הסכום שלהן משתנה בכל חודש.", "הזינו הוצאות קבועות, אך הסכום שלהן משתנה בכל חודש.");
+  if (fixedExpensesExplainer) fixedExpensesExplainer.textContent = audienceText("הזן תשלומים שחוזרים בסכום קבוע בכל חודש.", "הזינו תשלומים שחוזרים בסכום קבוע בכל חודש.");
+  if (specialExpensesExplainer) specialExpensesExplainer.textContent = audienceText("הזן הוצאה חד־פעמית ודחופה שקיימת רק החודש.", "הזינו הוצאה חד־פעמית ודחופה שקיימת רק החודש.");
+  if (specialExpensesTitle) specialExpensesTitle.textContent = AppState.profile.debtStatus ? "הוצאות מיוחדות / בלתי צפויות" : "הוצאות מיוחדות";
+  if (incomeBackToDebts) {
+    incomeBackToDebts.hidden = !AppState.profile.debtStatus;
+    incomeBackToDebts.parentElement.classList.toggle("has-debt-back", AppState.profile.debtStatus);
+  }
+  if (clearLoansButton) {
+    var clearLoansLabel = AppState.profile.debtStatus ? "מחיקת הלוואות" : "מחיקת הלוואות וחובות";
+    clearLoansButton.setAttribute("aria-label", clearLoansLabel);
+    clearLoansButton.title = clearLoansLabel;
+  }
+  if (allocationQuestion) {
+    var budgetMonthName = MONTHS[AppState.period.month];
+    allocationQuestion.textContent = audienceText("כיצד תרצה את חודש " + budgetMonthName + "?", "כיצד תרצו את חודש " + budgetMonthName + "?");
+  }
+}
+
+function renderTopbarSnapshot() {
+  var debts = el("topbar-debts-total");
+  var income = el("topbar-income-total");
+  var variableExpenses = el("topbar-variable-expenses-total");
+  var fixedExpenses = el("topbar-fixed-expenses-total");
+  var specialExpenses = el("topbar-special-expenses-total");
+  var donations = el("topbar-donations-total");
+  var allocationBalance = el("allocation-balance-total");
+  if (debts) renderSnapshotAmount(debts, recoveryDebtBalance(AppState.liabilities));
+  if (income) renderSnapshotAmount(income, AppState.result.total || 0);
+  if (variableExpenses) renderSnapshotAmount(variableExpenses, AppState.result.variableExpenses || 0);
+  if (fixedExpenses) {
+    var fixedExpensesTotal = (AppState.result.fixedExpenses || 0) +
+      (AppState.result.subscriptionExpenses || 0) +
+      (AppState.result.healthBeautyExpenses || 0) +
+      (AppState.result.childrenExpenses || 0) +
+      (AppState.result.insurance || 0) +
+      (AppState.result.liabilityPayments || 0);
+    renderSnapshotAmount(fixedExpenses, fixedExpensesTotal);
+  }
+  if (specialExpenses) renderSnapshotAmount(specialExpenses, AppState.result.oneTimeExpenses || 0);
+  if (donations) renderSnapshotAmount(donations, AppState.result.maaser || 0);
+  updateTopbarDonationVisibility();
+  if (allocationBalance) allocationBalance.textContent = money(Math.max(0, AppState.result.balance || 0));
+}
+
+function renderSnapshotAmount(element, amount) {
+  var formatted = money(amount);
+  element.textContent = formatted;
+  element.classList.toggle("snapshot-amount-long", formatted.length >= 9);
+  element.classList.toggle("snapshot-amount-very-long", formatted.length >= 12);
+  element.title = formatted;
+}
+
+function updateTopbarDonationVisibility() {
+  var debtsCard = el("topbar-debts-snapshot");
+  var incomeCard = el("topbar-income-snapshot");
+  var variableExpensesCard = el("topbar-variable-expenses-snapshot");
+  var fixedExpensesCard = el("topbar-fixed-expenses-snapshot");
+  var specialExpensesCard = el("topbar-special-expenses-snapshot");
+  var donationsCard = el("topbar-donations-snapshot");
+  var snapshotContainer = document.querySelector(".topbar-financial-snapshot");
+  var donationStepIndex = typeof BUDGET_FLOW_STEP_IDS !== "undefined"
+    ? BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-donations")
+    : 3;
+  var furthestStep = typeof budgetFlowFurthestStep === "number" ? budgetFlowFurthestStep : 0;
+  var variableExpensesStepIndex = typeof BUDGET_FLOW_STEP_IDS !== "undefined"
+    ? BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-variable-expenses")
+    : 1;
+  var fixedExpensesStepIndex = typeof BUDGET_FLOW_STEP_IDS !== "undefined"
+    ? BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-expenses")
+    : 2;
+  var specialExpensesStepIndex = typeof BUDGET_FLOW_STEP_IDS !== "undefined"
+    ? BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-special-expenses")
+    : 3;
+  var incomeStepIndex = typeof BUDGET_FLOW_STEP_IDS !== "undefined"
+    ? BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-income")
+    : 0;
+  var showVariableExpenses = furthestStep >= variableExpensesStepIndex;
+  var showFixedExpenses = furthestStep >= fixedExpensesStepIndex;
+  var showSpecialExpenses = furthestStep >= specialExpensesStepIndex;
+  var showDonations = !AppState.profile.debtStatus && !!(AppState.maaser && AppState.maaser.enabled) && furthestStep >= donationStepIndex;
+  if (debtsCard) debtsCard.hidden = !AppState.profile.debtStatus;
+  if (incomeCard) incomeCard.hidden = AppState.profile.debtStatus && furthestStep < incomeStepIndex;
+  if (variableExpensesCard) variableExpensesCard.hidden = !showVariableExpenses;
+  if (fixedExpensesCard) fixedExpensesCard.hidden = !showFixedExpenses;
+  if (specialExpensesCard) specialExpensesCard.hidden = !showSpecialExpenses;
+  if (donationsCard) donationsCard.hidden = !showDonations;
+  if (snapshotContainer) {
+    var visibleCount = snapshotContainer.querySelectorAll(".topbar-snapshot-item:not([hidden])").length;
+    for (var count = 1; count <= 5; count++) {
+      snapshotContainer.classList.toggle("snapshot-count-" + count, visibleCount === count);
+    }
+  }
+}
+
+function renderFields() {
+  var overdraftInput = el("debt-overdraft-input");
+  var debtListTotal = el("debt-list-total");
+  if (overdraftInput && document.activeElement !== overdraftInput) {
+    overdraftInput.value = Number(AppState.liabilities.overdraft) || 0;
+    el("debt-overdraft-error").textContent = "";
+  }
+  if (debtListTotal) debtListTotal.value = Math.round((AppState.liabilities.debts || []).reduce(function(total, debt) {
+    return total + (Number(debt.balance) || 0);
+  }, 0));
+  var s1el = el("inp-s1");
+  var s2el = el("inp-s2");
+  if (s1el) s1el.value = Number(AppState.income1[0] && AppState.income1[0].val) || "";
+  if (s2el) s2el.value = Number(AppState.income2[0] && AppState.income2[0].val) || "";
+  var salaryMonth = MONTHS[(AppState.period.month + 11) % 12];
+  var partner1Label = el("income-partner-1-label");
+  var partner2Label = el("income-partner-2-label");
+  if (partner1Label) partner1Label.textContent = AppState.profile.single ? "משכורת " + salaryMonth : "משכורת " + salaryMonth + " - בן זוג";
+  if (partner2Label) partner2Label.textContent = "משכורת " + salaryMonth + " - בת זוג";
+  var partner2Row = el("income-partner-2-row");
+  if (partner2Row) partner2Row.hidden = AppState.profile.single === true;
+  renderAdditionalIncomeRows();
+
+  var expEl = el("inp-exp");
+  var housingUtilitiesTotal = sumNamedExpenses(AppState.variableExpenses, HOUSING_UTILITY_NAMES);
+  if (expEl) expEl.value = Math.round(sumArr(getActiveFixedExpenseItems().filter(function(item) { return !item.customCategory; })));
+  var variableHousingEl = el("inp-variable-housing");
+  if (variableHousingEl) variableHousingEl.value = Math.round(housingUtilitiesTotal);
+  var childrenRow = el("children-expenses-row");
+  var childrenEl = el("inp-children-expenses");
+  if (childrenRow) childrenRow.hidden = AppState.profile.children !== true;
+  if (childrenEl) childrenEl.value = Math.round(AppState.result.childrenExpenses || 0);
+  var oneTimeExpensesEl = el("inp-one-time-expenses");
+  var oneTimeExpensesTotal = sumArr((AppState.oneTimeExpenses || []).filter(function(item) { return !item.customCategory; }));
+  if (oneTimeExpensesEl) oneTimeExpensesEl.textContent = money(oneTimeExpensesTotal);
+  var fuelExpensesEl = el("inp-fuel-expenses");
+  if (fuelExpensesEl) fuelExpensesEl.value = Math.round(sumNamedExpenses(AppState.variableExpenses, FUEL_EXPENSE_NAMES));
+  var supermarketExpensesEl = el("inp-supermarket-expenses");
+  if (supermarketExpensesEl) supermarketExpensesEl.value = Math.round(sumNamedExpenses(AppState.variableExpenses, SUPERMARKET_EXPENSE_NAMES));
+  var otherVariableExpenses = (AppState.variableExpenses || []).filter(function(item) {
+    return !item.customCategory && !isStandardVariableExpense(item);
+  });
+  var otherVariableRow = el("other-variable-expenses-row");
+  var otherVariableInput = el("inp-other-variable-expenses");
+  if (otherVariableRow) otherVariableRow.hidden = otherVariableExpenses.length === 0;
+  if (otherVariableInput) otherVariableInput.value = Math.round(sumArr(otherVariableExpenses));
+  var subscriptionsEl = el("inp-subscriptions");
+  if (subscriptionsEl) subscriptionsEl.value = Math.round(sumArr(AppState.subscriptions));
+  var healthBeautyEl = el("inp-health-beauty");
+  if (healthBeautyEl) healthBeautyEl.value = Math.round(sumArr(AppState.healthBeautyExpenses));
+  var insuranceEl = el("inp-insurance");
+  if (insuranceEl) insuranceEl.value = Math.round(sumArr(AppState.insurances));
+  var liabilitiesEl = el("inp-liabilities");
+  var mortgageEl = el("inp-mortgage");
+  var mortgageRow = el("mortgage-expense-row");
+  if (mortgageRow) mortgageRow.hidden = AppState.profile.mortgage !== true;
+  if (liabilitiesEl) liabilitiesEl.value = Math.round(AppState.result.loanPayments + (AppState.profile.debtStatus ? 0 : AppState.result.debtPayments));
+  if (mortgageEl) mortgageEl.value = Math.round(AppState.result.mortgagePayments);
+  renderCustomExpenseCategories();
+
+  var ms = el("sel-month");
+  var ys = el("sel-year");
+  if (ms) ms.value = AppState.period.month;
+  if (ys) ys.value = AppState.period.year;
+}
+
+function renderCustomExpenseCategories() {
+  [
+    {collection: "variableExpenses", list: "custom-variable-expenses-list"},
+    {collection: "expenses", list: "custom-fixed-expenses-list"},
+    {collection: "oneTimeExpenses", list: "custom-special-expenses-list"}
+  ].forEach(function(group) {
+    var list = el(group.list);
+    if (!list) return;
+    list.innerHTML = "";
+    (AppState[group.collection] || []).forEach(function(item, index) {
+      if (!item.customCategory) return;
+      var row = mk("div", "irow custom-category-row");
+      var label = mk("div", "ilabel");
+      var icon = mkText("button", "row-icon row-icon-btn material-symbols-rounded", "receipt_long");
+      icon.type = "button";
+      icon.setAttribute("aria-label", "עריכת סוגי הוצאות בקטגוריה " + item.name);
+      icon.title = "עריכת סוגי הוצאות בקטגוריה " + item.name;
+      icon.onclick = function() { openCustomExpenseCategoryModal(group.collection, index); };
+      var nameWrap = mk("div", "custom-category-name-wrap");
+      var name = document.createElement("input");
+      name.type = "text";
+      name.className = "custom-category-name";
+      name.value = item.name;
+      name.setAttribute("aria-label", "שם הקטגוריה");
+      name.title = "עריכת שם הקטגוריה";
+      name.onblur = function() {
+        var nextName = name.value.trim();
+        if (!nextName) { name.value = item.name; return; }
+        if (nextName === item.name) return;
+        item.name = nextName;
+        name.value = nextName;
+        icon.setAttribute("aria-label", "עריכת סוגי הוצאות בקטגוריה " + nextName);
+        icon.title = "עריכת סוגי הוצאות בקטגוריה " + nextName;
+        amount.setAttribute("aria-label", "סכום " + nextName);
+        remove.setAttribute("aria-label", "מחיקת קטגוריה " + nextName);
+        remove.title = "מחיקת קטגוריה " + nextName;
+        saveData();
+        flashSaved();
+      };
+      name.onkeydown = function(event) { if (event.key === "Enter") name.blur(); };
+      nameWrap.appendChild(name);
+      label.appendChild(icon);
+      label.appendChild(nameWrap);
+      var amountWrap = mk("div", "iright");
+      var amount = document.createElement("input");
+      amount.type = "number";
+      amount.readOnly = true;
+      amount.value = Math.round(Number(item.val) || 0);
+      amount.setAttribute("aria-label", "סכום " + item.name);
+      amountWrap.appendChild(amount);
+      var remove = mkText("button", "custom-category-remove material-symbols-rounded", "delete");
+      remove.type = "button";
+      remove.setAttribute("aria-label", "מחיקת קטגוריה " + item.name);
+      remove.title = "מחיקת קטגוריה " + item.name;
+      remove.onclick = function() {
+        askDeleteExpenseCategory(item.name, function() { removeCustomExpenseCategory(group.collection, index); });
+      };
+      amountWrap.appendChild(remove);
+      row.appendChild(label);
+      row.appendChild(amountWrap);
+      list.appendChild(row);
+    });
+  });
+  var specialCard = el("custom-special-expenses-card");
+  if (specialCard) specialCard.hidden = !el("custom-special-expenses-list").children.length;
+}
+
+function sumNamedExpenses(items, names) {
+  return (items || []).reduce(function(total, item) {
+    return total + (!item.customCategory && names.indexOf(item.name) >= 0 ? (Number(item.val) || 0) : 0);
+  }, 0);
+}
+
+function renderAdditionalIncomeRows() {
+  var list = el("additional-income-list");
+  if (!list) return;
+  list.innerHTML = "";
+
+  function appendRows(items, person) {
+    items.slice(1).forEach(function(item, offset) {
+      var index = offset + 1;
+      var row = mk("div", "irow additional-income-row");
+      var label = mk("div", "additional-income-name-wrap");
+      var remove = mkText("button", "row-icon row-icon-btn additional-income-remove material-symbols-rounded", "delete");
+      remove.type = "button";
+      remove.setAttribute("aria-label", "מחיקת הכנסה נוספת");
+      remove.onclick = function() { removeAdditionalIncome(person, index); };
+      var name = document.createElement("input");
+      name.type = "text";
+      name.className = "additional-income-name";
+      name.value = item.name || "";
+      name.placeholder = "שם ההכנסה";
+      name.setAttribute("aria-label", "שם ההכנסה הנוספת");
+      name.oninput = function() { updateAdditionalIncomeName(person, index, name.value); };
+      label.appendChild(remove);
+      label.appendChild(name);
+
+      var controls = mk("div", "additional-income-controls");
+      var amount = document.createElement("input");
+      amount.type = "number";
+      amount.className = "additional-income-amount";
+      amount.min = "0";
+      amount.inputMode = "decimal";
+      amount.placeholder = "0";
+      amount.value = Number(item.val) || "";
+      amount.setAttribute("aria-label", "סכום ההכנסה הנוספת");
+      amount.oninput = function() { updateAdditionalIncomeAmount(person, index, amount.value); };
+      controls.appendChild(amount);
+      row.appendChild(label);
+      row.appendChild(controls);
+      list.appendChild(row);
+    });
+  }
+
+  appendRows(AppState.income1 || [], 1);
+  if (!AppState.profile.single) appendRows(AppState.income2 || [], 2);
+}
+
+function renderActions(d) {
+  var box = el("actions-box");
+  if (!box) return;
+  box.innerHTML = "";
+
+  /* helper: build a standard action row */
+  function addRow(iconName, title, desc, val, iconClick) {
+    var row = mk("div", "action-row");
+    var left = mk("div", "act-left");
+    var icon = mkText("button", "act-icon material-symbols-rounded" + (iconClick ? " act-icon-btn" : ""), iconName);
+    icon.type = "button";
+    if (iconClick) {
+      icon.onclick = iconClick;
+      icon.setAttribute("aria-label", "עריכת " + title);
+      icon.title = "עריכה";
+    } else {
+      icon.disabled = true;
+      icon.setAttribute("aria-hidden", "true");
+    }
+    left.appendChild(icon);
+    var info = mk("div", "");
+    info.appendChild(mkText("span", "act-title", title));
+    if (desc) info.appendChild(mkText("span", "act-desc", desc));
+    left.appendChild(info);
+    row.appendChild(left);
+    row.appendChild(mkText("span", "act-val", money(val)));
+    box.appendChild(row);
+  }
+
+  function addDonationRow() {
+    if (!AppState.profile.debtStatus && AppState.maaser && AppState.maaser.enabled) {
+      addRow("volunteer_activism", "תרומות", "", d.maaser, openMaaserCharitiesModal);
+    }
+  }
+
+  if (d.balance <= 0) {
+    var warn = mk("div", "deficit-banner");
+    warn.appendChild(mkText("span", "material-symbols-rounded", "warning"));
+    warn.appendChild(mkText("span", "", "אין יתרה לחלוקה לחיסכון והשקעות בחודש זה."));
+    box.appendChild(warn);
+    addDonationRow();
+    return;
+  }
+
+  if (AppState.profile.debtStatus) {
+    if (!hasValidRecoveryPayment()) {
+      box.appendChild(mkText("div", "deficit-banner", "יש לבחור סכום להחזר נוסף לפני הצגת התוכנית."));
+      addDonationRow();
+      return;
+    }
+    var extraPayment = AppState.recoveryPayment;
+    var recoveryPlan = mk("div", "debt-plan-banner");
+    recoveryPlan.appendChild(mkText("span", "material-symbols-rounded", "shield"));
+    var recoveryText = mk("div", "");
+    recoveryText.appendChild(mkText("strong", "", "תוכנית לצמצום חובות"));
+    recoveryText.appendChild(mkText("span", "", "סכום ההחזר הנוסף נבחר כאן"));
+    recoveryPlan.appendChild(recoveryText);
+    box.appendChild(recoveryPlan);
+    addRow("payments", "החזר נוסף לחוב", "", extraPayment, function() { goToBudgetFlowStep(0); });
+    addRow("credit_card", "יתרה לשימוש החודש", "", d.balance - extraPayment, openSpendingModal);
+    addDonationRow();
+    return;
+  }
+
+  if (hasActiveDebtPlan()) {
+    var priority = d.priorityDebt;
+    var plan = mk("div", "debt-plan-banner");
+    plan.appendChild(mkText("span", "material-symbols-rounded", "shield"));
+    var planText = mk("div", "");
+    planText.appendChild(mkText("strong", "", "תוכנית יציאה מחובות"));
+    planText.appendChild(mkText("span", "", "היתרה מופנית קודם לחוב היקר ביותר"));
+    plan.appendChild(planText);
+    box.appendChild(plan);
+
+    var priorityDescription = "מטופל ראשון: " + priority.name;
+    if (priority.interest > 0) priorityDescription += " · " + priority.interest + "% ריבית";
+    addRow(
+      "payments",
+      "החזר נוסף לחוב",
+      priorityDescription,
+      percentageOf(d.balance, DEFAULT_DEBT_PLAN_PERCENTAGES.debt),
+      openLiabilitiesModal
+    );
+    addRow(
+      "credit_card",
+      "בזבוזים",
+      "",
+      percentageOf(d.balance, DEFAULT_DEBT_PLAN_PERCENTAGES.spending),
+      openSpendingModal
+    );
+    addDonationRow();
+    return;
+  }
+
+  /* 3. חלוקת היתרה */
+  var allocation = AppState.settings.allocation;
+  addRow("trending_up", "השקעות", "", percentageOf(d.balance, allocation.invest), openInvestGoalsModal);
+  addRow("spa", "קרן איכות חיים", "", percentageOf(d.balance, allocation.qualityOfLife), openDreamsModal);
+  addRow("credit_card", "בזבוזים", "", percentageOf(d.balance, allocation.spending), openSpendingModal);
+  addDonationRow();
+}
+
+function renderPreAllocation(d) {
+  var box = el("pre-allocation-balance");
+  var warningBox = el("pre-allocation-warning");
+  if (!box) return;
+  box.innerHTML = "";
+
+  box.appendChild(mkText("span", "", "סה״כ יתרה"));
+
+  var value = mkText("strong", "", money(Math.max(0, d.balance)));
+  if (d.balance < 0) value.style.color = "var(--danger)";
+  box.appendChild(value);
+
+  var hasSpecialExpenseDeficit = d.balance <= 0 && d.oneTimeExpenses > 0 && d.balance + d.oneTimeExpenses > 0;
+  if (warningBox) {
+    warningBox.innerHTML = "";
+    warningBox.hidden = d.balance > 0;
+  }
+  if (d.balance <= 0) {
+    var warning = mk("div", "deficit-banner" + (hasSpecialExpenseDeficit ? " special-expense-deficit-banner" : ""));
+    warning.appendChild(mkText("span", "material-symbols-rounded", "warning"));
+    warning.appendChild(mkText("span", "", hasSpecialExpenseDeficit
+      ? "ההוצאות המיוחדות משאירות את התקציב ללא יתרה לחלוקה. החודש מומלץ לדחות או לצמצם אותן לפני שממשיכים."
+      : "אין יתרה לחלוקה לחיסכון והשקעות בחודש זה."));
+    if (warningBox) warningBox.appendChild(warning);
+  }
+
+  renderRecoveryDashboard(d);
+  renderAllocationModes();
+  var allocationModes = el("allocation-mode-box");
+  var allocationQuestion = el("allocation-mode-question");
+  var allocationCustomButton = el("allocation-custom-btn");
+  var calculateButton = el("budget-flow-calculate-btn");
+  if (d.balance <= 0 || (AppState.profile.debtStatus && !hasValidRecoveryPayment())) {
+    if (allocationModes) allocationModes.hidden = true;
+    if (allocationQuestion) allocationQuestion.hidden = true;
+    if (allocationCustomButton) allocationCustomButton.hidden = true;
+    if (calculateButton) calculateButton.disabled = true;
+  } else if (calculateButton) {
+    calculateButton.disabled = false;
+  }
+}
+
+function renderRecoveryDashboard(d) {
+  var dashboard = el("recovery-dashboard");
+  var overview = el("recovery-overview");
+  if (!dashboard) return;
+  dashboard.hidden = !AppState.profile.debtStatus;
+  if (overview) overview.hidden = dashboard.hidden;
+  if (dashboard.hidden) return;
+
+  var totalDebt = recoveryDebtBalance(AppState.liabilities);
+  var limit = recoveryPaymentLimit();
+  var paymentInput = el("recovery-payment-input");
+  var message = el("recovery-payment-message");
+  el("recovery-debts-total").textContent = money(totalDebt);
+  el("recovery-expenses-total").textContent = money(d.exp + d.insurance + d.liabilityPayments);
+  paymentInput.disabled = d.balance <= 0 || totalDebt <= 0;
+  paymentInput.max = String(limit);
+  if (document.activeElement !== paymentInput) {
+    paymentInput.value = AppState.recoveryPayment === null ? "" : AppState.recoveryPayment;
+  }
+  el("recovery-remaining-total").textContent = money(Math.max(0, d.balance - (hasValidRecoveryPayment() ? AppState.recoveryPayment : 0)));
+
+  var enteredInvalid = paymentInput.value !== "" && parseNonNegativeNumber(paymentInput.value) === null;
+  var paymentInvalid = enteredInvalid || (AppState.recoveryPayment !== null && !hasValidRecoveryPayment());
+  paymentInput.setAttribute("aria-invalid", paymentInvalid ? "true" : "false");
+  message.classList.toggle("is-error", paymentInvalid);
+  if (totalDebt <= 0) {
+    message.textContent = "כדי לבנות תוכנית, יש להזין מינוס או חוב לסגירה.";
+  } else if (d.balance <= 0) {
+    message.textContent = "אין יתרה להחזר נוסף. קודם צריך לאזן את הוצאות החודש.";
+  } else if (enteredInvalid) {
+    message.textContent = "יש להזין סכום תקין שאינו שלילי.";
+  } else if (AppState.recoveryPayment === null) {
+    message.textContent = "יש לבחור סכום להחזר נוסף. אפשר להזין גם 0.";
+  } else if (!hasValidRecoveryPayment()) {
+    message.textContent = "הסכום לא יכול לעלות על היתרה או על החוב הרשום (עד " + money(limit) + ").";
+  } else {
+    message.textContent = "הסכום הנותר נשאר זמין לשימוש החודש.";
+  }
+  var calculateButton = el("budget-flow-calculate-btn");
+  if (calculateButton) calculateButton.disabled = d.balance <= 0 || !hasValidRecoveryPayment();
+}
+
+function updateRecoveryPayment(value) {
+  AppState.recoveryPayment = parseNonNegativeNumber(value);
+  saveData();
+  renderRecoveryDashboard(AppState.result);
+  flashSaved();
+}
+
+function renderAllocationModes() {
+  var box = el("allocation-mode-box");
+  var question = el("allocation-mode-question");
+  var customButton = el("allocation-custom-btn");
+  if (!box) return;
+  if (AppState.profile.debtStatus || hasActiveDebtPlan()) {
+    box.hidden = true;
+    if (question) question.hidden = true;
+    if (customButton) customButton.hidden = true;
+    box.innerHTML = "";
+    return;
+  }
+
+  box.hidden = false;
+  if (question) question.hidden = false;
+  if (customButton) customButton.hidden = false;
+  box.innerHTML = ALLOCATION_MODES.map(function(mode) {
+    var selected = allocationsMatch(AppState.settings.allocation, mode.allocation);
+    return '<button type="button" class="allocation-mode' + (selected ? ' selected' : '') + '" ' +
+      'aria-pressed="' + selected + '" onclick="setAllocationMode(\'' + mode.id + '\')">' +
+      '<strong>' + mode.name + '</strong>' +
+      '<span>השקעות ' + mode.allocation.invest + '%</span>' +
+      '<span>איכות חיים ' + mode.allocation.qualityOfLife + '%</span>' +
+      '<span>בזבוזים ' + mode.allocation.spending + '%</span>' +
+    '</button>';
+  }).join("");
+}
+
+function allocationsMatch(current, candidate) {
+  return Number(current.invest) === candidate.invest &&
+    Number(current.qualityOfLife) === candidate.qualityOfLife &&
+    Number(current.spending) === candidate.spending;
+}
+
+function setAllocationMode(modeId) {
+  var selectedMode = null;
+  for (var i = 0; i < ALLOCATION_MODES.length; i++) {
+    if (ALLOCATION_MODES[i].id === modeId) {
+      selectedMode = ALLOCATION_MODES[i];
+      break;
+    }
+  }
+  if (!selectedMode) return;
+
+  AppState.settings.allocation = clone(selectedMode.allocation);
+  saveAllocationPercentages();
+  calculate();
+  render();
+  flashSaved();
+}
+
+
+
+/* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+   SAVE DOT FLASHER
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
+var _saveTimer = null;
+function flashSaved() {
+  var dot = el("save-dot");
+  if (!dot) return;
+  dot.classList.add("show");
+  clearTimeout(_saveTimer);
+  _saveTimer = setTimeout(function() { dot.classList.remove("show"); }, 1800);
+}

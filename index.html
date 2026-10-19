@@ -1,0 +1,518 @@
+<!DOCTYPE html>
+<html lang="he" dir="rtl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="default">
+  <meta name="apple-mobile-web-app-title" content="שליטה פיננסית">
+  <meta name="theme-color" content="#163a5f">
+  <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png?v=brand">
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png?v=brand">
+  <link rel="manifest" href="manifest.webmanifest?v=brand">
+  <title>שליטה פיננסית - פגישת התקציב החודשית</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Heebo:wght@400;500;600;700;800&family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@20..48,400,0,0&family=Rubik:wght@500;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+  <section class="landing-screen" id="landing-screen" aria-labelledby="landing-title">
+    <div class="landing-glow landing-glow-one" aria-hidden="true"></div>
+    <div class="landing-glow landing-glow-two" aria-hidden="true"></div>
+    <div class="landing-card">
+      <div class="landing-icon landing-month-icon" id="landing-month" aria-label="החודש הנוכחי"></div>
+      <h1 class="landing-title" id="landing-title">פגישת התקציב החודשית</h1>
+      <p class="landing-description"><strong>המשכורת כבר כאן?</strong> יחד נעדכן הכנסות, נבדוק הוצאות ונבנה תוכנית ברורה לחודש הקרוב.</p>
+      <button type="button" class="landing-start-btn" onclick="startBudgetMeeting()">
+        <span>התחל פגישה</span>
+        <span class="landing-btn-timer" aria-hidden="true"><span class="material-symbols-rounded">timer</span><span>10 דק׳</span></span>
+      </button>
+    </div>
+  </section>
+
+  <section class="profile-setup-screen" id="profile-setup-screen" aria-labelledby="profile-setup-title" aria-hidden="true" hidden>
+    <div class="profile-setup-card">
+      <h1 class="profile-setup-title" id="profile-setup-title">האם את/ה?</h1>
+
+      <div class="profile-status-grid" aria-label="בחירת סטטוסים">
+        <label class="profile-status-option">
+          <input type="checkbox" value="single">
+          <span class="profile-status-card"><span class="material-symbols-rounded" aria-hidden="true">person</span><strong>רווק/ה</strong></span>
+        </label>
+        <label class="profile-status-option">
+          <input type="checkbox" value="children">
+          <span class="profile-status-card"><span class="material-symbols-rounded" aria-hidden="true">family_restroom</span><strong>הורה לילדים</strong></span>
+        </label>
+        <label class="profile-status-option">
+          <input type="checkbox" value="renting">
+          <span class="profile-status-card"><span class="material-symbols-rounded" aria-hidden="true">key</span><strong>שוכר/ת דירה</strong></span>
+        </label>
+        <label class="profile-status-option">
+          <input type="checkbox" value="mortgage">
+          <span class="profile-status-card"><span class="material-symbols-rounded" aria-hidden="true">home</span><strong>משלם/ת משכנתא</strong></span>
+        </label>
+        <label class="profile-status-option">
+          <input type="checkbox" value="debtStatus">
+          <span class="profile-status-card"><span class="material-symbols-rounded" aria-hidden="true">account_balance</span><strong>במינוס או עם חובות</strong></span>
+        </label>
+        <label class="profile-status-option">
+          <input type="checkbox" value="loans">
+          <span class="profile-status-card"><span class="material-symbols-rounded" aria-hidden="true">more_horiz</span><strong>אחר</strong></span>
+        </label>
+      </div>
+
+      <div class="profile-setup-actions">
+        <label class="profile-review-confirm">
+          <input type="checkbox" id="profile-review-confirmation" onchange="updateProfileConfirmation()">
+          <span>בדקתי והפרטים<br>נכונים</span>
+        </label>
+        <button type="button" class="profile-setup-continue" id="profile-confirm-button" onclick="confirmProfileSetup()" disabled>המשך לתקציב</button>
+      </div>
+    </div>
+  </section>
+
+  <div class="calculator-app" id="calculator-app" aria-hidden="true">
+  <header class="topbar">
+    <button type="button" class="topbar-brand" id="brand-menu-button" onclick="openSideMenu()" aria-label="פתיחת התפריט הראשי" aria-haspopup="dialog" aria-expanded="false">
+      <span class="brand-emoji material-symbols-rounded" aria-hidden="true">account_balance_wallet</span>
+      <h1 class="brand-title">שליטה פיננסית</h1>
+    </button>
+    <section class="card period-card topbar-period">
+      <div class="period-row">
+        <div class="period-cell">
+          <div class="select-wrap"><select id="sel-month" aria-label="הגדרת תקציב לחודש" title="בחירת חודש להגדרת התקציב">
+            <option value="0">תקציב ינואר</option><option value="1">תקציב פברואר</option>
+            <option value="2">תקציב מרץ</option><option value="3">תקציב אפריל</option>
+            <option value="4">תקציב מאי</option><option value="5">תקציב יוני</option>
+            <option value="6">תקציב יולי</option><option value="7">תקציב אוגוסט</option>
+            <option value="8">תקציב ספטמבר</option><option value="9">תקציב אוקטובר</option>
+            <option value="10">תקציב נובמבר</option><option value="11">תקציב דצמבר</option>
+          </select></div>
+        </div>
+        <div class="period-cell period-year-cell" aria-hidden="true">
+          <div class="select-wrap"><select id="sel-year" aria-label="בחירת שנה" title="בחירת שנה">
+            <option value="2024">2024</option><option value="2025">2025</option>
+            <option value="2026">2026</option><option value="2027">2027</option>
+            <option value="2028">2028</option>
+          </select></div>
+        </div>
+      </div>
+      <div class="topbar-financial-snapshot" aria-label="תמונת מצב חודשית" aria-live="polite">
+        <button type="button" class="topbar-snapshot-item topbar-snapshot-debts" id="topbar-debts-snapshot" onclick="goToBudgetFlowStep(0)" aria-label="חזרה לשלב החובות" hidden>
+          <span class="topbar-snapshot-label"><span class="material-symbols-rounded" aria-hidden="true">account_balance</span><span>סה״כ<br>חובות</span></span><strong id="topbar-debts-total">₪0</strong>
+        </button>
+        <button type="button" class="topbar-snapshot-item topbar-snapshot-income" id="topbar-income-snapshot" onclick="goToBudgetFlowStep(1)" aria-label="חזרה לשלב ההכנסות">
+          <span class="topbar-snapshot-label"><span class="snapshot-bag-icon snapshot-bag-plus" aria-hidden="true"><span class="material-symbols-rounded">money_bag</span></span><span>סה״כ<br>הכנסות</span></span><strong id="topbar-income-total">₪0</strong>
+        </button>
+        <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-variable-expenses-snapshot" onclick="goToBudgetFlowStep(2)" aria-label="חזרה לשלב ההוצאות המשתנות" hidden>
+          <span class="topbar-snapshot-label"><span class="snapshot-bag-icon snapshot-bag-minus" aria-hidden="true"><span class="material-symbols-rounded">money_bag</span></span><span>סה״כ הוצאות<br>משתנות</span></span><strong id="topbar-variable-expenses-total">₪0</strong>
+        </button>
+        <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-fixed-expenses-snapshot" onclick="goToBudgetFlowStep(3)" aria-label="חזרה לשלב ההוצאות הקבועות" hidden>
+          <span class="topbar-snapshot-label"><span class="snapshot-bag-icon snapshot-bag-minus" aria-hidden="true"><span class="material-symbols-rounded">money_bag</span></span><span>סה״כ הוצאות<br>קבועות</span></span><strong id="topbar-fixed-expenses-total">₪0</strong>
+        </button>
+        <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-special-expenses-snapshot" onclick="goToBudgetFlowStep(4)" aria-label="חזרה לשלב ההוצאות המיוחדות" hidden>
+          <span class="topbar-snapshot-label"><span class="snapshot-bag-icon snapshot-bag-minus" aria-hidden="true"><span class="material-symbols-rounded">money_bag</span></span><span>סה״כ הוצאות<br>מיוחדות</span></span><strong id="topbar-special-expenses-total">₪0</strong>
+        </button>
+        <button type="button" class="topbar-snapshot-item topbar-snapshot-donations" id="topbar-donations-snapshot" onclick="goToBudgetFlowStep(5)" aria-label="חזרה לשלב התרומות" hidden>
+          <span class="topbar-snapshot-label"><span class="material-symbols-rounded snapshot-donation-icon" aria-hidden="true">volunteer_activism</span><span>סה״כ<br>תרומות</span></span><strong id="topbar-donations-total">₪0</strong>
+        </button>
+      </div>
+    </section>
+    <div class="topbar-actions">
+      <div class="save-indicator" id="save-dot">
+        <span>✓</span><span>נשמר</span>
+      </div>
+      <button type="button" class="topbar-icon-btn calendar-topbar-btn" id="calendar-topbar-button" onclick="openCalendarModal()" aria-label="קביעת פגישה לחודש הבא" title="קביעת פגישה לחודש הבא">
+        <span id="next-meeting-label">קבע פגישה לחודש הבא</span>
+        <span class="calendar-topbar-icon" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <div class="side-menu-overlay" id="side-menu-overlay" aria-hidden="true" onclick="if(event.target===this)closeSideMenu()">
+    <aside class="side-menu" role="dialog" aria-modal="true" aria-labelledby="side-menu-title">
+      <div class="side-menu-header">
+        <h2 id="side-menu-title">שליטה פיננסית</h2>
+        <button type="button" class="side-menu-close material-symbols-rounded" id="side-menu-close" onclick="closeSideMenu()" aria-label="סגירת התפריט">close</button>
+      </div>
+      <nav class="side-menu-nav" aria-label="תחומים נוספים">
+        <button type="button" class="side-menu-item side-menu-item-current" id="menu-cashflow" onclick="showFinancialPage('cashflow')" aria-current="page">
+          <span class="side-menu-item-icon material-symbols-rounded" aria-hidden="true">home</span>
+          <span class="side-menu-item-label">תזרים חודשי</span>
+          <span class="side-menu-current-badge">נוכחי</span>
+        </button>
+        <button type="button" class="side-menu-item" id="menu-investments" onclick="showFinancialPage('investments')">
+          <span class="side-menu-item-icon material-symbols-rounded" aria-hidden="true">trending_up</span>
+          <span class="side-menu-item-label">השקעות</span>
+          <span class="side-menu-current-badge" hidden>נוכחי</span>
+        </button>
+        <button type="button" class="side-menu-item" id="menu-insurances" onclick="showFinancialPage('insurances')">
+          <span class="side-menu-item-icon material-symbols-rounded" aria-hidden="true">shield</span>
+          <span class="side-menu-item-label">ביטוחים</span>
+          <span class="side-menu-current-badge" hidden>נוכחי</span>
+        </button>
+      </nav>
+    </aside>
+  </div>
+
+  <main class="content" id="budget-main">
+
+    <!-- Debts: shown first only in recovery mode -->
+    <div class="budget-flow-step" id="budget-flow-debts" hidden>
+      <h2 class="budget-flow-stage-title">חובות</h2>
+      <div class="allocation-balance-summary flow-stage-explainer" id="debt-stage-explainer">יש להזין מינוס בבנק או חובות שאינם הלוואה מסודרת או משכנתא.</div>
+      <div class="expense-cards-stack">
+        <section class="card inputs-card expense-section-card">
+          <div class="irow">
+            <div class="ilabel"><span class="row-icon material-symbols-rounded" aria-hidden="true">account_balance_wallet</span><span class="label-main">מינוס בבנק</span></div>
+            <div class="iright"><input type="number" id="debt-overdraft-input" placeholder="0" min="0" step="any" inputmode="decimal" aria-label="גובה המינוס בבנק" oninput="updateDebtStepOverdraft(this.value)"></div>
+          </div>
+        </section>
+        <section class="card inputs-card expense-section-card">
+          <div class="irow">
+            <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openLiabilitiesModal('debts')" aria-label="עריכת חובות" title="עריכת חובות">receipt_long</button><span class="label-main">חובות</span></div>
+            <div class="iright"><input type="number" id="debt-list-total" placeholder="0" aria-label="סך החובות" readonly></div>
+          </div>
+        </section>
+      </div>
+      <p class="recovery-field-error" id="debt-overdraft-error" role="alert"></p>
+      <div class="budget-flow-controls budget-flow-controls-forward">
+        <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(1)">הבא</button>
+      </div>
+    </div>
+
+    <!-- Income -->
+    <div class="budget-flow-step" id="budget-flow-income">
+      <h2 class="budget-flow-stage-title">הכנסות</h2>
+      <div class="allocation-balance-summary flow-stage-explainer" id="income-stage-explainer"></div>
+      <section class="card inputs-card">
+        <div class="irow">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(1)" aria-label="פתיחת תלוש משכורת" title="תלוש משכורת">payments</button><div><span class="label-main" id="income-partner-1-label">משכורת</span></div></div>
+          <div class="iright"><input type="number" id="inp-s1" placeholder="0" min="0" inputmode="decimal"/></div>
+        </div>
+        <div class="irow" id="income-partner-2-row">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(2)" aria-label="פתיחת תלוש משכורת בת זוג" title="תלוש משכורת">payments</button><div><span class="label-main" id="income-partner-2-label">משכורת</span></div></div>
+          <div class="iright"><input type="number" id="inp-s2" placeholder="0" min="0" inputmode="decimal"/></div>
+        </div>
+        <div class="additional-income-list" id="additional-income-list"></div>
+      </section>
+      <button type="button" class="additional-income-add" onclick="addAdditionalIncome()"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הכנסה נוספת</span></button>
+      <div class="budget-flow-controls budget-flow-controls-forward">
+        <button type="button" class="budget-flow-back income-back-to-debts" id="income-back-to-debts" onclick="goToBudgetFlowStep(0)" hidden><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
+        <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(2)">הבא</button>
+      </div>
+    </div>
+
+    <!-- Recurring expenses with a changing monthly amount -->
+    <div class="budget-flow-step" id="budget-flow-variable-expenses" hidden>
+      <h2 class="budget-flow-stage-title">הוצאות משתנות</h2>
+      <div class="allocation-balance-summary flow-stage-explainer" id="variable-expenses-stage-explainer"></div>
+      <section class="card inputs-card expense-section-card">
+        <div class="irow">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openHousingUtilitiesModal()" aria-label="עריכת חיובי דיור משתנים" title="עריכת חיובי דיור משתנים">home</button><div><span class="label-main">חיובי דיור</span><span class="label-sub">חשמל, מים, גז וארנונה</span></div></div>
+          <div class="iright"><input type="number" id="inp-variable-housing" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('variableHousing','חיובי דיור')" aria-label="מחיקת חיובי דיור" title="מחיקת חיובי דיור">delete</button></div>
+        </div>
+        <div class="irow">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openFuelExpensesModal()" aria-label="עריכת דלק ותחבורה" title="עריכת דלק ותחבורה">local_gas_station</button><div><span class="label-main">דלק / תחבורה</span></div></div>
+          <div class="iright"><input type="number" id="inp-fuel-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('fuel','דלק / תחבורה')" aria-label="מחיקת דלק ותחבורה" title="מחיקת דלק ותחבורה">delete</button></div>
+        </div>
+        <div class="irow">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openSupermarketExpensesModal()" aria-label="עריכת קניות סופר" title="עריכת קניות סופר">shopping_cart</button><div><span class="label-main">קניות סופר</span><span class="label-sub">מזון ומוצרי ניקוי</span></div></div>
+          <div class="iright"><input type="number" id="inp-supermarket-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('supermarket','קניות סופר')" aria-label="מחיקת קניות סופר" title="מחיקת קניות סופר">delete</button></div>
+        </div>
+        <div class="irow" id="other-variable-expenses-row" hidden>
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openOtherVariableExpensesModal()" aria-label="עריכת הוצאות משתנות נוספות" title="עריכת הוצאות משתנות נוספות">more_horiz</button><div><span class="label-main">הוצאות משתנות נוספות</span></div></div>
+          <div class="iright"><input type="number" id="inp-other-variable-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('otherVariable','הוצאות משתנות נוספות')" aria-label="מחיקת הוצאות משתנות נוספות" title="מחיקת הוצאות משתנות נוספות">delete</button></div>
+        </div>
+        <div id="custom-variable-expenses-list"></div>
+      </section>
+      <button type="button" class="additional-income-add" onclick="addCustomExpenseCategory('variableExpenses')"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף קטגוריה</span></button>
+      <div class="budget-flow-controls">
+        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(1)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
+        <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(3)">הבא</button>
+      </div>
+    </div>
+
+    <!-- Fixed expenses and liabilities -->
+    <div class="budget-flow-step" id="budget-flow-expenses" hidden>
+      <h2 class="budget-flow-stage-title">הוצאות קבועות</h2>
+      <div class="allocation-balance-summary flow-stage-explainer" id="fixed-expenses-stage-explainer"></div>
+      <div class="expense-cards-stack">
+      <section class="card inputs-card expense-section-card">
+        <div class="irow">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openModal('exp')" aria-label="עריכת הוצאות דיור" title="עריכת הוצאות דיור">home</button><div><span class="label-main">דיור</span></div></div>
+          <div class="iright"><input type="number" id="inp-exp" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('housing','דיור')" aria-label="מחיקת הוצאות דיור" title="מחיקת הוצאות דיור">delete</button></div>
+        </div>
+        <div class="irow">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openSubscriptionsModal()" aria-label="עריכת מנויים ותקשורת" title="עריכת מנויים ותקשורת">subscriptions</button><div><span class="label-main">מנויים ותקשורת</span></div></div>
+          <div class="iright"><input type="number" id="inp-subscriptions" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('subscriptions','מנויים ותקשורת')" aria-label="מחיקת מנויים ותקשורת" title="מחיקת מנויים ותקשורת">delete</button></div>
+        </div>
+        <div class="irow">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openHealthBeautyModal()" aria-label="עריכת בריאות וטיפוח" title="עריכת בריאות וטיפוח">spa</button><div><span class="label-main">בריאות וטיפוח</span></div></div>
+          <div class="iright"><input type="number" id="inp-health-beauty" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('healthBeauty','בריאות וטיפוח')" aria-label="מחיקת בריאות וטיפוח" title="מחיקת בריאות וטיפוח">delete</button></div>
+        </div>
+        <div class="irow" id="children-expenses-row" hidden>
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openChildrenExpensesModal()" aria-label="עריכת הוצאות ילדים" title="עריכת הוצאות ילדים">family_restroom</button><div><span class="label-main">הוצאות ילדים</span></div></div>
+          <div class="iright"><input type="number" id="inp-children-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('children','הוצאות ילדים')" aria-label="מחיקת הוצאות ילדים" title="מחיקת הוצאות ילדים">delete</button></div>
+        </div>
+        <div class="irow">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openInsuranceModal()" aria-label="עריכת ביטוחים" title="עריכת ביטוחים">shield</button><div><span class="label-main">ביטוחים</span></div></div>
+          <div class="iright"><input type="number" id="inp-insurance" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('insurances','ביטוחים')" aria-label="מחיקת ביטוחים" title="מחיקת ביטוחים">delete</button></div>
+        </div>
+        <div class="irow">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openLiabilitiesModal()" aria-label="עריכת הלוואות" title="עריכת הלוואות">account_balance</button><div><span class="label-main">הלוואות</span></div></div>
+          <div class="iright"><input type="number" id="inp-liabilities" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" id="clear-loans-button" onclick="confirmClearExpenseCategory('loans','הלוואות וחובות')" aria-label="מחיקת הלוואות וחובות" title="מחיקת הלוואות וחובות">delete</button></div>
+        </div>
+        <div class="irow" id="mortgage-expense-row">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openMortgageModal()" aria-label="עריכת משכנתא" title="עריכת משכנתא">home</button><div><span class="label-main">משכנתא</span></div></div>
+          <div class="iright"><input type="number" id="inp-mortgage" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('mortgage','משכנתא')" aria-label="מחיקת משכנתא" title="מחיקת משכנתא">delete</button></div>
+        </div>
+        <div id="custom-fixed-expenses-list"></div>
+      </section>
+      </div>
+      <button type="button" class="additional-income-add" onclick="addCustomExpenseCategory('expenses')"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף קטגוריה</span></button>
+      <div class="budget-flow-controls">
+        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(2)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
+        <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(4)">הבא</button>
+      </div>
+    </div>
+
+    <!-- Special monthly expenses -->
+    <div class="budget-flow-step" id="budget-flow-special-expenses" hidden>
+      <h2 class="budget-flow-stage-title" id="special-expenses-stage-title">הוצאות מיוחדות</h2>
+      <div class="allocation-balance-summary flow-stage-explainer" id="special-expenses-stage-explainer"></div>
+      <section class="card special-expenses-stage-card">
+        <h2><span>האם קיימת הוצאה מיוחדת החודש?</span></h2>
+        <button type="button" class="special-expenses-entry" onclick="openOneTimeExpensesModal()" aria-label="הוספה או עריכה של הוצאות מיוחדות">
+          <span>הוסף או ערוך הוצאה</span>
+          <strong id="inp-one-time-expenses">₪0</strong>
+        </button>
+      </section>
+      <section class="card inputs-card expense-section-card" id="custom-special-expenses-card" hidden><div id="custom-special-expenses-list"></div></section>
+      <button type="button" class="additional-income-add" onclick="addCustomExpenseCategory('oneTimeExpenses')"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף קטגוריה</span></button>
+      <div class="budget-flow-controls">
+        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(3)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
+        <button type="button" class="budget-flow-next" onclick="nextAfterSpecialExpenses()">הבא</button>
+      </div>
+    </div>
+
+    <!-- Tithe -->
+    <div class="budget-flow-step" id="budget-flow-donations" hidden>
+      <h2 class="budget-flow-stage-title">תרומות</h2>
+      <div class="maaser-no-balance" id="maaser-no-balance" role="status" hidden><span class="material-symbols-rounded" aria-hidden="true">info</span><span>לא נותרה יתרה זמינה לתרומה החודש.</span></div>
+      <div class="maaser-mode-box" id="maaser-mode-box"></div>
+      <section class="card maaser-card" id="maaser-card">
+        <div id="maaser-box" class="maaser-box"></div>
+      </section>
+      <div class="budget-flow-controls">
+        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(4)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
+        <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(6)">הבא</button>
+      </div>
+    </div>
+
+    <!-- Calculate allocation -->
+    <div class="budget-flow-step" id="budget-flow-calculate" hidden>
+      <h2 class="budget-flow-stage-title">חלוקה חודשית</h2>
+      <div id="pre-allocation-balance" class="allocation-balance-summary" aria-live="polite"></div>
+      <div class="recovery-overview" id="recovery-overview" aria-label="סיכום חובות והוצאות" hidden>
+        <div><span>חובות</span><strong id="recovery-debts-total">₪0</strong></div>
+        <div><span>הוצאות</span><strong id="recovery-expenses-total">₪0</strong></div>
+      </div>
+      <section class="card budget-flow-calculate-card" id="budget-flow-calculation" aria-live="polite">
+        <div id="pre-allocation-warning" hidden></div>
+        <section class="recovery-dashboard" id="recovery-dashboard" aria-labelledby="recovery-dashboard-title" hidden>
+          <h3 id="recovery-dashboard-title">תוכנית לצמצום חובות</h3>
+          <p>תחילה מכסים את הוצאות החודש ואת ההחזרים הקבועים. המינוס מוצג כחוב קיים ולא כהוצאה נוספת; כאן בוחרים כמה מהיתרה להפנות לצמצום חובות.</p>
+          <button type="button" class="recovery-edit-debts" onclick="goToBudgetFlowStep(0)">עדכון מינוס וחובות</button>
+          <label class="recovery-payment-field" for="recovery-payment-input">כמה מהיתרה להפנות להחזר נוסף?</label>
+          <input type="number" id="recovery-payment-input" min="0" step="any" inputmode="decimal" placeholder="סכום ההחזר" oninput="updateRecoveryPayment(this.value)" aria-describedby="recovery-payment-message">
+          <p id="recovery-payment-message" class="recovery-payment-message" role="status"></p>
+          <div class="recovery-remaining"><span>יתרה לשימוש החודש</span><strong id="recovery-remaining-total">₪0</strong></div>
+        </section>
+        <p class="allocation-mode-question" id="allocation-mode-question">כיצד תרצו את חודש אוגוסט?</p>
+        <div class="allocation-mode-box" id="allocation-mode-box" aria-label="בחירת אופן החלוקה"></div>
+        <div class="budget-flow-loader" id="budget-flow-loader" hidden>
+          <span class="budget-flow-spinner" aria-hidden="true"></span>
+          <span>מכינים את החלוקה שלך…</span>
+        </div>
+      </section>
+      <div class="budget-flow-controls budget-flow-calculate-controls">
+        <button type="button" class="budget-flow-back" onclick="backFromAllocation()"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
+        <button type="button" class="allocation-custom-btn" id="allocation-custom-btn" onclick="openAllocationSettingsModal()">הגדר לבד</button>
+        <button type="button" class="budget-flow-calculate-btn" id="budget-flow-calculate-btn" onclick="calculateBudgetFlow()">חשב את החלוקה החודשית</button>
+      </div>
+    </div>
+
+    <!-- Actions / Balance Breakdown -->
+    <div class="budget-flow-step" id="budget-flow-result" hidden>
+      <h2 class="budget-flow-stage-title">החלוקה החודשית</h2>
+      <div class="allocation-balance-summary" aria-live="polite">
+        <span>סה״כ יתרה</span>
+        <strong id="allocation-balance-total">₪0</strong>
+      </div>
+      <section class="card">
+        <div id="actions-box" class="actions-box"></div>
+      </section>
+      <div class="budget-flow-result-actions">
+        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(6)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
+        <button class="export-btn" onclick="exportPDF()"><span class="material-symbols-rounded" aria-hidden="true">description</span><span>הפק דוח חודשי</span></button>
+      </div>
+    </div>
+  </main>
+
+  <main class="financial-page" id="investments-page" aria-labelledby="investments-page-title" hidden>
+    <div class="financial-page-heading">
+      <div class="financial-page-heading-row"><h2 id="investments-page-title" tabindex="-1">השקעות</h2><button type="button" onclick="showFinancialPage('cashflow')">חזרה לתזרים</button></div>
+      <p>מקום אחד לראות את החסכונות, ההפקדות ודמי הניהול.</p>
+    </div>
+    <div class="financial-product-grid" id="financial-product-grid"></div>
+    <section class="financial-detail card" id="investment-detail" tabindex="-1" aria-live="polite" hidden></section>
+    <p class="financial-page-note">הנתונים נשמרים במכשיר הזה ואינם משנים את חישוב התקציב החודשי.</p>
+  </main>
+
+  <main class="financial-page" id="insurances-page" aria-labelledby="insurances-page-title" hidden>
+    <div class="financial-page-heading">
+      <div class="financial-page-heading-row"><h2 id="insurances-page-title" tabindex="-1">ביטוחים</h2><button type="button" onclick="showFinancialPage('cashflow')">חזרה לתזרים</button></div>
+      <p id="insurance-page-period"></p>
+    </div>
+    <div class="financial-product-grid" id="insurance-product-grid"></div>
+    <section class="financial-detail card" id="insurance-detail" tabindex="-1" aria-live="polite" hidden></section>
+    <p class="financial-page-note">הביטוחים המוצגים כאן הם אותם ביטוחים הכלולים בהוצאות החודשיות, ללא חיוב כפול.</p>
+  </main>
+
+  <!-- Expenses Modal -->
+  <div class="overlay" id="gen-overlay" onclick="if(event.target===this)closeGenModal()">
+    <div class="modal">
+      <div class="modal-hdr"><h2 class="modal-title" id="gen-modal-title">הוצאות</h2><button class="close-btn material-symbols-rounded" onclick="closeGenModal()" aria-label="סגירה">close</button></div>
+      <div class="modal-body" id="gen-modal-body"></div>
+      <div class="modal-ftr">
+        <div class="modal-total-row" id="gen-modal-total-row"><span class="modal-total-lbl">סה"כ:</span><span class="modal-total-val" id="gen-modal-total">₪0</span></div>
+        <div class="investment-goal-footer" id="investment-goal-footer" hidden></div>
+        <button class="apply-btn" id="gen-apply-btn">עדכן ושמור ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="expense-delete-overlay" id="expense-delete-overlay" hidden onclick="if(event.target===this)closeExpenseDeleteDialog()">
+    <div class="expense-delete-dialog" role="dialog" aria-modal="true" aria-labelledby="expense-delete-title" aria-describedby="expense-delete-message">
+      <h2 id="expense-delete-title">מחיקת נתונים</h2>
+      <p id="expense-delete-message"></p>
+      <div class="expense-delete-actions">
+        <button type="button" id="expense-delete-no" onclick="closeExpenseDeleteDialog()">לא</button>
+        <button type="button" id="expense-delete-yes" onclick="confirmExpenseDelete()">כן</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Income Modal -->
+  <div class="overlay" id="inc-overlay" onclick="if(event.target===this)closeIncomeModal()">
+    <div class="modal">
+      <div class="modal-hdr"><h2 class="modal-title" id="inc-modal-title">הכנסות</h2><button class="close-btn material-symbols-rounded" onclick="closeIncomeModal()" aria-label="סגירה">close</button></div>
+      <div class="modal-body" id="inc-modal-body"></div>
+      <div class="modal-ftr">
+        <button class="apply-btn" onclick="applyIncome()">עדכן ושמור ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payslip Modal -->
+  <div class="overlay" id="payslip-overlay" onclick="if(event.target===this)closePayslipModal()">
+    <div class="modal payslip-modal" role="dialog" aria-modal="true" aria-labelledby="payslip-modal-title">
+      <div class="modal-hdr">
+        <h2 class="modal-title" id="payslip-modal-title">תלוש משכורת</h2>
+        <button type="button" class="close-btn material-symbols-rounded" onclick="closePayslipModal()" aria-label="סגירה">close</button>
+      </div>
+      <div class="modal-body payslip-modal-body">
+        <p class="payslip-context" id="payslip-context"></p>
+        <label class="payslip-upload" for="payslip-file-input">
+          <span class="payslip-upload-icon material-symbols-rounded" aria-hidden="true">add</span>
+          <span><strong>העלה תמונה או קובץ</strong><small>PDF, JPG, PNG או WEBP</small></span>
+        </label>
+        <input type="file" id="payslip-file-input" class="payslip-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" onchange="uploadPayslipFile(this.files[0])">
+        <p class="payslip-privacy"><span class="material-symbols-rounded" aria-hidden="true">lock</span><span>התלוש נשמר רק במכשיר הזה ואינו נשלח לשרת.</span></p>
+        <div class="payslip-status" id="payslip-status" aria-live="polite"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Loans and Debts Modal -->
+  <div class="overlay" id="liabilities-overlay" onclick="if(event.target===this)closeLiabilitiesModal()">
+    <div class="modal liabilities-modal" role="dialog" aria-modal="true" aria-labelledby="liabilities-modal-title">
+      <div class="modal-hdr">
+        <h2 class="modal-title" id="liabilities-modal-title">הלוואות</h2>
+        <button class="close-btn material-symbols-rounded" onclick="closeLiabilitiesModal()" aria-label="סגירה">close</button>
+      </div>
+      <div class="modal-body liabilities-modal-body" id="liabilities-modal-body"></div>
+      <div class="modal-ftr">
+        <div class="modal-total-row"><span class="modal-total-lbl">תשלומים חודשיים:</span><span class="modal-total-val" id="liabilities-modal-total">₪0</span></div>
+        <button type="button" class="apply-btn" onclick="applyLiabilitiesModal()">עדכן ושמור ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Mortgage Modal -->
+  <div class="overlay" id="mortgage-overlay" onclick="if(event.target===this)closeMortgageModal()">
+    <div class="modal liabilities-modal" role="dialog" aria-modal="true" aria-labelledby="mortgage-modal-title">
+      <div class="modal-hdr">
+        <h2 class="modal-title" id="mortgage-modal-title">משכנתא</h2>
+        <button class="close-btn material-symbols-rounded" onclick="closeMortgageModal()" aria-label="סגירה">close</button>
+      </div>
+      <div class="modal-body liabilities-modal-body" id="mortgage-modal-body"></div>
+      <div class="modal-ftr">
+        <div class="modal-total-row"><span class="modal-total-lbl">תשלום חודשי:</span><span class="modal-total-val" id="mortgage-modal-total">₪0</span></div>
+        <button type="button" class="apply-btn" onclick="applyMortgageModal()">עדכן ושמור ✓</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Next Monthly Meeting Modal -->
+  <div class="overlay" id="calendar-overlay" onclick="if(event.target===this)closeCalendarModal()">
+    <div class="modal calendar-modal" role="dialog" aria-modal="true" aria-labelledby="calendar-modal-title">
+      <div class="modal-hdr">
+        <h2 class="modal-title" id="calendar-modal-title">מתי לקבוע את הפגישה?</h2>
+        <button class="close-btn material-symbols-rounded" onclick="closeCalendarModal()" aria-label="סגירה">close</button>
+      </div>
+      <div class="modal-body calendar-modal-body">
+        <p class="calendar-intro" id="calendar-choice-copy">בחרו תאריך בחודש הבא</p>
+        <div class="calendar-date-options">
+          <button type="button" class="calendar-date-option" onclick="scheduleNextMeeting(10)"><strong>10</strong><span>בחודש</span></button>
+          <button type="button" class="calendar-date-option" onclick="scheduleNextMeeting(1)"><strong>1</strong><span>בחודש</span></button>
+          <button type="button" class="calendar-date-option" onclick="showCustomCalendarDate()"><span class="material-symbols-rounded" aria-hidden="true">edit_calendar</span><span>הגדר לבד</span></button>
+        </div>
+        <div class="calendar-custom-date" id="calendar-custom-date" hidden>
+          <label for="calendar-date-input" id="calendar-custom-copy">בחרו תאריך</label>
+          <input type="date" id="calendar-date-input">
+          <button type="button" class="apply-btn" onclick="scheduleCustomMeeting()">הוסף ליומן</button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <script src="js/shared/constants.js"></script>
+  <script src="js/shared/helpers.js"></script>
+  <script src="js/shared/utils.js"></script>
+  <script src="js/shared/state.js"></script>
+  <script src="js/storage/storage.js"></script>
+  <script src="js/storage/investments.js"></script>
+  <script src="js/calculations/budget.js"></script>
+  <script src="js/calculations/fees.js"></script>
+  <script src="js/ui/maaser.js"></script>
+  <script src="js/ui/modals.js"></script>
+  <script src="js/ui/liabilities.js"></script>
+  <script src="js/ui/render.js"></script>
+  <script src="js/ui/flow.js"></script>
+  <script src="js/ui/financial-pages.js"></script>
+  <script src="js/ui/landing.js"></script>
+  <script src="js/events/events.js"></script>
+  <script src="js/features/export.js"></script>
+  <script src="js/features/calendar.js"></script>
+  <script src="js/main.js"></script>
+</body>
+</html>
+
+
+
+
