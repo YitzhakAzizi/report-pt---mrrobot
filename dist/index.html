@@ -101,11 +101,11 @@
           </button>
         </div>
         <div class="snapshot-row snapshot-row-expenses">
-          <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-variable-expenses-snapshot" onclick="goToBudgetFlowStep(3)" aria-label="חזרה לשלב ההוצאות המשתנות" hidden>
-            <span class="topbar-snapshot-label"><span class="snapshot-bag-icon snapshot-bag-minus" aria-hidden="true"><span class="material-symbols-rounded">money_bag</span></span><span>סה״כ הוצאות<br>משתנות</span></span><strong id="topbar-variable-expenses-total">₪0</strong>
-          </button>
-          <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-fixed-expenses-snapshot" onclick="goToBudgetFlowStep(4)" aria-label="חזרה לשלב ההוצאות הקבועות" hidden>
+          <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-fixed-expenses-snapshot" onclick="goToBudgetFlowStep(3)" aria-label="חזרה לשלב ההוצאות הקבועות" hidden>
             <span class="topbar-snapshot-label"><span class="snapshot-bag-icon snapshot-bag-minus" aria-hidden="true"><span class="material-symbols-rounded">money_bag</span></span><span>סה״כ הוצאות<br>קבועות</span></span><strong id="topbar-fixed-expenses-total">₪0</strong>
+          </button>
+          <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-variable-expenses-snapshot" onclick="goToBudgetFlowStep(4)" aria-label="חזרה לשלב ההוצאות המשתנות" hidden>
+            <span class="topbar-snapshot-label"><span class="snapshot-bag-icon snapshot-bag-minus" aria-hidden="true"><span class="material-symbols-rounded">money_bag</span></span><span>סה״כ הוצאות<br>משתנות</span></span><strong id="topbar-variable-expenses-total">₪0</strong>
           </button>
           <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-special-expenses-snapshot" onclick="goToBudgetFlowStep(5)" aria-label="חזרה לשלב ההוצאות המיוחדות" hidden>
             <span class="topbar-snapshot-label"><span class="snapshot-bag-icon snapshot-bag-minus" aria-hidden="true"><span class="material-symbols-rounded">money_bag</span></span><span>סה״כ הוצאות<br>מיוחדות</span></span><strong id="topbar-special-expenses-total">₪0</strong>
@@ -226,36 +226,6 @@
       </div>
     </div>
 
-    <!-- Recurring expenses with a changing monthly amount -->
-    <div class="budget-flow-step" id="budget-flow-variable-expenses" hidden>
-      <h2 class="budget-flow-stage-title">הוצאות משתנות</h2>
-      <div class="allocation-balance-summary flow-stage-explainer" id="variable-expenses-stage-explainer"></div>
-      <section class="card inputs-card expense-section-card">
-        <div class="irow">
-          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openHousingUtilitiesModal()" aria-label="עריכת חיובי דיור משתנים" title="עריכת חיובי דיור משתנים">home</button><div><span class="label-main">חיובי דיור</span><span class="label-sub">חשמל, מים, גז וארנונה</span></div></div>
-          <div class="iright"><input type="number" id="inp-variable-housing" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('variableHousing','חיובי דיור')" aria-label="מחיקת חיובי דיור" title="מחיקת חיובי דיור">delete</button></div>
-        </div>
-        <div class="irow">
-          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openFuelExpensesModal()" aria-label="עריכת דלק ותחבורה" title="עריכת דלק ותחבורה">local_gas_station</button><div><span class="label-main">דלק / תחבורה</span></div></div>
-          <div class="iright"><input type="number" id="inp-fuel-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('fuel','דלק / תחבורה')" aria-label="מחיקת דלק ותחבורה" title="מחיקת דלק ותחבורה">delete</button></div>
-        </div>
-        <div class="irow">
-          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openSupermarketExpensesModal()" aria-label="עריכת קניות סופר" title="עריכת קניות סופר">shopping_cart</button><div><span class="label-main">קניות סופר</span><span class="label-sub">מזון ומוצרי ניקוי</span></div></div>
-          <div class="iright"><input type="number" id="inp-supermarket-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('supermarket','קניות סופר')" aria-label="מחיקת קניות סופר" title="מחיקת קניות סופר">delete</button></div>
-        </div>
-        <div class="irow" id="other-variable-expenses-row" hidden>
-          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openOtherVariableExpensesModal()" aria-label="עריכת הוצאות משתנות נוספות" title="עריכת הוצאות משתנות נוספות">more_horiz</button><div><span class="label-main">הוצאות משתנות נוספות</span></div></div>
-          <div class="iright"><input type="number" id="inp-other-variable-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('otherVariable','הוצאות משתנות נוספות')" aria-label="מחיקת הוצאות משתנות נוספות" title="מחיקת הוצאות משתנות נוספות">delete</button></div>
-        </div>
-        <div id="custom-variable-expenses-list"></div>
-      </section>
-      <button type="button" class="additional-income-add" onclick="addCustomExpenseCategory('variableExpenses')"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף קטגוריה</span></button>
-      <div class="budget-flow-controls">
-        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(2)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
-        <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(4)">הבא</button>
-      </div>
-    </div>
-
     <!-- Fixed expenses and liabilities -->
     <div class="budget-flow-step" id="budget-flow-expenses" hidden>
       <h2 class="budget-flow-stage-title">הוצאות קבועות</h2>
@@ -294,6 +264,36 @@
       </section>
       </div>
       <button type="button" class="additional-income-add" onclick="addCustomExpenseCategory('expenses')"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף קטגוריה</span></button>
+      <div class="budget-flow-controls">
+        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(2)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
+        <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(4)">הבא</button>
+      </div>
+    </div>
+
+    <!-- Recurring expenses with a changing monthly amount -->
+    <div class="budget-flow-step" id="budget-flow-variable-expenses" hidden>
+      <h2 class="budget-flow-stage-title">הוצאות משתנות</h2>
+      <div class="allocation-balance-summary flow-stage-explainer" id="variable-expenses-stage-explainer"></div>
+      <section class="card inputs-card expense-section-card">
+        <div class="irow">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openHousingUtilitiesModal()" aria-label="עריכת חיובי דיור משתנים" title="עריכת חיובי דיור משתנים">home</button><div><span class="label-main">חיובי דיור</span><span class="label-sub">חשמל, מים, גז וארנונה</span></div></div>
+          <div class="iright"><input type="number" id="inp-variable-housing" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('variableHousing','חיובי דיור')" aria-label="מחיקת חיובי דיור" title="מחיקת חיובי דיור">delete</button></div>
+        </div>
+        <div class="irow">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openFuelExpensesModal()" aria-label="עריכת דלק ותחבורה" title="עריכת דלק ותחבורה">local_gas_station</button><div><span class="label-main">דלק / תחבורה</span></div></div>
+          <div class="iright"><input type="number" id="inp-fuel-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('fuel','דלק / תחבורה')" aria-label="מחיקת דלק ותחבורה" title="מחיקת דלק ותחבורה">delete</button></div>
+        </div>
+        <div class="irow">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openSupermarketExpensesModal()" aria-label="עריכת קניות סופר" title="עריכת קניות סופר">shopping_cart</button><div><span class="label-main">קניות סופר</span><span class="label-sub">מזון ומוצרי ניקוי</span></div></div>
+          <div class="iright"><input type="number" id="inp-supermarket-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('supermarket','קניות סופר')" aria-label="מחיקת קניות סופר" title="מחיקת קניות סופר">delete</button></div>
+        </div>
+        <div class="irow" id="other-variable-expenses-row" hidden>
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openOtherVariableExpensesModal()" aria-label="עריכת הוצאות משתנות נוספות" title="עריכת הוצאות משתנות נוספות">more_horiz</button><div><span class="label-main">הוצאות משתנות נוספות</span></div></div>
+          <div class="iright"><input type="number" id="inp-other-variable-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('otherVariable','הוצאות משתנות נוספות')" aria-label="מחיקת הוצאות משתנות נוספות" title="מחיקת הוצאות משתנות נוספות">delete</button></div>
+        </div>
+        <div id="custom-variable-expenses-list"></div>
+      </section>
+      <button type="button" class="additional-income-add" onclick="addCustomExpenseCategory('variableExpenses')"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף קטגוריה</span></button>
       <div class="budget-flow-controls">
         <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(3)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
         <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(5)">הבא</button>

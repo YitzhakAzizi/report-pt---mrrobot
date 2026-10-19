@@ -4,8 +4,8 @@ var BUDGET_FLOW_STEP_IDS = [
   "budget-flow-debts",
   "budget-flow-income",
   "budget-flow-donations",
-  "budget-flow-variable-expenses",
   "budget-flow-expenses",
+  "budget-flow-variable-expenses",
   "budget-flow-special-expenses",
   "budget-flow-calculate",
   "budget-flow-result"
