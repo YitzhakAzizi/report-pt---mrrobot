@@ -23,12 +23,14 @@ function calculate() {
   var priorityDebt = getPriorityDebt(AppState.liabilities);
   var maaserEnabled = !AppState.profile.debtStatus && !!(AppState.maaser && AppState.maaser.enabled);
   var availableBeforeMaaser = total - expenseTotal - liabilityPayments;
-  var maaser = maaserEnabled && availableBeforeMaaser > 0 ? percentageOf(total, AppState.settings.maaserPercent) : 0; // תרומה מחושבת מההכנסה רק כאשר נשארה יתרה לאחר הוצאות והתחייבויות
+  /* התרומה מחושבת מההכנסה נטו, אך לעולם אינה גדולה מהיתרה שנשארה, כך שאינה יוצרת גירעון */
+  var maaserRequested = maaserEnabled ? percentageOf(total, AppState.settings.maaserPercent) : 0;
+  var maaser = Math.min(maaserRequested, Math.max(0, availableBeforeMaaser));
   var balance = total - expenseTotal - liabilityPayments - maaser;
   AppState.result = {
     s1: s1, s2: s2, total: total, exp: exp, fixedExpenses: fixedExpenses,
     variableExpenses: variableExpenses, subscriptionExpenses: subscriptionExpenses, healthBeautyExpenses: healthBeautyExpenses, oneTimeExpenses: oneTimeExpenses, childrenExpenses: childrenExpenses,
-    insurance: insurance, maaser: maaser, availableBeforeMaaser: availableBeforeMaaser, balance: balance,
+    insurance: insurance, maaser: maaser, maaserRequested: maaserRequested, maaserCapped: maaser < maaserRequested, availableBeforeMaaser: availableBeforeMaaser, balance: balance,
     loanPayments: loanPayments,
     debtPayments: debtPayments,
     mortgagePayments: mortgagePayments,

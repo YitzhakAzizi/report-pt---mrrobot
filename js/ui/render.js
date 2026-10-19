@@ -432,7 +432,9 @@ function renderPreAllocation(d) {
     warning.appendChild(mkText("span", "material-symbols-rounded", "warning"));
     var deficitText = isDeficit
       ? "ההוצאות וההתחייבויות גבוהות מההכנסות ב־" + money(-d.balance) + " החודש. כדאי לבדוק אילו הוצאות אפשר לצמצם או לדחות."
-      : "אין יתרה לחלוקה לחיסכון והשקעות בחודש זה.";
+      : d.maaserCapped
+        ? "התרומה הותאמה ל־" + money(d.maaser) + " כדי שלא ייווצר מינוס, ולא נותרה יתרה לחלוקה לחיסכון והשקעות בחודש זה."
+        : "אין יתרה לחלוקה לחיסכון והשקעות בחודש זה.";
     warning.appendChild(mkText("span", "", hasSpecialExpenseDeficit
       ? "ההוצאות המיוחדות משאירות את התקציב " + (isDeficit ? "בגירעון של " + money(-d.balance) : "ללא יתרה לחלוקה") + ". החודש מומלץ לדחות או לצמצם אותן לפני שממשיכים."
       : deficitText));

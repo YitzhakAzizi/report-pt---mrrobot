@@ -18,9 +18,15 @@ function renderMaaser(d) {
 
   box.innerHTML += maaserPercentageChoicesHtml() +
     '<label class="maaser-summary"><span>סכום לתרומה</span><div class="maaser-summary-input"><input type="number" value="' +
-      formatMaaserSettingsNumber(d.maaser) + '" min="0" step="any" inputmode="decimal" aria-label="סכום לתרומה" ' +
+      formatMaaserSettingsNumber(d.maaserRequested) + '" min="0" step="any" inputmode="decimal" aria-label="סכום לתרומה" ' +
       'onchange="saveMainMaaserAmount(this.value)" /><b>₪</b></div></label>' +
+    (d.maaserCapped ? '<p class="maaser-capped-note" role="status">' + escapeHtml(maaserCappedText(d)) + '</p>' : '') +
     '<div class="maaser-validation" id="maaser-validation">' + getMaaserValidationMessage() + '</div>';
+}
+
+function maaserCappedText(d) {
+  return "אחרי ההוצאות נותרו " + money(d.maaser) + " בלבד, ולכן התרומה החודש תעמוד על " + money(d.maaser) +
+    " במקום " + money(d.maaserRequested) + ", כדי שלא ייווצר מינוס.";
 }
 
 function maaserToggleHtml(enabled, canDonate) {

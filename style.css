@@ -1424,3 +1424,4 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 .save-indicator.save-failed{color:var(--danger);background:#fef2f2;border-color:rgba(220,38,38,.3);max-width:min(320px,calc(100vw - 24px));white-space:normal;line-height:1.35}
 .save-indicator.save-failed span:last-child{display:inline}
 .allocation-balance-summary.is-deficit{color:var(--danger);background:#fef2f2;border-color:rgba(220,38,38,.32);box-shadow:0 6px 16px rgba(220,38,38,.08)}
+.maaser-capped-note{margin:0;padding:10px 12px;color:#9a5b00;background:#fff7e6;border:1px solid rgba(245,158,11,.28);border-radius:14px;font-size:13px;font-weight:700;line-height:1.55;text-align:center}
