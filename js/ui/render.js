@@ -139,8 +139,15 @@ function renderFields() {
   var salaryMonth = MONTHS[(AppState.period.month + 11) % 12];
   var partner1Label = el("income-partner-1-label");
   var partner2Label = el("income-partner-2-label");
-  if (partner1Label) partner1Label.textContent = AppState.profile.single ? "משכורת " + salaryMonth : "משכורת " + salaryMonth + " - בן זוג";
-  if (partner2Label) partner2Label.textContent = "משכורת " + salaryMonth + " - בת זוג";
+  if (partner1Label) partner1Label.textContent = "משכורת " + salaryMonth;
+  if (partner2Label) partner2Label.textContent = "משכורת " + salaryMonth;
+  [1, 2].forEach(function(person) {
+    var nameInput = el("income-partner-" + person + "-name");
+    if (!nameInput) return;
+    nameInput.hidden = AppState.profile.single === true;
+    if (document.activeElement !== nameInput) nameInput.value = AppState.profile.names[person] || "";
+    nameInput.placeholder = personName(person) + " (אפשר לערוך)";
+  });
   var partner2Row = el("income-partner-2-row");
   if (partner2Row) partner2Row.hidden = AppState.profile.single === true;
   renderAdditionalIncomeRows();

@@ -176,11 +176,11 @@
       <div class="allocation-balance-summary flow-stage-explainer" id="income-stage-explainer"></div>
       <section class="card inputs-card">
         <div class="irow">
-          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(1)" aria-label="פתיחת תלוש משכורת" title="תלוש משכורת">payments</button><div><span class="label-main" id="income-partner-1-label">משכורת</span></div></div>
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(1)" aria-label="פתיחת תלוש משכורת" title="תלוש משכורת">payments</button><div class="income-person"><span class="label-main" id="income-partner-1-label">משכורת</span><input type="text" class="income-person-name" id="income-partner-1-name" maxlength="40" placeholder="שם (אפשר לערוך)" aria-label="שם בעל/ת ההכנסה הראשונה" oninput="updatePersonName(1,this.value)"></div></div>
           <div class="iright"><input type="number" id="inp-s1" placeholder="0" min="0" inputmode="decimal"/></div>
         </div>
         <div class="irow" id="income-partner-2-row">
-          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(2)" aria-label="פתיחת תלוש משכורת בת זוג" title="תלוש משכורת">payments</button><div><span class="label-main" id="income-partner-2-label">משכורת</span></div></div>
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(2)" aria-label="פתיחת תלוש המשכורת השנייה" title="תלוש משכורת">payments</button><div class="income-person"><span class="label-main" id="income-partner-2-label">משכורת</span><input type="text" class="income-person-name" id="income-partner-2-name" maxlength="40" placeholder="שם (אפשר לערוך)" aria-label="שם בעל/ת ההכנסה השנייה" oninput="updatePersonName(2,this.value)"></div></div>
           <div class="iright"><input type="number" id="inp-s2" placeholder="0" min="0" inputmode="decimal"/></div>
         </div>
         <div class="additional-income-list" id="additional-income-list"></div>

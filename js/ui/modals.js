@@ -1016,11 +1016,8 @@ var _payslipOpener = null;
 function openPayslipModal(person) {
   _payslipPerson = person === 2 ? 2 : 1;
   _payslipOpener = document.activeElement;
-  var salaryMonth = MONTHS[(AppState.period.month + 11) % 12];
   var context = el("payslip-context");
-  context.textContent = AppState.profile.single
-    ? "תלוש עבור משכורת " + salaryMonth
-    : "תלוש עבור משכורת " + salaryMonth + (_payslipPerson === 2 ? " - בת זוג" : " - בן זוג");
+  context.textContent = "תלוש עבור " + salaryLabel(_payslipPerson);
   el("payslip-file-input").value = "";
   el("payslip-overlay").className = "overlay open";
   renderPayslipStatus();

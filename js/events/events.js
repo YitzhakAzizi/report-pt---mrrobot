@@ -52,6 +52,12 @@ function onPeriodChange() {
   refreshWithoutSaving();
 }
 
+function updatePersonName(person, value) {
+  AppState.profile.names[person] = String(value || "").slice(0, 40);
+  saveProfileSettings();
+  flashSaved();
+}
+
 function onIncome1Input() {
   updateState("income1.0.val", parseFloat(el("inp-s1").value) || 0);
 }

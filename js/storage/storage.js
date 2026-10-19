@@ -33,6 +33,8 @@ function loadProfileSettings() {
     AppState.profile.children = saved.children === true;
     AppState.profile.loans = saved.loans === true;
     AppState.profile.debtStatus = saved.debtStatus === true;
+    var names = saved.names && typeof saved.names === "object" ? saved.names : {};
+    AppState.profile.names = {1: String(names[1] || "").slice(0, 40), 2: String(names[2] || "").slice(0, 40)};
   } catch(e) {}
 }
 

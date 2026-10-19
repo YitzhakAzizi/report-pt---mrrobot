@@ -36,7 +36,7 @@ function exportPDF() {
   }
 
   function amountLine(label, amount) {
-    return '<div class="amount-line"><span>' + label + '</span><strong>' + money(amount) + '</strong></div>';
+    return '<div class="amount-line"><span>' + escapeHtml(label) + '</span><strong>' + money(amount) + '</strong></div>';
   }
 
   function allocationCard(label, amount) {
@@ -44,13 +44,9 @@ function exportPDF() {
       '<span class="allocation-label">' + label + '</span><strong class="allocation-value">' + money(amount) + '</strong></div></article>';
   }
 
-  var salaryMonth = MONTHS[(month + 11) % 12];
-  var incomeDetails = amountLine(
-    AppState.profile.single ? "משכורת " + salaryMonth : "משכורת " + salaryMonth + " - בן זוג",
-    Number(AppState.income1[0] && AppState.income1[0].val) || 0
-  );
+  var incomeDetails = amountLine(salaryLabel(1), Number(AppState.income1[0] && AppState.income1[0].val) || 0);
   if (!AppState.profile.single) {
-    incomeDetails += amountLine("משכורת " + salaryMonth + " - בת זוג", Number(AppState.income2[0] && AppState.income2[0].val) || 0);
+    incomeDetails += amountLine(salaryLabel(2), Number(AppState.income2[0] && AppState.income2[0].val) || 0);
   }
   (AppState.income1 || []).slice(1).forEach(function(item) {
     incomeDetails += amountLine(item.name || "הכנסה נוספת", Number(item.val) || 0);
