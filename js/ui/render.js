@@ -115,10 +115,11 @@ function updateTopbarDonationVisibility() {
   if (specialExpensesCard) specialExpensesCard.hidden = !showSpecialExpenses;
   if (donationsCard) donationsCard.hidden = !showDonations;
   if (snapshotContainer) {
-    var visibleCount = snapshotContainer.querySelectorAll(".topbar-snapshot-item:not([hidden])").length;
-    for (var count = 1; count <= 5; count++) {
-      snapshotContainer.classList.toggle("snapshot-count-" + count, visibleCount === count);
-    }
+    /* שורה בלי כרטיסים גלויים מוסתרת, והתוכן מתחת לכרטיסים מפנה להם מקום */
+    Array.prototype.forEach.call(snapshotContainer.querySelectorAll(".snapshot-row"), function(row) {
+      row.hidden = !row.querySelector(".topbar-snapshot-item:not([hidden])");
+    });
+    document.documentElement.style.setProperty("--snapshot-space", snapshotContainer.offsetHeight + "px");
   }
 }
 
