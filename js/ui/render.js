@@ -456,7 +456,8 @@ function renderPreAllocation(d) {
     warningBox.hidden = d.balance > 0;
   }
   if (d.balance <= 0) {
-    var warning = mk("div", "deficit-banner" + (hasSpecialExpenseDeficit ? " special-expense-deficit-banner" : ""));
+    var calmWarning = hasSpecialExpenseDeficit || (d.maaserCapped && !isDeficit);
+    var warning = mk("div", "deficit-banner" + (calmWarning ? " special-expense-deficit-banner" : ""));
     warning.appendChild(mkText("span", "material-symbols-rounded", "warning"));
     var deficitText = isDeficit
       ? "ההוצאות וההתחייבויות גבוהות מההכנסות ב־" + money(-d.balance) + " החודש. כדאי לבדוק אילו הוצאות אפשר לצמצם או לדחות."
