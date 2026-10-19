@@ -1,7 +1,26 @@
 "use strict";
 
+/* כל כתיבה לאחסון עוברת כאן, כדי שכשל שמירה לא יוצג למשתמש כהצלחה */
+var storageWriteFailed = false;
+
+function writeStorage(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch(e) {
+    storageWriteFailed = true;
+    return false;
+  }
+}
+
+function consumeStorageWriteFailure() {
+  var failed = storageWriteFailed;
+  storageWriteFailed = false;
+  return failed;
+}
+
 function saveProfileSettings() {
-  try { localStorage.setItem(PROFILE_SETTINGS_KEY, JSON.stringify(AppState.profile)); } catch(e) {}
+  return writeStorage(PROFILE_SETTINGS_KEY, JSON.stringify(AppState.profile));
 }
 
 function loadProfileSettings() {
@@ -87,7 +106,7 @@ function deletePayslipFile(person) {
 }
 
 function saveMaaser() {
-  try { localStorage.setItem(MAASER_KEY, JSON.stringify(AppState.maaser)); } catch(e) {}
+  return writeStorage(MAASER_KEY, JSON.stringify(AppState.maaser));
 }
 
 function loadMaaserAccount() {
@@ -149,7 +168,7 @@ function normalizeMaaserCharity(charity) {
    GOAL PERSISTENCE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function saveGoals() {
-  try { localStorage.setItem(GOALS_KEY, JSON.stringify(AppState.goals)); } catch(e) {}
+  return writeStorage(GOALS_KEY, JSON.stringify(AppState.goals));
 }
 
 function loadGoals() {
@@ -208,8 +227,11 @@ function saveData() {
       insurances: AppState.insurances,
       recoveryPayment: AppState.recoveryPayment
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  } catch(e){}
+    return writeStorage(STORAGE_KEY, JSON.stringify(all));
+  } catch(e) {
+    storageWriteFailed = true;
+    return false;
+  }
 }
 
 function loadData(month, year) {
@@ -335,7 +357,7 @@ function normalizeInsurance(insurance) {
   };
 }
 function saveDreams() {
-  try { localStorage.setItem(DREAMS_KEY, JSON.stringify(AppState.dreams)); } catch(e) {}
+  return writeStorage(DREAMS_KEY, JSON.stringify(AppState.dreams));
 }
 
 function loadDreams() {
@@ -348,11 +370,11 @@ function loadDreams() {
 }
 
 function saveMaaserPercentage() {
-  localStorage.setItem(MAASER_PERCENTAGE_KEY, String(AppState.settings.maaserPercent));
+  return writeStorage(MAASER_PERCENTAGE_KEY, String(AppState.settings.maaserPercent));
 }
 
 function saveAllocationPercentages() {
-  localStorage.setItem(ALLOCATION_PERCENTAGES_KEY, JSON.stringify(AppState.settings.allocation));
+  return writeStorage(ALLOCATION_PERCENTAGES_KEY, JSON.stringify(AppState.settings.allocation));
 }
 
 function loadPercentageSettings() {
@@ -379,9 +401,7 @@ function loadPercentageSettings() {
 }
 
 function saveLiabilities() {
-  try {
-    localStorage.setItem(LIABILITIES_KEY, JSON.stringify(AppState.liabilities));
-  } catch(e) {}
+  return writeStorage(LIABILITIES_KEY, JSON.stringify(AppState.liabilities));
 }
 
 function loadLiabilities() {

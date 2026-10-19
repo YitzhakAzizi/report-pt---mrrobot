@@ -559,7 +559,13 @@ var _saveTimer = null;
 function flashSaved() {
   var dot = el("save-dot");
   if (!dot) return;
+  var failed = consumeStorageWriteFailure();
+  dot.classList.toggle("save-failed", failed);
+  dot.setAttribute("role", failed ? "alert" : "status");
+  dot.children[0].textContent = failed ? "!" : "✓";
+  dot.children[1].textContent = failed ? "השמירה נכשלה. ייתכן שהאחסון בדפדפן מלא או חסום." : "נשמר";
   dot.classList.add("show");
   clearTimeout(_saveTimer);
-  _saveTimer = setTimeout(function() { dot.classList.remove("show"); }, 1800);
+  /* הודעת כשל נשארת גלויה עד לשמירה מוצלחת הבאה */
+  if (!failed) _saveTimer = setTimeout(function() { dot.classList.remove("show"); }, 1800);
 }
