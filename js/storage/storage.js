@@ -347,14 +347,6 @@ function loadDreams() {
   } catch(e) {}
 }
 
-function saveThemePreference(theme) {
-  localStorage.setItem("themePreference", theme);
-}
-
-function loadThemePreference() {
-  return localStorage.getItem("themePreference");
-}
-
 function saveMaaserPercentage() {
   localStorage.setItem(MAASER_PERCENTAGE_KEY, String(AppState.settings.maaserPercent));
 }

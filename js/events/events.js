@@ -1,22 +1,8 @@
 "use strict";
 
 function registerEvents() {
-  var tb = el("theme-toggle");
-  if (tb) {
-    tb.onclick = function() {
-      var cur = document.documentElement.getAttribute("data-theme");
-      var nxt = cur === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", nxt);
-      saveThemePreference(nxt);
-    };
-  }
-
-  var saved = loadThemePreference();
-  if (saved) {
-    document.documentElement.setAttribute("data-theme", saved);
-  } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    document.documentElement.setAttribute("data-theme", "dark");
-  }
+  /* המוצר מוצג בעיצוב בהיר בלבד, גם כשהמכשיר מוגדר למצב כהה */
+  document.documentElement.setAttribute("data-theme", "light");
 
   el("sel-month").onchange = onPeriodChange;
   el("sel-year").onchange = onPeriodChange;
