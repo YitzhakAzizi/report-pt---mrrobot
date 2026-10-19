@@ -54,6 +54,36 @@ function calculate() {
   });
 }
 
+/* סיכום חודש לדוחות, לפי אותן הגדרות כמו בתזרים החודשי:
+   הוצאות מחיה (כולל ביטוחים והוצאות מיוחדות) בנפרד מהחזרי הלוואות, חובות ומשכנתא */
+function currentMonthSummary() {
+  var r = AppState.result;
+  return {
+    income: r.total,
+    livingExpenses: r.exp + r.insurance,
+    liabilityPayments: r.liabilityPayments,
+    maaser: r.maaser,
+    balance: r.balance
+  };
+}
+
+/* חודש שנשמר אחרי עדכון זה מחזיק סיכום משלו. לחודש ישן מחושב סיכום לפי הפרופיל
+   ולפי ההתחייבויות הנוכחיות, כי התחייבויות לא נשמרו אז לפי חודש */
+function savedMonthSummary(saved) {
+  if (!saved) return null;
+  if (saved.summary) return saved.summary;
+  var profile = AppState.profile;
+  var fixedItems = (saved.expenses || []).filter(function(item) { return profile.renting || !isRentExpense(item); });
+  var living = sumArr(fixedItems) + sumArr(saved.variableExpenses || []) + sumArr(saved.subscriptions || []) +
+    sumArr(saved.healthBeautyExpenses || []) + sumArr(saved.oneTimeExpenses || []) + sumArr(saved.insurances || []) +
+    (profile.children ? sumArr(saved.childrenExpenses || []) : 0);
+  return {
+    income: sumArr(saved.income1 || []) + (profile.single ? 0 : sumArr(saved.income2 || [])),
+    livingExpenses: living,
+    liabilityPayments: (AppState.result && AppState.result.liabilityPayments) || 0
+  };
+}
+
 function isRentExpense(item) {
   return !!item && !item.customCategory && String(item.name || "").trim() === "שכר דירה";
 }

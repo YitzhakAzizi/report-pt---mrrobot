@@ -185,21 +185,20 @@ function incomeComparisonText(currentIncome, month, year) {
 function annualIncomeOverviewHtml(year, selectedMonth, systemDate) {
   var annualIncome = 0;
   var annualExpenses = 0;
-  var averageExpenseTotal = 0;
   var monthsWithIncome = 0;
   var months = [];
 
   MONTHS.forEach(function(monthName, monthIndex) {
-    var saved = getSavedMonthData(monthIndex, year);
-    var income = saved ? sumArr(saved.income1 || []) + sumArr(saved.income2 || []) : 0;
-    var expenses = saved ? sumArr(saved.oneTimeExpenses || []) + sumArr(saved.expenses || []) + sumArr(saved.variableExpenses || []) + sumArr(saved.subscriptions || []) + sumArr(saved.healthBeautyExpenses || []) + sumArr(saved.childrenExpenses || []) + sumArr(saved.insurances || []) : 0;
+    var summary = savedMonthSummary(getSavedMonthData(monthIndex, year));
+    var income = summary ? summary.income : 0;
+    var expenses = summary ? summary.livingExpenses + summary.liabilityPayments : 0;
     var hasIncome = income > 0;
+    /* סכומים וממוצעים מחושבים על אותם חודשים: חודשים שהוזנה בהם הכנסה */
     if (hasIncome) {
       annualIncome += income;
-      averageExpenseTotal += expenses;
+      annualExpenses += expenses;
       monthsWithIncome++;
     }
-    if (saved) annualExpenses += expenses;
 
     months.push({
       name: monthName,
@@ -210,17 +209,17 @@ function annualIncomeOverviewHtml(year, selectedMonth, systemDate) {
   });
 
   var averageIncome = monthsWithIncome ? annualIncome / monthsWithIncome : 0;
-  var averageExpenses = monthsWithIncome ? averageExpenseTotal / monthsWithIncome : 0;
+  var averageExpenses = monthsWithIncome ? annualExpenses / monthsWithIncome : 0;
 
   var html = '<section class="annual"><div class="annual-head"><h2>תמונה שנתית</h2></div>';
   html += '<div class="annual-summary">' +
     '<div class="annual-total income"><span class="annual-tag">הכנסה שנתית</span><strong>' +
       money(annualIncome) + '</strong></div>' +
-    '<div class="annual-total expenses"><span class="annual-tag">הוצאה שנתית</span><strong>' +
+    '<div class="annual-total expenses"><span class="annual-tag">הוצאות והחזרים בשנה</span><strong>' +
       money(annualExpenses) + '</strong></div>' +
     '<div class="annual-total income"><span class="annual-tag">ממוצע הכנסות חודשי</span><strong>' +
       money(averageIncome) + '</strong></div>' +
-    '<div class="annual-total expenses"><span class="annual-tag">ממוצע הוצאות חודשי</span><strong>' +
+    '<div class="annual-total expenses"><span class="annual-tag">ממוצע הוצאות והחזרים</span><strong>' +
       money(averageExpenses) + '</strong></div></div>';
   html += '<div class="months-grid">';
 
@@ -229,7 +228,7 @@ function annualIncomeOverviewHtml(year, selectedMonth, systemDate) {
     if (monthIndex === selectedMonth) className += " selected";
     html += '<div class="month-card ' + className + '"><span class="month-name">' + month.name + '</span>' +
       '<div class="month-finance-row"><span>הכנסות:</span><strong>' + month.income + '</strong></div>' +
-      '<div class="month-finance-row"><span>הוצאות:</span><strong>' + month.expenses + '</strong></div></div>';
+      '<div class="month-finance-row"><span>יציאות:</span><strong>' + month.expenses + '</strong></div></div>';
   });
 
   return html + '</div></section>';

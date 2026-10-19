@@ -227,7 +227,8 @@ function saveData() {
       subscriptions: AppState.subscriptions,
       healthBeautyExpenses: AppState.healthBeautyExpenses,
       insurances: AppState.insurances,
-      recoveryPayment: AppState.recoveryPayment
+      recoveryPayment: AppState.recoveryPayment,
+      summary: currentMonthSummary()
     };
     var saved = writeStorage(STORAGE_KEY, JSON.stringify(all));
     if (saved) AppState.monthHasRecord = true;
