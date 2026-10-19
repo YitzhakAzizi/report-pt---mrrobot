@@ -544,13 +544,13 @@ function livingEstimateFieldsHtml(type) {
 }
 
 function applyLivingExpenseEstimate(wrapper, type) {
-  var primary = parseFloat(wrapper.querySelector(".living-estimate-primary").value) || 0;
+  var primary = toAmount(wrapper.querySelector(".living-estimate-primary").value);
   var amount = primary;
   if (type === "food") {
-    amount = primary * (parseFloat(wrapper.querySelector(".living-estimate-secondary").value) || 0);
+    amount = primary * (toAmount(wrapper.querySelector(".living-estimate-secondary").value));
   }
   if (type === "fuel") {
-    amount = primary * (parseFloat(wrapper.querySelector(".living-estimate-secondary").value) || 0);
+    amount = primary * (toAmount(wrapper.querySelector(".living-estimate-secondary").value));
   }
   if (type === "bill") {
     amount = primary / (parseFloat(wrapper.querySelector(".living-estimate-frequency").value) || 1);
@@ -667,7 +667,7 @@ function buildGenRow(item, collection) {
 function updateGenTotal() {
   var rows = document.querySelectorAll("#gen-modal-body .exp-row");
   var t = 0;
-  rows.forEach(function(r) { t += parseFloat(r.querySelector(".exp-amt").value) || 0; });
+  rows.forEach(function(r) { t += toAmount(r.querySelector(".exp-amt").value); });
   el("gen-modal-total").textContent = money(t);
 }
 
@@ -680,7 +680,7 @@ function applyGenModal() {
         name: row.querySelector(".insurance-type").value.trim(),
         provider: row.querySelector(".insurance-provider").value.trim(),
         endDate: row.querySelector(".insurance-end-date").value,
-        val: parseFloat(row.querySelector(".insurance-monthly-amount").value) || 0
+        val: toAmount(row.querySelector(".insurance-monthly-amount").value)
       };
       if (insurance.name || insurance.provider || insurance.endDate || insurance.val > 0) insurances.push(insurance);
     });
@@ -693,7 +693,7 @@ function applyGenModal() {
   var collections = {expenses: [], variableExpenses: [], subscriptions: [], healthBeautyExpenses: [], oneTimeExpenses: [], childrenExpenses: [], insurances: []};
   rows.forEach(function(r) {
     var n = r.querySelector(".exp-name").value.trim();
-    var a = parseFloat(r.querySelector(".exp-amt").value) || 0;
+    var a = toAmount(r.querySelector(".exp-amt").value);
     var collection = r.getAttribute("data-expense-collection") || _genCollection;
     if (n || a > 0) collections[collection].push({name: n || "הוצאה", val: a});
   });
@@ -958,7 +958,7 @@ function buildDreamRow(item) {
 function updateDreamsTotal() {
   var rows = document.querySelectorAll("#gen-modal-body .dream-row");
   var t = 0;
-  rows.forEach(function(r) { t += parseFloat(r.querySelector(".dream-amt").value) || 0; });
+  rows.forEach(function(r) { t += toAmount(r.querySelector(".dream-amt").value); });
   el("gen-modal-total").textContent = money(t);
 }
 
@@ -968,7 +968,7 @@ function applyDreamsModal() {
   rows.forEach(function(r) {
     var rank = parseInt(r.querySelector(".dream-rank").value, 10) || 0;
     var name = r.querySelector(".dream-name").value.trim();
-    var amount = parseFloat(r.querySelector(".dream-amt").value) || 0;
+    var amount = toAmount(r.querySelector(".dream-amt").value);
     if (rank > 0 || name || amount > 0) arr.push({rank: rank || nextDreamRank(), name: name || "חלום", val: amount});
   });
   AppState.dreams = sortDreams(arr);
@@ -1167,7 +1167,7 @@ function buildIncRow(item) {
 function updateIncTotal() {
   var rows = document.querySelectorAll("#inc-modal-body .exp-row");
   var t = 0;
-  rows.forEach(function(r) { t += parseFloat(r.querySelector(".exp-amt").value) || 0; });
+  rows.forEach(function(r) { t += toAmount(r.querySelector(".exp-amt").value); });
   var total = el("inc-modal-total");
   if (total) total.textContent = money(t);
 }
@@ -1177,7 +1177,7 @@ function applyIncome() {
   var arr = [];
   rows.forEach(function(r) {
     var n = r.querySelector(".exp-name").value.trim();
-    var a = parseFloat(r.querySelector(".exp-amt").value) || 0;
+    var a = toAmount(r.querySelector(".exp-amt").value);
     if (n || a > 0) arr.push({name: n || "הכנסה נוספת", val: a});
   });
   if (!arr.length) arr = [{name: "משכורת", val: 0}];

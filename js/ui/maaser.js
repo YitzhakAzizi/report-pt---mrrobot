@@ -110,7 +110,7 @@ function maaserCharityHtml(charity, index) {
     '<div class="maaser-charity-head">' +
       '<button type="button" class="maaser-accordion-btn material-symbols-rounded" onclick="toggleMaaserCharity(' + index + ')" aria-label="' + (expanded ? 'סגירת פרטי עמותה' : 'פתיחת פרטי עמותה') + '">' + (expanded ? 'expand_less' : 'expand_more') + '</button>' +
       '<input type="text" class="maaser-charity-name" value="' + escapeHtml(charity.name || '') + '" placeholder="שם העמותה" oninput="updateMaaserCharity(' + index + ',\'name\',this.value,this)" />' +
-      '<input type="number" class="maaser-charity-amount" value="' + (Number(charity.amount) || '') + '" placeholder="0" min="0" inputmode="decimal" oninput="updateMaaserCharity(' + index + ',\'amount\',parseFloat(this.value)||0,this)" />' +
+      '<input type="number" class="maaser-charity-amount" value="' + (Number(charity.amount) || '') + '" placeholder="0" min="0" inputmode="decimal" oninput="updateMaaserCharity(' + index + ',\'amount\',toAmount(this.value),this)" />' +
       '<button type="button" class="maaser-delete-btn material-symbols-rounded" onclick="deleteMaaserCharity(' + index + ')" aria-label="מחיקת עמותה"' + (isOnlyCharity ? ' disabled title="חייבת להישאר לפחות עמותה אחת"' : '') + '>delete</button>' +
     '</div>' +
     (expanded ? maaserCharityDetailsHtml(charity, index) : '') +

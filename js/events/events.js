@@ -59,11 +59,11 @@ function updatePersonName(person, value) {
 }
 
 function onIncome1Input() {
-  updateState("income1.0.val", parseFloat(el("inp-s1").value) || 0);
+  updateState("income1.0.val", toAmount(el("inp-s1").value));
 }
 
 function onIncome2Input() {
-  updateState("income2.0.val", parseFloat(el("inp-s2").value) || 0);
+  updateState("income2.0.val", toAmount(el("inp-s2").value));
 }
 
 function addAdditionalIncome() {
@@ -84,7 +84,7 @@ function updateAdditionalIncomeName(person, index, value) {
 function updateAdditionalIncomeAmount(person, index, value) {
   var items = person === 2 ? AppState.income2 : AppState.income1;
   if (!items[index]) return;
-  items[index].val = parseFloat(value) || 0;
+  items[index].val = toAmount(value);
   calculate();
   renderTopbarSnapshot();
   renderMaaser(AppState.result);

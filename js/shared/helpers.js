@@ -22,6 +22,12 @@ function sumArr(arr) {
   return t;
 }
 
+/* סכום שהוזן בשדה: מספר סופי שאינו שלילי, אחרת 0 */
+function toAmount(value) {
+  var number = parseFloat(value);
+  return isFinite(number) && number > 0 ? number : 0;
+}
+
 function parseNonNegativeNumber(value) {
   if (value === "" || value === null || value === undefined) return null;
   var number = Number(value);
