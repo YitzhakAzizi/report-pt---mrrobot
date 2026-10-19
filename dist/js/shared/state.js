@@ -17,6 +17,7 @@ var AppState = {
   investments: {},
   liabilities: {loans: [], debts: [], mortgages: [], overdraft: 0},
   recoveryPayment: null,
+  monthHasRecord: false,
   dreams: [],
   goals: {
     checking: {current: 0, target: 0, completed: false, bank: "", account: ""},
@@ -30,7 +31,7 @@ var AppState = {
   },
   maaser: {enabled: false, charities: []},
   maaserAccount: {branch: "", account: "", bank: "", owner: ""},
-  profile: {single: false, renting: false, mortgage: false, children: false, loans: false, debtStatus: false},
+  profile: {single: false, renting: false, mortgage: false, children: false, loans: false, debtStatus: false, names: {1: "", 2: ""}},
   settings: {
     maaserPercent: DEFAULT_MAASER_PERCENTAGE,
     allocation: clone(DEFAULT_ALLOCATION_PERCENTAGES)
@@ -62,6 +63,17 @@ function pipeline() {
   render();
   saveData();
   flashSaved();
+}
+
+/* חישוב ותצוגה בלי לשמור: משמש בפתיחת חודש לצפייה */
+function refreshWithoutSaving() {
+  calculate();
+  if (AppState.goalCompletionAdjusted) {
+    saveGoals();
+    AppState.goalCompletionAdjusted = false;
+  }
+  render();
+  if (storageWriteFailed) flashSaved();
 }
 
 function resetToDefaults() {

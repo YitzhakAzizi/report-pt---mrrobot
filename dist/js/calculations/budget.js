@@ -23,12 +23,14 @@ function calculate() {
   var priorityDebt = getPriorityDebt(AppState.liabilities);
   var maaserEnabled = !AppState.profile.debtStatus && !!(AppState.maaser && AppState.maaser.enabled);
   var availableBeforeMaaser = total - expenseTotal - liabilityPayments;
-  var maaser = maaserEnabled && availableBeforeMaaser > 0 ? percentageOf(total, AppState.settings.maaserPercent) : 0; // תרומה מחושבת מההכנסה רק כאשר נשארה יתרה לאחר הוצאות והתחייבויות
+  /* התרומה מחושבת מההכנסה נטו, אך לעולם אינה גדולה מהיתרה שנשארה, כך שאינה יוצרת גירעון */
+  var maaserRequested = maaserEnabled ? percentageOf(total, AppState.settings.maaserPercent) : 0;
+  var maaser = Math.min(maaserRequested, Math.max(0, availableBeforeMaaser));
   var balance = total - expenseTotal - liabilityPayments - maaser;
   AppState.result = {
     s1: s1, s2: s2, total: total, exp: exp, fixedExpenses: fixedExpenses,
     variableExpenses: variableExpenses, subscriptionExpenses: subscriptionExpenses, healthBeautyExpenses: healthBeautyExpenses, oneTimeExpenses: oneTimeExpenses, childrenExpenses: childrenExpenses,
-    insurance: insurance, maaser: maaser, availableBeforeMaaser: availableBeforeMaaser, balance: balance,
+    insurance: insurance, maaser: maaser, maaserRequested: maaserRequested, maaserCapped: maaser < maaserRequested, availableBeforeMaaser: availableBeforeMaaser, balance: balance,
     loanPayments: loanPayments,
     debtPayments: debtPayments,
     mortgagePayments: mortgagePayments,
@@ -50,6 +52,36 @@ function calculate() {
       goal.target = nextTarget;
     }
   });
+}
+
+/* סיכום חודש לדוחות, לפי אותן הגדרות כמו בתזרים החודשי:
+   הוצאות מחיה (כולל ביטוחים והוצאות מיוחדות) בנפרד מהחזרי הלוואות, חובות ומשכנתא */
+function currentMonthSummary() {
+  var r = AppState.result;
+  return {
+    income: r.total,
+    livingExpenses: r.exp + r.insurance,
+    liabilityPayments: r.liabilityPayments,
+    maaser: r.maaser,
+    balance: r.balance
+  };
+}
+
+/* חודש שנשמר אחרי עדכון זה מחזיק סיכום משלו. לחודש ישן מחושב סיכום לפי הפרופיל.
+   התחייבויות לא נשמרו אז לפי חודש, ולכן לא מייחסים לו את ההחזרים של היום */
+function savedMonthSummary(saved) {
+  if (!saved) return null;
+  if (saved.summary) return saved.summary;
+  var profile = AppState.profile;
+  var fixedItems = (saved.expenses || []).filter(function(item) { return profile.renting || !isRentExpense(item); });
+  var living = sumArr(fixedItems) + sumArr(saved.variableExpenses || []) + sumArr(saved.subscriptions || []) +
+    sumArr(saved.healthBeautyExpenses || []) + sumArr(saved.oneTimeExpenses || []) + sumArr(saved.insurances || []) +
+    (profile.children ? sumArr(saved.childrenExpenses || []) : 0);
+  return {
+    income: sumArr(saved.income1 || []) + (profile.single ? 0 : sumArr(saved.income2 || [])),
+    livingExpenses: living,
+    liabilityPayments: 0
+  };
 }
 
 function isRentExpense(item) {
@@ -147,6 +179,13 @@ function remainingDaysInLocalMonth(date) {
   var localDate = date || new Date();
   var lastDay = new Date(localDate.getFullYear(), localDate.getMonth() + 1, 0).getDate();
   return lastDay - localDate.getDate() + 1;
+}
+
+/* בחודש הנוכחי הסכום היומי מחולק בימים שנותרו; בחודש אחר, בכל ימי אותו חודש */
+function budgetReferenceDate(period, today) {
+  var now = today || new Date();
+  if (period.month === now.getMonth() && period.year === now.getFullYear()) return now;
+  return new Date(period.year, period.month, 1);
 }
 
 function dailySpendingAmount(monthlySpending, date) {

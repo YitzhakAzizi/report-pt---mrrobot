@@ -42,5 +42,5 @@ function loadInvestmentsOverview() {
 }
 
 function saveInvestmentsOverview() {
-  try { localStorage.setItem(INVESTMENTS_OVERVIEW_KEY, JSON.stringify(AppState.investments)); } catch(e) {}
+  return writeStorage(INVESTMENTS_OVERVIEW_KEY, JSON.stringify(AppState.investments));
 }

@@ -3,10 +3,10 @@
 var BUDGET_FLOW_STEP_IDS = [
   "budget-flow-debts",
   "budget-flow-income",
+  "budget-flow-donations",
   "budget-flow-variable-expenses",
   "budget-flow-expenses",
   "budget-flow-special-expenses",
-  "budget-flow-donations",
   "budget-flow-calculate",
   "budget-flow-result"
 ];
@@ -26,7 +26,11 @@ function startBudgetFlow() {
 
 function goToBudgetFlowStep(stepIndex, shouldScroll) {
   if (!AppState.profile.debtStatus && stepIndex === 0) stepIndex = 1;
-  if (AppState.profile.debtStatus && stepIndex === 5) stepIndex = 6;
+  /* במסלול החובות אין שלב תרומות: מדלגים עליו בכיוון התנועה */
+  var donationsStep = BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-donations");
+  if (AppState.profile.debtStatus && stepIndex === donationsStep) {
+    stepIndex = budgetFlowCurrentStep > donationsStep ? donationsStep - 1 : donationsStep + 1;
+  }
   if (stepIndex < 0 || stepIndex >= BUDGET_FLOW_STEP_IDS.length) return;
   var overdraftInput = el("debt-overdraft-input");
   if (AppState.profile.debtStatus && budgetFlowCurrentStep === 0 && stepIndex !== 0 &&
@@ -69,14 +73,6 @@ function updateDebtStepOverdraft(value) {
   AppState.liabilities.overdraft = overdraft;
   saveLiabilities();
   pipeline();
-}
-
-function nextAfterSpecialExpenses() {
-  goToBudgetFlowStep(AppState.profile.debtStatus ? 6 : 5);
-}
-
-function backFromAllocation() {
-  goToBudgetFlowStep(AppState.profile.debtStatus ? 4 : 5);
 }
 
 function resetBudgetFlowCalculation() {

@@ -7,6 +7,7 @@
   <meta name="apple-mobile-web-app-status-bar-style" content="default">
   <meta name="apple-mobile-web-app-title" content="שליטה פיננסית">
   <meta name="theme-color" content="#163a5f">
+  <meta name="color-scheme" content="light">
   <link rel="apple-touch-icon" sizes="180x180" href="assets/icons/apple-touch-icon.png?v=brand">
   <link rel="icon" type="image/png" sizes="32x32" href="assets/icons/favicon-32.png?v=brand">
   <link rel="manifest" href="manifest.webmanifest?v=brand">
@@ -82,21 +83,7 @@
     <section class="card period-card topbar-period">
       <div class="period-row">
         <div class="period-cell">
-          <div class="select-wrap"><select id="sel-month" aria-label="הגדרת תקציב לחודש" title="בחירת חודש להגדרת התקציב">
-            <option value="0">תקציב ינואר</option><option value="1">תקציב פברואר</option>
-            <option value="2">תקציב מרץ</option><option value="3">תקציב אפריל</option>
-            <option value="4">תקציב מאי</option><option value="5">תקציב יוני</option>
-            <option value="6">תקציב יולי</option><option value="7">תקציב אוגוסט</option>
-            <option value="8">תקציב ספטמבר</option><option value="9">תקציב אוקטובר</option>
-            <option value="10">תקציב נובמבר</option><option value="11">תקציב דצמבר</option>
-          </select></div>
-        </div>
-        <div class="period-cell period-year-cell" aria-hidden="true">
-          <div class="select-wrap"><select id="sel-year" aria-label="בחירת שנה" title="בחירת שנה">
-            <option value="2024">2024</option><option value="2025">2025</option>
-            <option value="2026">2026</option><option value="2027">2027</option>
-            <option value="2028">2028</option>
-          </select></div>
+          <div class="select-wrap"><select id="sel-month" aria-label="בחירת חודש התקציב" title="בחירת חודש להגדרת התקציב"></select></div>
         </div>
       </div>
       <div class="topbar-financial-snapshot" aria-label="תמונת מצב חודשית" aria-live="polite">
@@ -106,17 +93,17 @@
         <button type="button" class="topbar-snapshot-item topbar-snapshot-income" id="topbar-income-snapshot" onclick="goToBudgetFlowStep(1)" aria-label="חזרה לשלב ההכנסות">
           <span class="topbar-snapshot-label"><span class="snapshot-bag-icon snapshot-bag-plus" aria-hidden="true"><span class="material-symbols-rounded">money_bag</span></span><span>סה״כ<br>הכנסות</span></span><strong id="topbar-income-total">₪0</strong>
         </button>
-        <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-variable-expenses-snapshot" onclick="goToBudgetFlowStep(2)" aria-label="חזרה לשלב ההוצאות המשתנות" hidden>
+        <button type="button" class="topbar-snapshot-item topbar-snapshot-donations" id="topbar-donations-snapshot" onclick="goToBudgetFlowStep(2)" aria-label="חזרה לשלב התרומות" hidden>
+          <span class="topbar-snapshot-label"><span class="material-symbols-rounded snapshot-donation-icon" aria-hidden="true">volunteer_activism</span><span>סה״כ<br>תרומות</span></span><strong id="topbar-donations-total">₪0</strong>
+        </button>
+        <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-variable-expenses-snapshot" onclick="goToBudgetFlowStep(3)" aria-label="חזרה לשלב ההוצאות המשתנות" hidden>
           <span class="topbar-snapshot-label"><span class="snapshot-bag-icon snapshot-bag-minus" aria-hidden="true"><span class="material-symbols-rounded">money_bag</span></span><span>סה״כ הוצאות<br>משתנות</span></span><strong id="topbar-variable-expenses-total">₪0</strong>
         </button>
-        <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-fixed-expenses-snapshot" onclick="goToBudgetFlowStep(3)" aria-label="חזרה לשלב ההוצאות הקבועות" hidden>
+        <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-fixed-expenses-snapshot" onclick="goToBudgetFlowStep(4)" aria-label="חזרה לשלב ההוצאות הקבועות" hidden>
           <span class="topbar-snapshot-label"><span class="snapshot-bag-icon snapshot-bag-minus" aria-hidden="true"><span class="material-symbols-rounded">money_bag</span></span><span>סה״כ הוצאות<br>קבועות</span></span><strong id="topbar-fixed-expenses-total">₪0</strong>
         </button>
-        <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-special-expenses-snapshot" onclick="goToBudgetFlowStep(4)" aria-label="חזרה לשלב ההוצאות המיוחדות" hidden>
+        <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-special-expenses-snapshot" onclick="goToBudgetFlowStep(5)" aria-label="חזרה לשלב ההוצאות המיוחדות" hidden>
           <span class="topbar-snapshot-label"><span class="snapshot-bag-icon snapshot-bag-minus" aria-hidden="true"><span class="material-symbols-rounded">money_bag</span></span><span>סה״כ הוצאות<br>מיוחדות</span></span><strong id="topbar-special-expenses-total">₪0</strong>
-        </button>
-        <button type="button" class="topbar-snapshot-item topbar-snapshot-donations" id="topbar-donations-snapshot" onclick="goToBudgetFlowStep(5)" aria-label="חזרה לשלב התרומות" hidden>
-          <span class="topbar-snapshot-label"><span class="material-symbols-rounded snapshot-donation-icon" aria-hidden="true">volunteer_activism</span><span>סה״כ<br>תרומות</span></span><strong id="topbar-donations-total">₪0</strong>
         </button>
       </div>
     </section>
@@ -154,6 +141,19 @@
           <span class="side-menu-current-badge" hidden>נוכחי</span>
         </button>
       </nav>
+      <section class="side-menu-data" aria-labelledby="side-menu-data-title">
+        <h3 id="side-menu-data-title">הנתונים שלי</h3>
+        <button type="button" class="side-menu-item" onclick="exportBackup()">
+          <span class="side-menu-item-icon material-symbols-rounded" aria-hidden="true">download</span>
+          <span class="side-menu-item-label">גיבוי לקובץ</span>
+        </button>
+        <button type="button" class="side-menu-item" onclick="chooseBackupFile()">
+          <span class="side-menu-item-icon material-symbols-rounded" aria-hidden="true">upload</span>
+          <span class="side-menu-item-label">שחזור מגיבוי</span>
+        </button>
+        <input type="file" id="backup-file-input" class="payslip-file-input" accept=".json,application/json" aria-label="בחירת קובץ גיבוי" onchange="importBackupFile(this.files[0])">
+        <p class="side-menu-data-note">הנתונים נשמרים רק בדפדפן הזה. כדאי לגבות מדי פעם. הגיבוי כולל את התקציב וההגדרות, ללא תלושי שכר.</p>
+      </section>
     </aside>
   </div>
 
@@ -189,11 +189,11 @@
       <div class="allocation-balance-summary flow-stage-explainer" id="income-stage-explainer"></div>
       <section class="card inputs-card">
         <div class="irow">
-          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(1)" aria-label="פתיחת תלוש משכורת" title="תלוש משכורת">payments</button><div><span class="label-main" id="income-partner-1-label">משכורת</span></div></div>
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(1)" aria-label="פתיחת תלוש משכורת" title="תלוש משכורת">payments</button><div class="income-person"><span class="label-main" id="income-partner-1-label">משכורת</span><input type="text" class="income-person-name" id="income-partner-1-name" maxlength="40" placeholder="שם (אפשר לערוך)" aria-label="שם בעל/ת ההכנסה הראשונה" oninput="updatePersonName(1,this.value)"></div></div>
           <div class="iright"><input type="number" id="inp-s1" placeholder="0" min="0" inputmode="decimal"/></div>
         </div>
         <div class="irow" id="income-partner-2-row">
-          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(2)" aria-label="פתיחת תלוש משכורת בת זוג" title="תלוש משכורת">payments</button><div><span class="label-main" id="income-partner-2-label">משכורת</span></div></div>
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(2)" aria-label="פתיחת תלוש המשכורת השנייה" title="תלוש משכורת">payments</button><div class="income-person"><span class="label-main" id="income-partner-2-label">משכורת</span><input type="text" class="income-person-name" id="income-partner-2-name" maxlength="40" placeholder="שם (אפשר לערוך)" aria-label="שם בעל/ת ההכנסה השנייה" oninput="updatePersonName(2,this.value)"></div></div>
           <div class="iright"><input type="number" id="inp-s2" placeholder="0" min="0" inputmode="decimal"/></div>
         </div>
         <div class="additional-income-list" id="additional-income-list"></div>
@@ -202,6 +202,21 @@
       <div class="budget-flow-controls budget-flow-controls-forward">
         <button type="button" class="budget-flow-back income-back-to-debts" id="income-back-to-debts" onclick="goToBudgetFlowStep(0)" hidden><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
         <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(2)">הבא</button>
+      </div>
+    </div>
+
+    <!-- Tithe -->
+    <div class="budget-flow-step" id="budget-flow-donations" hidden>
+      <h2 class="budget-flow-stage-title">תרומות</h2>
+      <div class="allocation-balance-summary flow-stage-explainer">התרומה מחושבת מההכנסה נטו. אם אחרי ההוצאות לא תישאר יתרה מספיקה, היא תותאם כך שלא ייווצר מינוס.</div>
+      <div class="maaser-no-balance" id="maaser-no-balance" role="status" hidden><span class="material-symbols-rounded" aria-hidden="true">info</span><span>לא נותרה יתרה זמינה לתרומה החודש.</span></div>
+      <div class="maaser-mode-box" id="maaser-mode-box"></div>
+      <section class="card maaser-card" id="maaser-card">
+        <div id="maaser-box" class="maaser-box"></div>
+      </section>
+      <div class="budget-flow-controls">
+        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(1)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
+        <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(3)">הבא</button>
       </div>
     </div>
 
@@ -230,8 +245,8 @@
       </section>
       <button type="button" class="additional-income-add" onclick="addCustomExpenseCategory('variableExpenses')"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף קטגוריה</span></button>
       <div class="budget-flow-controls">
-        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(1)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
-        <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(3)">הבא</button>
+        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(2)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
+        <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(4)">הבא</button>
       </div>
     </div>
 
@@ -274,8 +289,8 @@
       </div>
       <button type="button" class="additional-income-add" onclick="addCustomExpenseCategory('expenses')"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף קטגוריה</span></button>
       <div class="budget-flow-controls">
-        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(2)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
-        <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(4)">הבא</button>
+        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(3)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
+        <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(5)">הבא</button>
       </div>
     </div>
 
@@ -292,20 +307,6 @@
       </section>
       <section class="card inputs-card expense-section-card" id="custom-special-expenses-card" hidden><div id="custom-special-expenses-list"></div></section>
       <button type="button" class="additional-income-add" onclick="addCustomExpenseCategory('oneTimeExpenses')"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף קטגוריה</span></button>
-      <div class="budget-flow-controls">
-        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(3)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
-        <button type="button" class="budget-flow-next" onclick="nextAfterSpecialExpenses()">הבא</button>
-      </div>
-    </div>
-
-    <!-- Tithe -->
-    <div class="budget-flow-step" id="budget-flow-donations" hidden>
-      <h2 class="budget-flow-stage-title">תרומות</h2>
-      <div class="maaser-no-balance" id="maaser-no-balance" role="status" hidden><span class="material-symbols-rounded" aria-hidden="true">info</span><span>לא נותרה יתרה זמינה לתרומה החודש.</span></div>
-      <div class="maaser-mode-box" id="maaser-mode-box"></div>
-      <section class="card maaser-card" id="maaser-card">
-        <div id="maaser-box" class="maaser-box"></div>
-      </section>
       <div class="budget-flow-controls">
         <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(4)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
         <button type="button" class="budget-flow-next" onclick="goToBudgetFlowStep(6)">הבא</button>
@@ -339,7 +340,7 @@
         </div>
       </section>
       <div class="budget-flow-controls budget-flow-calculate-controls">
-        <button type="button" class="budget-flow-back" onclick="backFromAllocation()"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
+        <button type="button" class="budget-flow-back" onclick="goToBudgetFlowStep(5)"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
         <button type="button" class="allocation-custom-btn" id="allocation-custom-btn" onclick="openAllocationSettingsModal()">הגדר לבד</button>
         <button type="button" class="budget-flow-calculate-btn" id="budget-flow-calculate-btn" onclick="calculateBudgetFlow()">חשב את החלוקה החודשית</button>
       </div>
@@ -384,7 +385,7 @@
 
   <!-- Expenses Modal -->
   <div class="overlay" id="gen-overlay" onclick="if(event.target===this)closeGenModal()">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="gen-modal-title">
       <div class="modal-hdr"><h2 class="modal-title" id="gen-modal-title">הוצאות</h2><button class="close-btn material-symbols-rounded" onclick="closeGenModal()" aria-label="סגירה">close</button></div>
       <div class="modal-body" id="gen-modal-body"></div>
       <div class="modal-ftr">
@@ -408,7 +409,7 @@
 
   <!-- Income Modal -->
   <div class="overlay" id="inc-overlay" onclick="if(event.target===this)closeIncomeModal()">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="inc-modal-title">
       <div class="modal-hdr"><h2 class="modal-title" id="inc-modal-title">הכנסות</h2><button class="close-btn material-symbols-rounded" onclick="closeIncomeModal()" aria-label="סגירה">close</button></div>
       <div class="modal-body" id="inc-modal-body"></div>
       <div class="modal-ftr">
@@ -509,6 +510,7 @@
   <script src="js/events/events.js"></script>
   <script src="js/features/export.js"></script>
   <script src="js/features/calendar.js"></script>
+  <script src="js/features/backup.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

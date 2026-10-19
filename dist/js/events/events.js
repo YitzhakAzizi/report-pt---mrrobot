@@ -1,33 +1,24 @@
 "use strict";
 
 function registerEvents() {
-  var tb = el("theme-toggle");
-  if (tb) {
-    tb.onclick = function() {
-      var cur = document.documentElement.getAttribute("data-theme");
-      var nxt = cur === "dark" ? "light" : "dark";
-      document.documentElement.setAttribute("data-theme", nxt);
-      saveThemePreference(nxt);
-    };
-  }
-
-  var saved = loadThemePreference();
-  if (saved) {
-    document.documentElement.setAttribute("data-theme", saved);
-  } else if (window.matchMedia && window.matchMedia("(prefers-color-scheme: dark)").matches) {
-    document.documentElement.setAttribute("data-theme", "dark");
-  }
+  /* המוצר מוצג בעיצוב בהיר בלבד, גם כשהמכשיר מוגדר למצב כהה */
+  document.documentElement.setAttribute("data-theme", "light");
 
   el("sel-month").onchange = onPeriodChange;
-  el("sel-year").onchange = onPeriodChange;
   el("inp-s1").oninput = onIncome1Input;
   el("inp-s2").oninput = onIncome2Input;
   document.addEventListener("keydown", function(event) {
-    if (event.key === "Escape") {
-      closeSideMenu();
-      var payslipOverlay = el("payslip-overlay");
-      if (payslipOverlay && payslipOverlay.classList.contains("open")) closePayslipModal();
-    }
+    if (event.key !== "Escape") return;
+    var deleteDialog = el("expense-delete-overlay");
+    if (deleteDialog && !deleteDialog.hidden) return; /* לדיאלוג המחיקה יש טיפול משלו */
+    var closers = {
+      "payslip-overlay": closePayslipModal, "gen-overlay": closeGenModal, "inc-overlay": closeIncomeModal,
+      "liabilities-overlay": closeLiabilitiesModal, "mortgage-overlay": closeMortgageModal, "calendar-overlay": closeCalendarModal
+    };
+    /* סוגרים רק את החלון העליון (האחרון במסמך מבין הפתוחים) */
+    var open = Array.prototype.filter.call(document.querySelectorAll(".overlay.open"), function(overlay) { return closers[overlay.id]; });
+    if (open.length) closers[open[open.length - 1].id]();
+    else closeSideMenu();
   });
 }
 
@@ -60,20 +51,25 @@ function closeSideMenu() {
    UI EVENT HANDLERS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function onPeriodChange() {
-  saveData();
-  AppState.period.month = parseInt(el("sel-month").value);
-  AppState.period.year = parseInt(el("sel-year").value);
-  resetToDefaults();
-  loadData(AppState.period.month, AppState.period.year);
-  pipeline();
+  var selected = parseInt(el("sel-month").value, 10);
+  if (!isFinite(selected)) return;
+  if (AppState.monthHasRecord) saveData();
+  openBudgetPeriod(selected % 12, Math.floor(selected / 12));
+  refreshWithoutSaving();
+}
+
+function updatePersonName(person, value) {
+  AppState.profile.names[person] = String(value || "").slice(0, 40);
+  saveProfileSettings();
+  flashSaved();
 }
 
 function onIncome1Input() {
-  updateState("income1.0.val", parseFloat(el("inp-s1").value) || 0);
+  updateState("income1.0.val", toAmount(el("inp-s1").value));
 }
 
 function onIncome2Input() {
-  updateState("income2.0.val", parseFloat(el("inp-s2").value) || 0);
+  updateState("income2.0.val", toAmount(el("inp-s2").value));
 }
 
 function addAdditionalIncome() {
@@ -94,7 +90,7 @@ function updateAdditionalIncomeName(person, index, value) {
 function updateAdditionalIncomeAmount(person, index, value) {
   var items = person === 2 ? AppState.income2 : AppState.income1;
   if (!items[index]) return;
-  items[index].val = parseFloat(value) || 0;
+  items[index].val = toAmount(value);
   calculate();
   renderTopbarSnapshot();
   renderMaaser(AppState.result);

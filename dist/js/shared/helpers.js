@@ -4,10 +4,27 @@ function audienceText(singleText, pluralText) {
   return AppState && AppState.profile && AppState.profile.single ? singleText : pluralText;
 }
 
+/* שם בעל/ת ההכנסה כפי שהמשתמשים הזינו, או כינוי ניטרלי כברירת מחדל */
+function personName(person) {
+  var names = AppState && AppState.profile && AppState.profile.names || {};
+  var name = String(names[person] || "").trim();
+  return name || "בן/בת זוג " + person;
+}
+
+function salaryLabel(person) {
+  var salaryMonth = MONTHS[(AppState.period.month + 11) % 12];
+  return "משכורת " + salaryMonth + (AppState.profile.single ? "" : " - " + personName(person));
+}
+
 function sumArr(arr) {
   var t = 0;
   arr.forEach(function(item) { t += (Number(item.val) || 0); });
   return t;
+}
+
+/* סכום שהוזן בשדה: מספר סופי שאינו שלילי, אחרת 0 */
+function toAmount(value) {
+  return parseNonNegativeNumber(value) || 0;
 }
 
 function parseNonNegativeNumber(value) {

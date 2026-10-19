@@ -139,8 +139,15 @@ function renderFields() {
   var salaryMonth = MONTHS[(AppState.period.month + 11) % 12];
   var partner1Label = el("income-partner-1-label");
   var partner2Label = el("income-partner-2-label");
-  if (partner1Label) partner1Label.textContent = AppState.profile.single ? "משכורת " + salaryMonth : "משכורת " + salaryMonth + " - בן זוג";
-  if (partner2Label) partner2Label.textContent = "משכורת " + salaryMonth + " - בת זוג";
+  if (partner1Label) partner1Label.textContent = "משכורת " + salaryMonth;
+  if (partner2Label) partner2Label.textContent = "משכורת " + salaryMonth;
+  [1, 2].forEach(function(person) {
+    var nameInput = el("income-partner-" + person + "-name");
+    if (!nameInput) return;
+    nameInput.hidden = AppState.profile.single === true;
+    if (document.activeElement !== nameInput) nameInput.value = AppState.profile.names[person] || "";
+    nameInput.placeholder = personName(person) + " (אפשר לערוך)";
+  });
   var partner2Row = el("income-partner-2-row");
   if (partner2Row) partner2Row.hidden = AppState.profile.single === true;
   renderAdditionalIncomeRows();
@@ -182,10 +189,36 @@ function renderFields() {
   if (mortgageEl) mortgageEl.value = Math.round(AppState.result.mortgagePayments);
   renderCustomExpenseCategories();
 
-  var ms = el("sel-month");
-  var ys = el("sel-year");
-  if (ms) ms.value = AppState.period.month;
-  if (ys) ys.value = AppState.period.year;
+  renderPeriodOptions();
+}
+
+/* רשימת החודשים נבנית מהנתונים: שנה אחורה, חודשיים קדימה, וכל חודש שנשמר.
+   הערך של כל אפשרות הוא מספר רץ (שנה × 12 + חודש), כך שאין רשימת שנים קבועה */
+var _periodOptionsSignature = "";
+function renderPeriodOptions() {
+  var select = el("sel-month");
+  if (!select) return;
+  /* הרשימה משתנה רק במעבר חודש או כשחודש נשמר לראשונה, ולא בכל הקלדה */
+  var signature = AppState.period.year + "-" + AppState.period.month + ":" + AppState.monthHasRecord;
+  if (signature === _periodOptionsSignature) return;
+  _periodOptionsSignature = signature;
+  var now = new Date();
+  var current = periodIndex(now.getMonth(), now.getFullYear());
+  var selected = periodIndex(AppState.period.month, AppState.period.year);
+  var indexes = getSavedPeriodIndexes().concat([current - 12, current + 2, selected]);
+  var first = Math.min.apply(null, indexes);
+  var last = Math.max.apply(null, indexes);
+  var html = "";
+  for (var index = first; index <= last; index++) {
+    var year = Math.floor(index / 12);
+    var label = "תקציב " + MONTHS[index % 12] + (year !== now.getFullYear() ? " " + year : "");
+    html += '<option value="' + index + '">' + label + '</option>';
+  }
+  if (select.getAttribute("data-range") !== first + "-" + last) {
+    select.innerHTML = html;
+    select.setAttribute("data-range", first + "-" + last);
+  }
+  select.value = String(selected);
 }
 
 function renderCustomExpenseCategories() {
@@ -414,10 +447,12 @@ function renderPreAllocation(d) {
   if (!box) return;
   box.innerHTML = "";
 
-  box.appendChild(mkText("span", "", "סה״כ יתרה"));
+  var isDeficit = d.balance < 0;
+  box.classList.toggle("is-deficit", isDeficit);
+  box.appendChild(mkText("span", "", isDeficit ? "גירעון החודש" : "סה״כ יתרה"));
 
-  var value = mkText("strong", "", money(Math.max(0, d.balance)));
-  if (d.balance < 0) value.style.color = "var(--danger)";
+  /* גירעון מוצג בסכומו האמיתי ולא כאפס */
+  var value = mkText("strong", "", money(d.balance));
   box.appendChild(value);
 
   var hasSpecialExpenseDeficit = d.balance <= 0 && d.oneTimeExpenses > 0 && d.balance + d.oneTimeExpenses > 0;
@@ -426,11 +461,17 @@ function renderPreAllocation(d) {
     warningBox.hidden = d.balance > 0;
   }
   if (d.balance <= 0) {
-    var warning = mk("div", "deficit-banner" + (hasSpecialExpenseDeficit ? " special-expense-deficit-banner" : ""));
+    var calmWarning = hasSpecialExpenseDeficit || (d.maaserCapped && !isDeficit);
+    var warning = mk("div", "deficit-banner" + (calmWarning ? " special-expense-deficit-banner" : ""));
     warning.appendChild(mkText("span", "material-symbols-rounded", "warning"));
+    var deficitText = isDeficit
+      ? "ההוצאות וההתחייבויות גבוהות מההכנסות ב־" + money(-d.balance) + " החודש. כדאי לבדוק אילו הוצאות אפשר לצמצם או לדחות."
+      : d.maaserCapped
+        ? "התרומה הותאמה ל־" + money(d.maaser) + " כדי שלא ייווצר מינוס, ולא נותרה יתרה לחלוקה לחיסכון והשקעות בחודש זה."
+        : "אין יתרה לחלוקה לחיסכון והשקעות בחודש זה.";
     warning.appendChild(mkText("span", "", hasSpecialExpenseDeficit
-      ? "ההוצאות המיוחדות משאירות את התקציב ללא יתרה לחלוקה. החודש מומלץ לדחות או לצמצם אותן לפני שממשיכים."
-      : "אין יתרה לחלוקה לחיסכון והשקעות בחודש זה."));
+      ? "ההוצאות המיוחדות משאירות את התקציב " + (isDeficit ? "בגירעון של " + money(-d.balance) : "ללא יתרה לחלוקה") + ". החודש מומלץ לדחות או לצמצם אותן לפני שממשיכים."
+      : deficitText));
     if (warningBox) warningBox.appendChild(warning);
   }
 
@@ -559,7 +600,13 @@ var _saveTimer = null;
 function flashSaved() {
   var dot = el("save-dot");
   if (!dot) return;
+  var failed = consumeStorageWriteFailure();
+  dot.classList.toggle("save-failed", failed);
+  dot.setAttribute("role", failed ? "alert" : "status");
+  dot.children[0].textContent = failed ? "!" : "✓";
+  dot.children[1].textContent = failed ? "השמירה נכשלה. ייתכן שהאחסון בדפדפן מלא או חסום." : "נשמר";
   dot.classList.add("show");
   clearTimeout(_saveTimer);
-  _saveTimer = setTimeout(function() { dot.classList.remove("show"); }, 1800);
+  /* הודעת כשל נשארת גלויה עד לשמירה מוצלחת הבאה */
+  if (!failed) _saveTimer = setTimeout(function() { dot.classList.remove("show"); }, 1800);
 }

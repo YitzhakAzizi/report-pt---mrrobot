@@ -1,7 +1,26 @@
 "use strict";
 
+/* כל כתיבה לאחסון עוברת כאן, כדי שכשל שמירה לא יוצג למשתמש כהצלחה */
+var storageWriteFailed = false;
+
+function writeStorage(key, value) {
+  try {
+    localStorage.setItem(key, value);
+    return true;
+  } catch(e) {
+    storageWriteFailed = true;
+    return false;
+  }
+}
+
+function consumeStorageWriteFailure() {
+  var failed = storageWriteFailed;
+  storageWriteFailed = false;
+  return failed;
+}
+
 function saveProfileSettings() {
-  try { localStorage.setItem(PROFILE_SETTINGS_KEY, JSON.stringify(AppState.profile)); } catch(e) {}
+  return writeStorage(PROFILE_SETTINGS_KEY, JSON.stringify(AppState.profile));
 }
 
 function loadProfileSettings() {
@@ -14,6 +33,8 @@ function loadProfileSettings() {
     AppState.profile.children = saved.children === true;
     AppState.profile.loans = saved.loans === true;
     AppState.profile.debtStatus = saved.debtStatus === true;
+    var names = saved.names && typeof saved.names === "object" ? saved.names : {};
+    AppState.profile.names = {1: String(names[1] || "").slice(0, 40), 2: String(names[2] || "").slice(0, 40)};
   } catch(e) {}
 }
 
@@ -87,7 +108,7 @@ function deletePayslipFile(person) {
 }
 
 function saveMaaser() {
-  try { localStorage.setItem(MAASER_KEY, JSON.stringify(AppState.maaser)); } catch(e) {}
+  return writeStorage(MAASER_KEY, JSON.stringify(AppState.maaser));
 }
 
 function loadMaaserAccount() {
@@ -149,7 +170,7 @@ function normalizeMaaserCharity(charity) {
    GOAL PERSISTENCE
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function saveGoals() {
-  try { localStorage.setItem(GOALS_KEY, JSON.stringify(AppState.goals)); } catch(e) {}
+  return writeStorage(GOALS_KEY, JSON.stringify(AppState.goals));
 }
 
 function loadGoals() {
@@ -206,10 +227,16 @@ function saveData() {
       subscriptions: AppState.subscriptions,
       healthBeautyExpenses: AppState.healthBeautyExpenses,
       insurances: AppState.insurances,
-      recoveryPayment: AppState.recoveryPayment
+      recoveryPayment: AppState.recoveryPayment,
+      summary: currentMonthSummary()
     };
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(all));
-  } catch(e){}
+    var saved = writeStorage(STORAGE_KEY, JSON.stringify(all));
+    if (saved) AppState.monthHasRecord = true;
+    return saved;
+  } catch(e) {
+    storageWriteFailed = true;
+    return false;
+  }
 }
 
 function loadData(month, year) {
@@ -230,10 +257,63 @@ function loadData(month, year) {
     AppState.healthBeautyExpenses = Array.isArray(p.healthBeautyExpenses) ? p.healthBeautyExpenses : clone(DEFAULT_HEALTH_BEAUTY_EXPENSES);
     AppState.insurances = Array.isArray(p.insurances) ? p.insurances.map(normalizeInsurance) : [];
     AppState.recoveryPayment = parseNonNegativeNumber(p.recoveryPayment);
+    AppState.monthHasRecord = true;
     return true;
   } catch(e) {
     return false;
   }
+}
+
+/* מספר רץ לחודש (שנה × 12 + חודש) כדי להשוות ולמיין חודשים */
+function periodIndex(month, year) {
+  return Number(year) * 12 + Number(month);
+}
+
+function getSavedPeriodIndexes() {
+  try {
+    var all = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    return Object.keys(all).map(function(key) {
+      var match = /^(\d{4})-(\d{2})$/.exec(key);
+      if (!match || Number(match[2]) > 11) return null;
+      return periodIndex(Number(match[2]), Number(match[1]));
+    }).filter(function(index) { return index !== null; }).sort(function(a, b) { return a - b; });
+  } catch(e) {
+    return [];
+  }
+}
+
+function zeroAmounts(items) {
+  return (items || []).map(function(item) {
+    var copy = clone(item);
+    copy.val = 0;
+    if (Array.isArray(copy.items)) copy.items = zeroAmounts(copy.items);
+    return copy;
+  });
+}
+
+/* חודש חדש מתחיל מהחודש השמור האחרון שלפניו: ההוצאות הקבועות עוברות כמו שהן,
+   בהוצאות המשתנות ובהכנסות נשמרים הסעיפים עם סכום 0, וההוצאות המיוחדות מתאפסות */
+function startMonthFromPrevious(month, year) {
+  var target = periodIndex(month, year);
+  var previous = getSavedPeriodIndexes().filter(function(index) { return index < target; }).pop();
+  if (previous === undefined) return false;
+  if (!loadData(previous % 12, Math.floor(previous / 12))) return false;
+  AppState.monthHasRecord = false;
+  AppState.income1 = zeroAmounts(AppState.income1);
+  AppState.income2 = zeroAmounts(AppState.income2);
+  AppState.variableExpenses = zeroAmounts(AppState.variableExpenses);
+  AppState.oneTimeExpenses = clone(DEFAULT_ONE_TIME_EXPENSES);
+  AppState.recoveryPayment = null;
+  return true;
+}
+
+/* טעינת חודש לתצוגה. חודש שעדיין לא נשמר אינו נשמר רק מעצם הצפייה בו */
+function openBudgetPeriod(month, year) {
+  AppState.period.month = month;
+  AppState.period.year = year;
+  AppState.monthHasRecord = false;
+  resetToDefaults();
+  if (!loadData(month, year)) startMonthFromPrevious(month, year);
 }
 
 function getSavedMonthData(month, year) {
@@ -335,7 +415,7 @@ function normalizeInsurance(insurance) {
   };
 }
 function saveDreams() {
-  try { localStorage.setItem(DREAMS_KEY, JSON.stringify(AppState.dreams)); } catch(e) {}
+  return writeStorage(DREAMS_KEY, JSON.stringify(AppState.dreams));
 }
 
 function loadDreams() {
@@ -347,20 +427,12 @@ function loadDreams() {
   } catch(e) {}
 }
 
-function saveThemePreference(theme) {
-  localStorage.setItem("themePreference", theme);
-}
-
-function loadThemePreference() {
-  return localStorage.getItem("themePreference");
-}
-
 function saveMaaserPercentage() {
-  localStorage.setItem(MAASER_PERCENTAGE_KEY, String(AppState.settings.maaserPercent));
+  return writeStorage(MAASER_PERCENTAGE_KEY, String(AppState.settings.maaserPercent));
 }
 
 function saveAllocationPercentages() {
-  localStorage.setItem(ALLOCATION_PERCENTAGES_KEY, JSON.stringify(AppState.settings.allocation));
+  return writeStorage(ALLOCATION_PERCENTAGES_KEY, JSON.stringify(AppState.settings.allocation));
 }
 
 function loadPercentageSettings() {
@@ -387,9 +459,7 @@ function loadPercentageSettings() {
 }
 
 function saveLiabilities() {
-  try {
-    localStorage.setItem(LIABILITIES_KEY, JSON.stringify(AppState.liabilities));
-  } catch(e) {}
+  return writeStorage(LIABILITIES_KEY, JSON.stringify(AppState.liabilities));
 }
 
 function loadLiabilities() {

@@ -18,9 +18,15 @@ function renderMaaser(d) {
 
   box.innerHTML += maaserPercentageChoicesHtml() +
     '<label class="maaser-summary"><span>סכום לתרומה</span><div class="maaser-summary-input"><input type="number" value="' +
-      formatMaaserSettingsNumber(d.maaser) + '" min="0" step="any" inputmode="decimal" aria-label="סכום לתרומה" ' +
+      formatMaaserSettingsNumber(d.maaserRequested) + '" min="0" step="any" inputmode="decimal" aria-label="סכום לתרומה" ' +
       'onchange="saveMainMaaserAmount(this.value)" /><b>₪</b></div></label>' +
+    (d.maaserCapped ? '<p class="maaser-capped-note" role="status">' + escapeHtml(maaserCappedText(d)) + '</p>' : '') +
     '<div class="maaser-validation" id="maaser-validation">' + getMaaserValidationMessage() + '</div>';
+}
+
+function maaserCappedText(d) {
+  return "אחרי ההוצאות נותרו " + money(d.maaser) + " בלבד, ולכן התרומה החודש תעמוד על " + money(d.maaser) +
+    " במקום " + money(d.maaserRequested) + ", כדי שלא ייווצר מינוס.";
 }
 
 function maaserToggleHtml(enabled, canDonate) {
@@ -90,7 +96,7 @@ function maaserInlineSettingsHtml(d) {
         formatMaaserSettingsNumber(AppState.settings.maaserPercent) +
         '" min="0" step="any" inputmode="decimal" oninput="syncInlineMaaserFromPercent()" onchange="saveInlineMaaserSetting(\'percent\')" /><b>%</b></div></label>' +
       '<label><span>סכום</span><div class="maaser-inline-control"><input type="number" id="maaser-amount-input" value="' +
-        formatMaaserSettingsNumber(d.maaser) +
+        formatMaaserSettingsNumber(d.maaserRequested) +
         '" min="0" step="any" inputmode="decimal" oninput="syncInlineMaaserFromAmount()" onchange="saveInlineMaaserSetting(\'amount\')" /><b>₪</b></div></label>' +
     '</div>' +
     '<div class="settings-validation" id="settings-validation"></div>' +
@@ -104,7 +110,7 @@ function maaserCharityHtml(charity, index) {
     '<div class="maaser-charity-head">' +
       '<button type="button" class="maaser-accordion-btn material-symbols-rounded" onclick="toggleMaaserCharity(' + index + ')" aria-label="' + (expanded ? 'סגירת פרטי עמותה' : 'פתיחת פרטי עמותה') + '">' + (expanded ? 'expand_less' : 'expand_more') + '</button>' +
       '<input type="text" class="maaser-charity-name" value="' + escapeHtml(charity.name || '') + '" placeholder="שם העמותה" oninput="updateMaaserCharity(' + index + ',\'name\',this.value,this)" />' +
-      '<input type="number" class="maaser-charity-amount" value="' + (Number(charity.amount) || '') + '" placeholder="0" min="0" inputmode="decimal" oninput="updateMaaserCharity(' + index + ',\'amount\',parseFloat(this.value)||0,this)" />' +
+      '<input type="number" class="maaser-charity-amount" value="' + (Number(charity.amount) || '') + '" placeholder="0" min="0" inputmode="decimal" oninput="updateMaaserCharity(' + index + ',\'amount\',toAmount(this.value),this)" />' +
       '<button type="button" class="maaser-delete-btn material-symbols-rounded" onclick="deleteMaaserCharity(' + index + ')" aria-label="מחיקת עמותה"' + (isOnlyCharity ? ' disabled title="חייבת להישאר לפחות עמותה אחת"' : '') + '>delete</button>' +
     '</div>' +
     (expanded ? maaserCharityDetailsHtml(charity, index) : '') +
@@ -160,7 +166,7 @@ function updateMaaserCharity(index, field, value, input) {
   if (field === 'amount') {
     var oldAmount = Number(charity.amount) || 0;
     var nextAmount = Number(value) || 0;
-    if (getMaaserAllocated() - oldAmount + nextAmount > AppState.result.maaser) {
+    if (getMaaserAllocated() - oldAmount + nextAmount > AppState.result.maaserRequested) {
       if (input) input.value = oldAmount || '';
       showMaaserValidation('הסכום שהוקצה גבוה מהתרומה הכוללת. כדאי להקטין סכום או לעדכן חלוקה.');
       return;
@@ -181,7 +187,7 @@ function getMaaserAllocated() {
 }
 
 function getMaaserValidationMessage() {
-  return getMaaserAllocated() > AppState.result.maaser ? 'הסכום שהוקצה גבוה מהתרומה הכוללת. כדאי להקטין סכום או לעדכן חלוקה.' : '';
+  return getMaaserAllocated() > AppState.result.maaserRequested ? 'הסכום שהוקצה גבוה מהתרומה הכוללת. כדאי להקטין סכום או לעדכן חלוקה.' : '';
 }
 
 function showMaaserValidation(message) {
@@ -191,7 +197,7 @@ function showMaaserValidation(message) {
 
 function updateMaaserSummaryView() {
   var allocated = getMaaserAllocated();
-  var remaining = Math.max(0, AppState.result.maaser - allocated);
+  var remaining = Math.max(0, AppState.result.maaserRequested - allocated);
   var allocatedEl = el('maaser-allocated-val');
   var remainingEl = el('maaser-remaining-val');
   if (allocatedEl) allocatedEl.textContent = money(allocated);
