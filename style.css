@@ -1431,3 +1431,6 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 .income-person-name:focus{color:var(--text);border-style:solid;border-color:var(--info);background:var(--card);box-shadow:0 0 0 3px rgba(22,58,95,.08)}
 .income-person-name[hidden]{display:none}
 .income-person-name::placeholder{opacity:.85;font-weight:600}
+.side-menu-data{display:flex;flex-direction:column;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
+.side-menu-data h3{margin:0 2px 2px;color:var(--muted);font-size:13px;font-weight:800}
+.side-menu-data-note{margin:2px 2px 0;color:var(--muted);font-size:12px;line-height:1.6}
