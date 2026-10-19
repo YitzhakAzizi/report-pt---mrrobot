@@ -181,6 +181,13 @@ function remainingDaysInLocalMonth(date) {
   return lastDay - localDate.getDate() + 1;
 }
 
+/* בחודש הנוכחי הסכום היומי מחולק בימים שנותרו; בחודש אחר, בכל ימי אותו חודש */
+function budgetReferenceDate(period, today) {
+  var now = today || new Date();
+  if (period.month === now.getMonth() && period.year === now.getFullYear()) return now;
+  return new Date(period.year, period.month, 1);
+}
+
 function dailySpendingAmount(monthlySpending, date) {
   return monthlySpending / remainingDaysInLocalMonth(date);
 }

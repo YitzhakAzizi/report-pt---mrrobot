@@ -66,7 +66,7 @@ function openSpendingModal() {
   var monthlySpending = recoverySpending === null
     ? percentageOf(AppState.result.balance, spendingPercentage)
     : recoverySpending;
-  var dailySpending = dailySpendingAmount(monthlySpending, new Date());
+  var dailySpending = dailySpendingAmount(monthlySpending, budgetReferenceDate(AppState.period));
 
   el("gen-modal-title").textContent = AppState.profile.debtStatus ? "יתרה לשימוש החודש" : "בזבוזים";
   el("gen-modal-body").innerHTML =
