@@ -73,6 +73,7 @@ function refreshWithoutSaving() {
     AppState.goalCompletionAdjusted = false;
   }
   render();
+  if (storageWriteFailed) flashSaved();
 }
 
 function resetToDefaults() {

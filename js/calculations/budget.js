@@ -67,8 +67,8 @@ function currentMonthSummary() {
   };
 }
 
-/* חודש שנשמר אחרי עדכון זה מחזיק סיכום משלו. לחודש ישן מחושב סיכום לפי הפרופיל
-   ולפי ההתחייבויות הנוכחיות, כי התחייבויות לא נשמרו אז לפי חודש */
+/* חודש שנשמר אחרי עדכון זה מחזיק סיכום משלו. לחודש ישן מחושב סיכום לפי הפרופיל.
+   התחייבויות לא נשמרו אז לפי חודש, ולכן לא מייחסים לו את ההחזרים של היום */
 function savedMonthSummary(saved) {
   if (!saved) return null;
   if (saved.summary) return saved.summary;
@@ -80,7 +80,7 @@ function savedMonthSummary(saved) {
   return {
     income: sumArr(saved.income1 || []) + (profile.single ? 0 : sumArr(saved.income2 || [])),
     livingExpenses: living,
-    liabilityPayments: (AppState.result && AppState.result.liabilityPayments) || 0
+    liabilityPayments: 0
   };
 }
 

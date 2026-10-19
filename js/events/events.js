@@ -11,15 +11,14 @@ function registerEvents() {
     if (event.key !== "Escape") return;
     var deleteDialog = el("expense-delete-overlay");
     if (deleteDialog && !deleteDialog.hidden) return; /* לדיאלוג המחיקה יש טיפול משלו */
-    closeSideMenu();
-    var overlays = {
+    var closers = {
       "payslip-overlay": closePayslipModal, "gen-overlay": closeGenModal, "inc-overlay": closeIncomeModal,
       "liabilities-overlay": closeLiabilitiesModal, "mortgage-overlay": closeMortgageModal, "calendar-overlay": closeCalendarModal
     };
-    Object.keys(overlays).forEach(function(id) {
-      var overlay = el(id);
-      if (overlay && overlay.classList.contains("open")) overlays[id]();
-    });
+    /* סוגרים רק את החלון העליון (האחרון במסמך מבין הפתוחים) */
+    var open = Array.prototype.filter.call(document.querySelectorAll(".overlay.open"), function(overlay) { return closers[overlay.id]; });
+    if (open.length) closers[open[open.length - 1].id]();
+    else closeSideMenu();
   });
 }
 

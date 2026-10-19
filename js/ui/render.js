@@ -194,9 +194,14 @@ function renderFields() {
 
 /* רשימת החודשים נבנית מהנתונים: שנה אחורה, חודשיים קדימה, וכל חודש שנשמר.
    הערך של כל אפשרות הוא מספר רץ (שנה × 12 + חודש), כך שאין רשימת שנים קבועה */
+var _periodOptionsSignature = "";
 function renderPeriodOptions() {
   var select = el("sel-month");
   if (!select) return;
+  /* הרשימה משתנה רק במעבר חודש או כשחודש נשמר לראשונה, ולא בכל הקלדה */
+  var signature = AppState.period.year + "-" + AppState.period.month + ":" + AppState.monthHasRecord;
+  if (signature === _periodOptionsSignature) return;
+  _periodOptionsSignature = signature;
   var now = new Date();
   var current = periodIndex(now.getMonth(), now.getFullYear());
   var selected = periodIndex(AppState.period.month, AppState.period.year);

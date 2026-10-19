@@ -96,7 +96,7 @@ function maaserInlineSettingsHtml(d) {
         formatMaaserSettingsNumber(AppState.settings.maaserPercent) +
         '" min="0" step="any" inputmode="decimal" oninput="syncInlineMaaserFromPercent()" onchange="saveInlineMaaserSetting(\'percent\')" /><b>%</b></div></label>' +
       '<label><span>סכום</span><div class="maaser-inline-control"><input type="number" id="maaser-amount-input" value="' +
-        formatMaaserSettingsNumber(d.maaser) +
+        formatMaaserSettingsNumber(d.maaserRequested) +
         '" min="0" step="any" inputmode="decimal" oninput="syncInlineMaaserFromAmount()" onchange="saveInlineMaaserSetting(\'amount\')" /><b>₪</b></div></label>' +
     '</div>' +
     '<div class="settings-validation" id="settings-validation"></div>' +
@@ -166,7 +166,7 @@ function updateMaaserCharity(index, field, value, input) {
   if (field === 'amount') {
     var oldAmount = Number(charity.amount) || 0;
     var nextAmount = Number(value) || 0;
-    if (getMaaserAllocated() - oldAmount + nextAmount > AppState.result.maaser) {
+    if (getMaaserAllocated() - oldAmount + nextAmount > AppState.result.maaserRequested) {
       if (input) input.value = oldAmount || '';
       showMaaserValidation('הסכום שהוקצה גבוה מהתרומה הכוללת. כדאי להקטין סכום או לעדכן חלוקה.');
       return;
@@ -187,7 +187,7 @@ function getMaaserAllocated() {
 }
 
 function getMaaserValidationMessage() {
-  return getMaaserAllocated() > AppState.result.maaser ? 'הסכום שהוקצה גבוה מהתרומה הכוללת. כדאי להקטין סכום או לעדכן חלוקה.' : '';
+  return getMaaserAllocated() > AppState.result.maaserRequested ? 'הסכום שהוקצה גבוה מהתרומה הכוללת. כדאי להקטין סכום או לעדכן חלוקה.' : '';
 }
 
 function showMaaserValidation(message) {
@@ -197,7 +197,7 @@ function showMaaserValidation(message) {
 
 function updateMaaserSummaryView() {
   var allocated = getMaaserAllocated();
-  var remaining = Math.max(0, AppState.result.maaser - allocated);
+  var remaining = Math.max(0, AppState.result.maaserRequested - allocated);
   var allocatedEl = el('maaser-allocated-val');
   var remainingEl = el('maaser-remaining-val');
   if (allocatedEl) allocatedEl.textContent = money(allocated);

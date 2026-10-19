@@ -24,8 +24,7 @@ function sumArr(arr) {
 
 /* סכום שהוזן בשדה: מספר סופי שאינו שלילי, אחרת 0 */
 function toAmount(value) {
-  var number = parseFloat(value);
-  return isFinite(number) && number > 0 ? number : 0;
+  return parseNonNegativeNumber(value) || 0;
 }
 
 function parseNonNegativeNumber(value) {

@@ -35,10 +35,16 @@ function exportBackup() {
   var file = typeof File === "function" ? new File([blob], fileName, {type: blob.type}) : null;
 
   if (file && navigator.share && navigator.canShare && navigator.canShare({files: [file]})) {
-    navigator.share({title: "גיבוי שליטה פיננסית", files: [file]}).catch(function() {});
+    navigator.share({title: "גיבוי שליטה פיננסית", files: [file]}).catch(function(error) {
+      /* ביטול בידי המשתמש אינו כשל; בכל כשל אחר מורידים את הקובץ ישירות */
+      if (!error || error.name !== "AbortError") downloadBackupBlob(blob, fileName);
+    });
     return;
   }
+  downloadBackupBlob(blob, fileName);
+}
 
+function downloadBackupBlob(blob, fileName) {
   var url = URL.createObjectURL(blob);
   var link = document.createElement("a");
   link.href = url;
