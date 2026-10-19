@@ -17,6 +17,7 @@ var AppState = {
   investments: {},
   liabilities: {loans: [], debts: [], mortgages: [], overdraft: 0},
   recoveryPayment: null,
+  monthHasRecord: false,
   dreams: [],
   goals: {
     checking: {current: 0, target: 0, completed: false, bank: "", account: ""},
@@ -62,6 +63,16 @@ function pipeline() {
   render();
   saveData();
   flashSaved();
+}
+
+/* חישוב ותצוגה בלי לשמור: משמש בפתיחת חודש לצפייה */
+function refreshWithoutSaving() {
+  calculate();
+  if (AppState.goalCompletionAdjusted) {
+    saveGoals();
+    AppState.goalCompletionAdjusted = false;
+  }
+  render();
 }
 
 function resetToDefaults() {

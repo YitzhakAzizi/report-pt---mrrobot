@@ -15,11 +15,6 @@
   loadLiabilities();
   loadProfileSettings();
   loadInvestmentsOverview();
-  var loaded = loadData(AppState.period.month, AppState.period.year);
-  if (!loaded) {
-    AppState.expenses = clone(DEFAULT_EXPENSES);
-    AppState.variableExpenses = clone(DEFAULT_VARIABLE_EXPENSES);
-  }
-
-  pipeline();
+  openBudgetPeriod(AppState.period.month, AppState.period.year);
+  refreshWithoutSaving();
 })();

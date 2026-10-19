@@ -182,10 +182,31 @@ function renderFields() {
   if (mortgageEl) mortgageEl.value = Math.round(AppState.result.mortgagePayments);
   renderCustomExpenseCategories();
 
-  var ms = el("sel-month");
-  var ys = el("sel-year");
-  if (ms) ms.value = AppState.period.month;
-  if (ys) ys.value = AppState.period.year;
+  renderPeriodOptions();
+}
+
+/* רשימת החודשים נבנית מהנתונים: שנה אחורה, חודשיים קדימה, וכל חודש שנשמר.
+   הערך של כל אפשרות הוא מספר רץ (שנה × 12 + חודש), כך שאין רשימת שנים קבועה */
+function renderPeriodOptions() {
+  var select = el("sel-month");
+  if (!select) return;
+  var now = new Date();
+  var current = periodIndex(now.getMonth(), now.getFullYear());
+  var selected = periodIndex(AppState.period.month, AppState.period.year);
+  var indexes = getSavedPeriodIndexes().concat([current - 12, current + 2, selected]);
+  var first = Math.min.apply(null, indexes);
+  var last = Math.max.apply(null, indexes);
+  var html = "";
+  for (var index = first; index <= last; index++) {
+    var year = Math.floor(index / 12);
+    var label = "תקציב " + MONTHS[index % 12] + (year !== now.getFullYear() ? " " + year : "");
+    html += '<option value="' + index + '">' + label + '</option>';
+  }
+  if (select.getAttribute("data-range") !== first + "-" + last) {
+    select.innerHTML = html;
+    select.setAttribute("data-range", first + "-" + last);
+  }
+  select.value = String(selected);
 }
 
 function renderCustomExpenseCategories() {

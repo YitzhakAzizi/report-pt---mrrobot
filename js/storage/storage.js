@@ -227,7 +227,9 @@ function saveData() {
       insurances: AppState.insurances,
       recoveryPayment: AppState.recoveryPayment
     };
-    return writeStorage(STORAGE_KEY, JSON.stringify(all));
+    var saved = writeStorage(STORAGE_KEY, JSON.stringify(all));
+    if (saved) AppState.monthHasRecord = true;
+    return saved;
   } catch(e) {
     storageWriteFailed = true;
     return false;
@@ -252,10 +254,63 @@ function loadData(month, year) {
     AppState.healthBeautyExpenses = Array.isArray(p.healthBeautyExpenses) ? p.healthBeautyExpenses : clone(DEFAULT_HEALTH_BEAUTY_EXPENSES);
     AppState.insurances = Array.isArray(p.insurances) ? p.insurances.map(normalizeInsurance) : [];
     AppState.recoveryPayment = parseNonNegativeNumber(p.recoveryPayment);
+    AppState.monthHasRecord = true;
     return true;
   } catch(e) {
     return false;
   }
+}
+
+/* מספר רץ לחודש (שנה × 12 + חודש) כדי להשוות ולמיין חודשים */
+function periodIndex(month, year) {
+  return Number(year) * 12 + Number(month);
+}
+
+function getSavedPeriodIndexes() {
+  try {
+    var all = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
+    return Object.keys(all).map(function(key) {
+      var match = /^(\d{4})-(\d{2})$/.exec(key);
+      if (!match || Number(match[2]) > 11) return null;
+      return periodIndex(Number(match[2]), Number(match[1]));
+    }).filter(function(index) { return index !== null; }).sort(function(a, b) { return a - b; });
+  } catch(e) {
+    return [];
+  }
+}
+
+function zeroAmounts(items) {
+  return (items || []).map(function(item) {
+    var copy = clone(item);
+    copy.val = 0;
+    if (Array.isArray(copy.items)) copy.items = zeroAmounts(copy.items);
+    return copy;
+  });
+}
+
+/* חודש חדש מתחיל מהחודש השמור האחרון שלפניו: ההוצאות הקבועות עוברות כמו שהן,
+   בהוצאות המשתנות ובהכנסות נשמרים הסעיפים עם סכום 0, וההוצאות המיוחדות מתאפסות */
+function startMonthFromPrevious(month, year) {
+  var target = periodIndex(month, year);
+  var previous = getSavedPeriodIndexes().filter(function(index) { return index < target; }).pop();
+  if (previous === undefined) return false;
+  if (!loadData(previous % 12, Math.floor(previous / 12))) return false;
+  AppState.monthHasRecord = false;
+  AppState.income1 = zeroAmounts(AppState.income1);
+  AppState.income2 = zeroAmounts(AppState.income2);
+  AppState.variableExpenses = zeroAmounts(AppState.variableExpenses);
+  AppState.oneTimeExpenses = clone(DEFAULT_ONE_TIME_EXPENSES);
+  AppState.recoveryPayment = null;
+  return true;
+}
+
+/* טעינת חודש לתצוגה. חודש שעדיין לא נשמר אינו נשמר רק מעצם הצפייה בו */
+function openBudgetPeriod(month, year) {
+  AppState.period.month = month;
+  AppState.period.year = year;
+  AppState.monthHasRecord = false;
+  resetToDefaults();
+  if (!loadData(month, year)) startMonthFromPrevious(month, year);
 }
 
 function getSavedMonthData(month, year) {

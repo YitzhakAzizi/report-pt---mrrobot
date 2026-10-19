@@ -5,7 +5,6 @@ function registerEvents() {
   document.documentElement.setAttribute("data-theme", "light");
 
   el("sel-month").onchange = onPeriodChange;
-  el("sel-year").onchange = onPeriodChange;
   el("inp-s1").oninput = onIncome1Input;
   el("inp-s2").oninput = onIncome2Input;
   document.addEventListener("keydown", function(event) {
@@ -46,12 +45,11 @@ function closeSideMenu() {
    UI EVENT HANDLERS
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function onPeriodChange() {
-  saveData();
-  AppState.period.month = parseInt(el("sel-month").value);
-  AppState.period.year = parseInt(el("sel-year").value);
-  resetToDefaults();
-  loadData(AppState.period.month, AppState.period.year);
-  pipeline();
+  var selected = parseInt(el("sel-month").value, 10);
+  if (!isFinite(selected)) return;
+  if (AppState.monthHasRecord) saveData();
+  openBudgetPeriod(selected % 12, Math.floor(selected / 12));
+  refreshWithoutSaving();
 }
 
 function onIncome1Input() {
