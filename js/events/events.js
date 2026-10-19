@@ -8,11 +8,18 @@ function registerEvents() {
   el("inp-s1").oninput = onIncome1Input;
   el("inp-s2").oninput = onIncome2Input;
   document.addEventListener("keydown", function(event) {
-    if (event.key === "Escape") {
-      closeSideMenu();
-      var payslipOverlay = el("payslip-overlay");
-      if (payslipOverlay && payslipOverlay.classList.contains("open")) closePayslipModal();
-    }
+    if (event.key !== "Escape") return;
+    var deleteDialog = el("expense-delete-overlay");
+    if (deleteDialog && !deleteDialog.hidden) return; /* לדיאלוג המחיקה יש טיפול משלו */
+    closeSideMenu();
+    var overlays = {
+      "payslip-overlay": closePayslipModal, "gen-overlay": closeGenModal, "inc-overlay": closeIncomeModal,
+      "liabilities-overlay": closeLiabilitiesModal, "mortgage-overlay": closeMortgageModal, "calendar-overlay": closeCalendarModal
+    };
+    Object.keys(overlays).forEach(function(id) {
+      var overlay = el(id);
+      if (overlay && overlay.classList.contains("open")) overlays[id]();
+    });
   });
 }
 

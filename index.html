@@ -385,7 +385,7 @@
 
   <!-- Expenses Modal -->
   <div class="overlay" id="gen-overlay" onclick="if(event.target===this)closeGenModal()">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="gen-modal-title">
       <div class="modal-hdr"><h2 class="modal-title" id="gen-modal-title">הוצאות</h2><button class="close-btn material-symbols-rounded" onclick="closeGenModal()" aria-label="סגירה">close</button></div>
       <div class="modal-body" id="gen-modal-body"></div>
       <div class="modal-ftr">
@@ -409,7 +409,7 @@
 
   <!-- Income Modal -->
   <div class="overlay" id="inc-overlay" onclick="if(event.target===this)closeIncomeModal()">
-    <div class="modal">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="inc-modal-title">
       <div class="modal-hdr"><h2 class="modal-title" id="inc-modal-title">הכנסות</h2><button class="close-btn material-symbols-rounded" onclick="closeIncomeModal()" aria-label="סגירה">close</button></div>
       <div class="modal-body" id="inc-modal-body"></div>
       <div class="modal-ftr">
