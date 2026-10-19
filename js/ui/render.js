@@ -414,10 +414,12 @@ function renderPreAllocation(d) {
   if (!box) return;
   box.innerHTML = "";
 
-  box.appendChild(mkText("span", "", "סה״כ יתרה"));
+  var isDeficit = d.balance < 0;
+  box.classList.toggle("is-deficit", isDeficit);
+  box.appendChild(mkText("span", "", isDeficit ? "גירעון החודש" : "סה״כ יתרה"));
 
-  var value = mkText("strong", "", money(Math.max(0, d.balance)));
-  if (d.balance < 0) value.style.color = "var(--danger)";
+  /* גירעון מוצג בסכומו האמיתי ולא כאפס */
+  var value = mkText("strong", "", money(d.balance));
   box.appendChild(value);
 
   var hasSpecialExpenseDeficit = d.balance <= 0 && d.oneTimeExpenses > 0 && d.balance + d.oneTimeExpenses > 0;
@@ -428,9 +430,12 @@ function renderPreAllocation(d) {
   if (d.balance <= 0) {
     var warning = mk("div", "deficit-banner" + (hasSpecialExpenseDeficit ? " special-expense-deficit-banner" : ""));
     warning.appendChild(mkText("span", "material-symbols-rounded", "warning"));
+    var deficitText = isDeficit
+      ? "ההוצאות וההתחייבויות גבוהות מההכנסות ב־" + money(-d.balance) + " החודש. כדאי לבדוק אילו הוצאות אפשר לצמצם או לדחות."
+      : "אין יתרה לחלוקה לחיסכון והשקעות בחודש זה.";
     warning.appendChild(mkText("span", "", hasSpecialExpenseDeficit
-      ? "ההוצאות המיוחדות משאירות את התקציב ללא יתרה לחלוקה. החודש מומלץ לדחות או לצמצם אותן לפני שממשיכים."
-      : "אין יתרה לחלוקה לחיסכון והשקעות בחודש זה."));
+      ? "ההוצאות המיוחדות משאירות את התקציב " + (isDeficit ? "בגירעון של " + money(-d.balance) : "ללא יתרה לחלוקה") + ". החודש מומלץ לדחות או לצמצם אותן לפני שממשיכים."
+      : deficitText));
     if (warningBox) warningBox.appendChild(warning);
   }
 

@@ -1423,3 +1423,4 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 /* Save failure: stays visible with readable text on every screen size */
 .save-indicator.save-failed{color:var(--danger);background:#fef2f2;border-color:rgba(220,38,38,.3);max-width:min(320px,calc(100vw - 24px));white-space:normal;line-height:1.35}
 .save-indicator.save-failed span:last-child{display:inline}
+.allocation-balance-summary.is-deficit{color:var(--danger);background:#fef2f2;border-color:rgba(220,38,38,.32);box-shadow:0 6px 16px rgba(220,38,38,.08)}
