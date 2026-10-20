@@ -114,4 +114,8 @@ var ALLOCATION_MODES = [
   {id: "balanced", name: "חודש מאוזן", allocation: {invest: 50, qualityOfLife: 20, spending: 30}},
   {id: "future", name: "חודש מחושב", allocation: {invest: 70, qualityOfLife: 15, spending: 15}}
 ];
+/* הוצאות משתנות כרשימה אחת (כל פריט בשורה משלו, עם עריכה ישירה) במקום קטגוריות.
+   false מחזיר את התצוגה הקודמת בקטגוריות (חיובי דיור, דלק, סופר) */
+var FLAT_VARIABLE_EXPENSES = true;
+
 var DEFAULT_DEBT_PLAN_PERCENTAGES = {debt: 70, spending: 30};

@@ -239,6 +239,7 @@ function renderFields() {
   if (liabilitiesEl) liabilitiesEl.value = Math.round(AppState.result.loanPayments + (AppState.profile.debtStatus ? 0 : AppState.result.debtPayments));
   if (mortgageEl) mortgageEl.value = Math.round(AppState.result.mortgagePayments);
   renderCustomExpenseCategories();
+  renderFlatVariableExpenses();
 
   renderPeriodOptions();
 }
@@ -270,6 +271,99 @@ function renderPeriodOptions() {
     select.setAttribute("data-range", first + "-" + last);
   }
   select.value = String(selected);
+}
+
+/* עדכון סכומים אחרי עריכה בשורה, בלי לבנות מחדש את השדות (כדי לא לאבד את הפוקוס) */
+function refreshAfterInlineEdit() {
+  calculate();
+  renderTopbarSnapshot();
+  renderMaaser(AppState.result);
+  renderPreAllocation(AppState.result);
+  renderActions(AppState.result);
+  saveData();
+  flashSaved();
+}
+
+/* ━━ הוצאות משתנות כרשימה אחת (FLAT_VARIABLE_EXPENSES) ━━ */
+var FLAT_VARIABLE_DISPLAY = {
+  "חשמל": {icon: "bolt"},
+  "מים": {icon: "water_drop"},
+  "גז": {icon: "local_fire_department"},
+  "ארנונה": {icon: "apartment"},
+  "דלק / תחבורה": {icon: "local_gas_station"},
+  "קניות סופר (מזון ומוצרי ניקוי)": {icon: "shopping_cart", label: "קניות סופר", sub: "מזון ומוצרי ניקוי"}
+};
+
+function renderFlatVariableExpenses() {
+  var list = el("flat-variable-expenses-list");
+  var addLabel = el("add-variable-label");
+  if (addLabel) addLabel.textContent = FLAT_VARIABLE_EXPENSES ? "הוסף הוצאה" : "הוסף קטגוריה";
+  if (!list) return;
+  if (!FLAT_VARIABLE_EXPENSES) { list.innerHTML = ""; return; }
+  Array.prototype.forEach.call(document.querySelectorAll("#budget-flow-variable-expenses .variable-category-row"), function(row) {
+    row.hidden = true;
+  });
+  if (list.contains(document.activeElement)) return; /* לא בונים מחדש בזמן הקלדה */
+  list.innerHTML = "";
+  (AppState.variableExpenses || []).forEach(function(item, index) {
+    if (item.customCategory) return;
+    var display = FLAT_VARIABLE_DISPLAY[item.name] || {};
+    var row = mk("div", "irow flat-expense-row");
+    var label = mk("div", "ilabel");
+    var icon = mkText("span", "row-icon material-symbols-rounded", display.icon || "receipt_long");
+    icon.setAttribute("aria-hidden", "true");
+    label.appendChild(icon);
+    var text = mk("div", "flat-expense-text");
+    if (display.icon) {
+      text.appendChild(mkText("span", "label-main", display.label || item.name));
+    } else {
+      var name = document.createElement("input");
+      name.type = "text";
+      name.className = "additional-income-name";
+      name.value = item.name || "";
+      name.placeholder = "שם ההוצאה";
+      name.setAttribute("aria-label", "שם ההוצאה");
+      name.oninput = function() { item.name = name.value; saveData(); flashSaved(); };
+      text.appendChild(name);
+    }
+    var history = item.name ? getPreviousVariableExpenseStats(item.name, AppState.period.month, AppState.period.year) : null;
+    var sub = history ? "בחודש הקודם: " + money(history.last) : display.sub;
+    if (sub) text.appendChild(mkText("span", "label-sub", sub));
+    label.appendChild(text);
+
+    var right = mk("div", "iright");
+    var amount = document.createElement("input");
+    amount.type = "number";
+    amount.min = "0";
+    amount.inputMode = "decimal";
+    amount.placeholder = "0";
+    amount.value = Number(item.val) || "";
+    amount.setAttribute("aria-label", "סכום " + (display.label || item.name || "ההוצאה"));
+    amount.oninput = function() { item.val = toAmount(amount.value); refreshAfterInlineEdit(); };
+    var remove = mkText("button", "custom-category-remove material-symbols-rounded", "delete");
+    remove.type = "button";
+    remove.setAttribute("aria-label", "מחיקת " + (display.label || item.name || "ההוצאה"));
+    remove.onclick = function() {
+      askDeleteExpenseCategory(display.label || item.name || "ההוצאה", function() {
+        var position = AppState.variableExpenses.indexOf(item);
+        if (position >= 0) AppState.variableExpenses.splice(position, 1);
+        pipeline();
+      });
+    };
+    right.appendChild(amount);
+    right.appendChild(remove);
+    row.appendChild(label);
+    row.appendChild(right);
+    list.appendChild(row);
+  });
+}
+
+function addVariableExpense() {
+  if (!FLAT_VARIABLE_EXPENSES) { addCustomExpenseCategory("variableExpenses"); return; }
+  AppState.variableExpenses.push({name: "", val: 0});
+  pipeline();
+  var names = document.querySelectorAll("#flat-variable-expenses-list .additional-income-name");
+  if (names.length) names[names.length - 1].focus();
 }
 
 function renderCustomExpenseCategories() {
@@ -423,6 +517,10 @@ function renderActions(d) {
     left.appendChild(info);
     row.appendChild(left);
     row.appendChild(mkText("span", "act-val", money(val)));
+    if (iconClick) {
+      row.classList.add("action-row-link");
+      row.onclick = function(event) { if (!event.target.closest("button")) iconClick(); };
+    }
     box.appendChild(row);
   }
 

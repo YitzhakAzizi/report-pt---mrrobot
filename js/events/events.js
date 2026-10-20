@@ -115,13 +115,7 @@ function updateAdditionalIncomeAmount(person, index, value) {
   var items = person === 2 ? AppState.income2 : AppState.income1;
   if (!items[index]) return;
   items[index].val = toAmount(value);
-  calculate();
-  renderTopbarSnapshot();
-  renderMaaser(AppState.result);
-  renderPreAllocation(AppState.result);
-  renderActions(AppState.result);
-  saveData();
-  flashSaved();
+  refreshAfterInlineEdit();
 }
 
 function removeAdditionalIncome(person, index) {

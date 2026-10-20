@@ -195,7 +195,7 @@
 
     <!-- Income -->
     <div class="budget-flow-step" id="budget-flow-income">
-      <h2 class="budget-flow-stage-title">הכנסות</h2>
+      <h2 class="budget-flow-stage-title">הזינו הכנסות</h2>
       <section class="card inputs-card">
         <div class="irow" id="income-partner-1-row">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(1)" aria-label="פתיחת תלוש משכורת" title="תלוש משכורת">payments</button><div class="income-person"><input type="text" class="label-main income-label-input" id="income-partner-1-name" maxlength="40" aria-label="שם ההכנסה הראשונה (לחצו לעריכה)" oninput="updateIncomeLabel(1,this.value)" onblur="if(!this.value.trim())renderFields()"></div></div>
@@ -216,7 +216,7 @@
 
     <!-- Fixed expenses and liabilities -->
     <div class="budget-flow-step" id="budget-flow-expenses" hidden>
-      <h2 class="budget-flow-stage-title">הוצאות קבועות</h2>
+      <h2 class="budget-flow-stage-title">הזינו הוצאות קבועות</h2>
       <div class="expense-cards-stack">
       <section class="card inputs-card expense-section-card">
         <div class="irow">
@@ -259,27 +259,28 @@
 
     <!-- Recurring expenses with a changing monthly amount -->
     <div class="budget-flow-step" id="budget-flow-variable-expenses" hidden>
-      <h2 class="budget-flow-stage-title">הוצאות משתנות</h2>
+      <h2 class="budget-flow-stage-title">הזינו הוצאות משתנות</h2>
       <section class="card inputs-card expense-section-card">
-        <div class="irow">
+        <div id="flat-variable-expenses-list"></div>
+        <div class="irow variable-category-row">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openHousingUtilitiesModal()" aria-label="עריכת חיובי דיור משתנים" title="עריכת חיובי דיור משתנים">home</button><div><span class="label-main">חיובי דיור</span><span class="label-sub">חשמל, מים, גז וארנונה</span></div></div>
           <div class="iright"><input type="number" id="inp-variable-housing" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('variableHousing','חיובי דיור')" aria-label="מחיקת חיובי דיור" title="מחיקת חיובי דיור">delete</button></div>
         </div>
-        <div class="irow">
+        <div class="irow variable-category-row">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openFuelExpensesModal()" aria-label="עריכת דלק ותחבורה" title="עריכת דלק ותחבורה">local_gas_station</button><div><span class="label-main">דלק / תחבורה</span></div></div>
           <div class="iright"><input type="number" id="inp-fuel-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('fuel','דלק / תחבורה')" aria-label="מחיקת דלק ותחבורה" title="מחיקת דלק ותחבורה">delete</button></div>
         </div>
-        <div class="irow">
+        <div class="irow variable-category-row">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openSupermarketExpensesModal()" aria-label="עריכת קניות סופר" title="עריכת קניות סופר">shopping_cart</button><div><span class="label-main">קניות סופר</span><span class="label-sub">מזון ומוצרי ניקוי</span></div></div>
           <div class="iright"><input type="number" id="inp-supermarket-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('supermarket','קניות סופר')" aria-label="מחיקת קניות סופר" title="מחיקת קניות סופר">delete</button></div>
         </div>
-        <div class="irow" id="other-variable-expenses-row" hidden>
+        <div class="irow variable-category-row" id="other-variable-expenses-row" hidden>
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openOtherVariableExpensesModal()" aria-label="עריכת הוצאות משתנות נוספות" title="עריכת הוצאות משתנות נוספות">more_horiz</button><div><span class="label-main">הוצאות משתנות נוספות</span></div></div>
           <div class="iright"><input type="number" id="inp-other-variable-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('otherVariable','הוצאות משתנות נוספות')" aria-label="מחיקת הוצאות משתנות נוספות" title="מחיקת הוצאות משתנות נוספות">delete</button></div>
         </div>
         <div id="custom-variable-expenses-list"></div>
       </section>
-      <button type="button" class="additional-income-add" onclick="addCustomExpenseCategory('variableExpenses')"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף קטגוריה</span></button>
+      <button type="button" class="additional-income-add" id="add-variable-btn" onclick="addVariableExpense()"><span class="material-symbols-rounded" aria-hidden="true">add</span><span id="add-variable-label">הוסף קטגוריה</span></button>
       <div class="budget-flow-controls">
         <button type="button" class="budget-flow-back" onclick="previousBudgetFlowStep()"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
         <button type="button" class="budget-flow-next" onclick="nextBudgetFlowStep()">הבא</button>
@@ -321,8 +322,8 @@
 
     <!-- Calculate allocation -->
     <div class="budget-flow-step" id="budget-flow-calculate" hidden>
-      <h2 class="budget-flow-stage-title">חלוקה חודשית</h2>
       <div id="pre-allocation-balance" class="allocation-balance-summary" aria-live="polite"></div>
+      <h2 class="budget-flow-stage-title">תכנית החלוקה החודשית</h2>
       <div class="recovery-overview" id="recovery-overview" aria-label="סיכום חובות והוצאות" hidden>
         <div><span>חובות</span><strong id="recovery-debts-total">₪0</strong></div>
         <div><span>הוצאות</span><strong id="recovery-expenses-total">₪0</strong></div>
@@ -345,20 +346,20 @@
           <span>מכינים את החלוקה שלך…</span>
         </div>
       </section>
+      <button type="button" class="allocation-custom-btn allocation-custom-wide" id="allocation-custom-btn" onclick="openAllocationSettingsModal()">אני רוצה לחלק לבד</button>
       <div class="budget-flow-controls budget-flow-calculate-controls">
         <button type="button" class="budget-flow-back" onclick="previousBudgetFlowStep()"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
-        <button type="button" class="allocation-custom-btn" id="allocation-custom-btn" onclick="openAllocationSettingsModal()">הגדר לבד</button>
-        <button type="button" class="budget-flow-calculate-btn" id="budget-flow-calculate-btn" onclick="calculateBudgetFlow()">חשב את החלוקה החודשית</button>
+        <button type="button" class="budget-flow-calculate-btn" id="budget-flow-calculate-btn" onclick="calculateBudgetFlow()">תחלק עבורי</button>
       </div>
     </div>
 
     <!-- Actions / Balance Breakdown -->
     <div class="budget-flow-step" id="budget-flow-result" hidden>
-      <h2 class="budget-flow-stage-title">החלוקה החודשית</h2>
       <div class="allocation-balance-summary" aria-live="polite">
         <span>סה״כ יתרה</span>
         <strong id="allocation-balance-total">₪0</strong>
       </div>
+      <h2 class="budget-flow-stage-title">החלוקה החודשית</h2>
       <section class="card">
         <div id="actions-box" class="actions-box"></div>
       </section>
