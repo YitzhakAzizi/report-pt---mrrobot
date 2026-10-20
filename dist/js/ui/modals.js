@@ -1019,6 +1019,7 @@ function openPayslipModal(person) {
   var context = el("payslip-context");
   context.textContent = "תלוש עבור " + salaryLabel(_payslipPerson);
   el("payslip-file-input").value = "";
+  clearPayslipPreview();
   el("payslip-overlay").className = "overlay open";
   renderPayslipStatus();
 }
@@ -1041,6 +1042,7 @@ function uploadPayslipFile(file) {
     return;
   }
   showPayslipMessage("שומרים את התלוש במכשיר…", false);
+  clearPayslipPreview();
   savePayslipFile(_payslipPerson, file).then(function() {
     renderPayslipStatus();
   }).catch(function() {
@@ -1086,25 +1088,49 @@ function renderPayslipStatus() {
   });
 }
 
+/* תצוגה בתוך החלון עצמו: חלון או לשונית חדשים נחסמים בחלק מהסביבות (למשל בתוך אפליקציה) */
 function viewPayslipFile() {
+  var preview = el("payslip-preview");
+  if (!preview) return;
+  if (preview.childNodes.length) { clearPayslipPreview(); return; }
   getPayslipFile(_payslipPerson).then(function(record) {
-    if (!record || !record.file) return;
-    var url = URL.createObjectURL(record.file);
-    var link = document.createElement("a");
-    link.href = url;
-    link.target = "_blank";
-    link.rel = "noopener";
-    link.click();
-    setTimeout(function() { URL.revokeObjectURL(url); }, 60000);
+    if (!record || record.legacy || !record.file) {
+      preview.appendChild(mkText("p", "payslip-findings-empty", "אי אפשר להציג את הקובץ הזה. אפשר למחוק אותו ולהעלות שוב."));
+      return;
+    }
+    var isPdf = record.type === "application/pdf" || /\.pdf$/i.test(record.name || "");
+    if (!isPdf) {
+      var image = document.createElement("img");
+      image.className = "payslip-preview-image";
+      image.alt = "תצוגת התלוש";
+      image.src = URL.createObjectURL(record.file);
+      preview.appendChild(image);
+      return;
+    }
+    preview.appendChild(mkText("p", "payslip-findings-empty", "מכינים תצוגה…"));
+    renderPdfPreview(record.file, preview).catch(function(error) {
+      preview.innerHTML = "";
+      preview.appendChild(mkText("p", "payslip-findings-empty", "לא הצלחנו להציג את התלוש." + payslipErrorDetail(error)));
+    });
   }).catch(function() {
     showPayslipMessage("לא הצלחנו לפתוח את התלוש.", true);
   });
 }
 
+function clearPayslipPreview() {
+  var preview = el("payslip-preview");
+  if (preview) preview.innerHTML = "";
+}
+
+/* אישור מחיקה בחלון של האפליקציה, כי confirm() של הדפדפן נחסם בחלק מהסביבות */
 function removePayslipFile() {
-  if (!window.confirm("למחוק את התלוש השמור מהמכשיר?")) return;
-  deletePayslipFile(_payslipPerson).then(renderPayslipStatus).catch(function() {
-    showPayslipMessage("לא הצלחנו למחוק את התלוש.", true);
+  askDeleteExpenseCategory("התלוש השמור", function() {
+    deletePayslipFile(_payslipPerson).then(function() {
+      clearPayslipPreview();
+      renderPayslipStatus();
+    }).catch(function() {
+      showPayslipMessage("לא הצלחנו למחוק את התלוש.", true);
+    });
   });
 }
 

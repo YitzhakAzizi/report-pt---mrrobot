@@ -68,15 +68,25 @@ function getPayslipFile(person) {
     return new Promise(function(resolve, reject) {
       var transaction = db.transaction(DOCUMENT_DB_STORE, "readonly");
       var request = transaction.objectStore(DOCUMENT_DB_STORE).get(payslipStorageId(person));
-      request.onsuccess = function() { resolve(request.result || null); };
+      request.onsuccess = function() {
+        var record = request.result || null;
+        /* תלוש נשמר כבייטים ומשוחזר לקובץ בקריאה. רשומה ישנה שנשמרה כקובץ מסומנת legacy */
+        if (record && record.data) record.file = new Blob([record.data], {type: record.type || "application/pdf"});
+        else if (record) record.legacy = true;
+        resolve(record);
+      };
       request.onerror = function() { reject(request.error); };
       transaction.oncomplete = function() { db.close(); };
     });
   });
 }
 
+/* הקובץ נשמר כבייטים (ArrayBuffer) ולא כ־Blob: ב־iOS, ובמיוחד בחלונות של אפליקציות,
+   קובץ Blob שנשמר ב־IndexedDB עלול לחזור פגום, וקריאה שלו נכשלת או מקריסה את הדף */
 function savePayslipFile(person, file) {
-  return openDocumentDatabase().then(function(db) {
+  return Promise.all([openDocumentDatabase(), file.arrayBuffer()]).then(function(results) {
+    var db = results[0];
+    var data = results[1];
     return new Promise(function(resolve, reject) {
       var transaction = db.transaction(DOCUMENT_DB_STORE, "readwrite");
       transaction.objectStore(DOCUMENT_DB_STORE).put({
@@ -88,7 +98,7 @@ function savePayslipFile(person, file) {
         type: file.type,
         size: file.size,
         savedAt: Date.now(),
-        file: file
+        data: data
       });
       transaction.oncomplete = function() { db.close(); resolve(); };
       transaction.onerror = function() { db.close(); reject(transaction.error); };

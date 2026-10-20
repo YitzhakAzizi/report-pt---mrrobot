@@ -170,11 +170,11 @@ var PAYSLIP_ROWS = [
   {key: "otherDeductions", label: "ניכויים אחרים", note: "ניכויים של המעסיק, כמו ועד או ארוחות.", deduction: true, hideZero: true}
 ];
 
-function renderPayslipFindings(container, result, person) {
+function renderPayslipFindings(container, result, person, errorDetail) {
   container.innerHTML = "";
   if (!result || !result.found) {
     container.appendChild(mkText("p", "payslip-findings-empty",
-      "לא הצלחנו לקרוא נתונים מהקובץ הזה. כרגע הזיהוי עובד על תלוש PDF דיגיטלי, ואפשר תמיד להזין את הסכום ידנית."));
+      "לא הצלחנו לקרוא נתונים מהקובץ הזה. כרגע הזיהוי עובד על תלוש PDF דיגיטלי, ואפשר תמיד להזין את הסכום ידנית." + (errorDetail || "")));
     return;
   }
   var card = mk("section", "payslip-findings");
@@ -249,11 +249,42 @@ function applyPayslipToInvestments(result) {
   flashSaved();
 }
 
+function payslipErrorDetail(error) {
+  return error && error.message ? " (פירוט: " + String(error.message).slice(0, 120) + ")" : "";
+}
+
+/* מציג את העמוד הראשון של ה־PDF כתמונה בתוך החלון */
+function renderPdfPreview(file, container) {
+  return Promise.all([loadPdfJs(), file.arrayBuffer()]).then(function(results) {
+    return results[0].getDocument({data: new Uint8Array(results[1]), isEvalSupported: false}).promise;
+  }).then(function(doc) {
+    return doc.getPage(1);
+  }).then(function(page) {
+    var width = Math.max(240, container.clientWidth || 320);
+    var base = page.getViewport({scale: 1});
+    var ratio = Math.min(2, window.devicePixelRatio || 1);
+    var viewport = page.getViewport({scale: (width / base.width) * ratio});
+    var canvas = document.createElement("canvas");
+    canvas.className = "payslip-preview-image";
+    canvas.width = viewport.width;
+    canvas.height = viewport.height;
+    return page.render({canvasContext: canvas.getContext("2d"), viewport: viewport}).promise.then(function() {
+      container.innerHTML = "";
+      container.appendChild(canvas);
+    });
+  });
+}
+
 function showPayslipFindings(record, person) {
   var container = el("payslip-findings");
   if (!container) return;
   container.innerHTML = "";
-  if (!record || !record.file) return;
+  if (!record) return;
+  /* תלוש שנשמר בגרסה קודמת לא נקרא אוטומטית: קובץ כזה עלול להיות פגום ב־iOS */
+  if (record.legacy || !record.file) {
+    container.appendChild(mkText("p", "payslip-findings-empty", "התלוש נשמר בגרסה קודמת של האפליקציה. כדי לקרוא אותו, מחקו והעלו אותו שוב."));
+    return;
+  }
   var isPdf = record.type === "application/pdf" || /\.pdf$/i.test(record.name || "");
   if (!isPdf) {
     container.appendChild(mkText("p", "payslip-findings-empty", "התלוש נשמר. זיהוי סכומים אוטומטי זמין כרגע לתלוש PDF דיגיטלי."));
@@ -262,7 +293,7 @@ function showPayslipFindings(record, person) {
   container.appendChild(mkText("p", "payslip-findings-empty", "קוראים את התלוש במכשיר…"));
   readPdfTextItems(record.file).then(function(items) {
     renderPayslipFindings(container, parsePayslipItems(items), person);
-  }).catch(function() {
-    renderPayslipFindings(container, null, person);
+  }).catch(function(error) {
+    renderPayslipFindings(container, null, person, payslipErrorDetail(error));
   });
 }

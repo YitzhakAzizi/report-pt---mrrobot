@@ -1662,3 +1662,6 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 .payslip-check.is-warning{color:#b45309}
 .payslip-employer{margin-top:12px;padding-top:12px;border-top:1px solid #eef2f6;display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--muted)}
 .payslip-employer strong{color:var(--text);font-size:14px}
+.payslip-preview:empty{display:none}
+.payslip-preview{margin-top:12px}
+.payslip-preview-image{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:12px;background:#fff}
