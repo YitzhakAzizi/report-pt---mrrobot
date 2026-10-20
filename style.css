@@ -1457,6 +1457,8 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 @media (min-width:701px){
   /* the cards float under the top bar on large screens, so the content leaves room for them */
   .content{padding-top:calc(var(--snapshot-space,60px) + 40px)}
+  /* moving to a step scrolls it to just below the cards, not under them */
+  .budget-flow-step{scroll-margin-top:calc(var(--snapshot-space,60px) + 110px)}
 }
 @media (max-width:700px){
   .topbar .topbar-financial-snapshot{flex-direction:column;flex-wrap:nowrap;overflow:visible;gap:6px;padding:2px 0 4px}
@@ -1482,19 +1484,42 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 .calendar-google-option input{width:18px;height:18px;accent-color:var(--info)}
 
 /* ═══════════════════════════════════════════════
-   SNAPSHOT AS STEPS — numbered circles and step states
+   SNAPSHOT AS STEPS — number circle outside each card, dotted links between steps
 ═══════════════════════════════════════════════ */
 .topbar-snapshot-item .topbar-snapshot-label > .material-symbols-rounded,
 .topbar-snapshot-item .snapshot-bag-icon{display:none}
-.snapshot-step-num{flex:0 0 24px;width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;
-  font:800 13px/1 Rubik,Heebo,sans-serif;color:#fff;background:#94a3b8;transition:background .2s,color .2s,box-shadow .2s}
-.topbar-snapshot-item{transition:transform .2s ease,box-shadow .2s ease,border-color .2s ease,background .2s ease,opacity .2s ease}
-/* done: keeps its own color, with a green circle */
-.topbar-snapshot-item.step-done .snapshot-step-num{background:var(--green)}
-/* current: navy frame and circle, lifted */
-.topbar-financial-snapshot .topbar-snapshot-item.step-current{border:2px solid var(--info);box-shadow:0 8px 22px rgba(22,58,95,.22);transform:translateY(-1px)}
-.topbar-snapshot-item.step-current .snapshot-step-num{background:var(--info);box-shadow:0 0 0 4px rgba(22,58,95,.16)}
-/* upcoming: neutral and faded */
-.topbar-financial-snapshot .topbar-snapshot-item.step-upcoming{color:#64748b;background:#f1f5f9;border-color:#e2e8f0;box-shadow:none;opacity:.78}
-.topbar-snapshot-item.step-upcoming .snapshot-step-num{color:#64748b;background:#fff;box-shadow:inset 0 0 0 2px #cbd5e1}
-@media (max-width:700px){.snapshot-step-num{flex-basis:21px;width:21px;height:21px;font-size:12px}}
+.topbar-financial-snapshot,.topbar-financial-snapshot[class*="snapshot-count-"]{gap:14px}
+.snapshot-row{justify-content:flex-start;gap:0}
+.step-slot{position:relative;display:flex;align-items:center;gap:6px;flex:1 1 0;min-width:0;max-width:236px}
+.step-slot.out-of-flow,.step-slot:not(.revealed){display:none}
+.topbar-financial-snapshot .step-slot .topbar-snapshot-item{flex:1 1 0;max-width:none}
+.snapshot-step-num{flex:0 0 26px;width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;
+  font:800 13px/1 Rubik,Heebo,sans-serif;color:#fff;background:var(--green);box-shadow:0 3px 8px rgba(22,163,74,.25)}
+.snapshot-step-num.is-current{background:var(--info);box-shadow:0 0 0 4px rgba(22,58,95,.15)}
+.topbar-financial-snapshot .topbar-snapshot-item.step-current{border:2px solid var(--info);box-shadow:0 8px 22px rgba(22,58,95,.20)}
+/* dotted links: horizontal inside a row, vertical between rows (above the number circle) */
+.step-link-h,.step-link-v{display:none;gap:3px;align-items:center;justify-content:center}
+.step-link-h i,.step-link-v i{width:4px;height:4px;border-radius:50%;background:#94a3b8;animation:stepDotIn .2s ease both}
+.step-link-h i:nth-child(2),.step-link-v i:nth-child(2){animation-delay:.12s}
+.step-link-h i:nth-child(3),.step-link-v i:nth-child(3){animation-delay:.24s}
+.step-slot.link-h{margin-inline-start:6px}
+.step-slot.link-h .step-link-h{display:flex;flex:0 0 auto}
+.step-slot.link-v .step-link-v{display:flex;flex-direction:column;position:absolute;top:-14px;inset-inline-start:11px;width:4px;height:14px;gap:1px}
+.step-link-v i{width:3px;height:3px}
+/* the step opens right after its dots */
+.step-slot.revealed>.snapshot-step-num,.step-slot.revealed>.topbar-snapshot-item{animation:stepOpen .38s cubic-bezier(.2,.8,.2,1) .36s both}
+.step-slot.first-step.revealed>.snapshot-step-num,.step-slot.first-step.revealed>.topbar-snapshot-item{animation-delay:.05s}
+@keyframes stepDotIn{from{opacity:0;transform:scale(0)}to{opacity:1;transform:none}}
+@keyframes stepOpen{from{opacity:0;transform:scale(.85)}to{opacity:1;transform:none}}
+@media (prefers-reduced-motion:reduce){.step-link-h i,.step-link-v i,.step-slot.revealed>.snapshot-step-num,.step-slot.revealed>.topbar-snapshot-item{animation:none}}
+@media (max-width:700px){
+  .topbar .topbar-financial-snapshot{gap:12px}
+  .topbar .snapshot-row{gap:0}
+  .step-slot{gap:4px;max-width:none}
+  .snapshot-step-num{flex-basis:21px;width:21px;height:21px;font-size:11.5px}
+  .step-slot.link-h{margin-inline-start:4px}
+  .step-link-h{gap:2px}
+  .step-link-h i{width:3px;height:3px}
+  .step-slot.link-v .step-link-v{top:-12px;height:12px;inset-inline-start:9px}
+  .topbar .snapshot-row-expenses .topbar-snapshot-item{padding:6px 3px}
+}

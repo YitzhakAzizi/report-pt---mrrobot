@@ -80,8 +80,8 @@ function renderSnapshotAmount(element, amount) {
   element.title = formatted;
 }
 
-/* כרטיסי הסיכום העליונים הם גם מפת השלבים: לכל כרטיס מספר בעיגול,
-   והצבע מראה אם השלב הושלם, נוכחי או עדיין לפנינו */
+/* כרטיסי הסיכום העליונים הם גם מפת השלבים: מספר בעיגול מחוץ לכל כרטיס,
+   ונקודות שמחברות שלב לשלב. כרטיס נפתח רק כשמגיעים לשלב שלו */
 var SNAPSHOT_STEP_CARDS = [
   {card: "topbar-debts-snapshot", step: "budget-flow-debts"},
   {card: "topbar-income-snapshot", step: "budget-flow-income"},
@@ -91,39 +91,66 @@ var SNAPSHOT_STEP_CARDS = [
   {card: "topbar-special-expenses-snapshot", step: "budget-flow-special-expenses"}
 ];
 
+function stepDots(className) {
+  var link = mk("span", className);
+  link.setAttribute("aria-hidden", "true");
+  for (var i = 0; i < 3; i++) link.appendChild(mk("i", ""));
+  return link;
+}
+
+/* עוטף כל כרטיס במשבצת שלב: נקודות חיבור, עיגול מספר ואז הכרטיס */
+function ensureSnapshotSlots() {
+  SNAPSHOT_STEP_CARDS.forEach(function(item) {
+    var card = el(item.card);
+    if (!card || card.parentElement.classList.contains("step-slot")) return;
+    var slot = mk("div", "step-slot");
+    card.parentElement.insertBefore(slot, card);
+    var number = mk("span", "snapshot-step-num");
+    number.setAttribute("aria-hidden", "true");
+    slot.appendChild(stepDots("step-link-v"));
+    slot.appendChild(stepDots("step-link-h"));
+    slot.appendChild(number);
+    slot.appendChild(card);
+    item.slot = slot;
+    item.number = number;
+  });
+}
+
 function updateTopbarDonationVisibility() {
+  ensureSnapshotSlots();
   var snapshotContainer = document.querySelector(".topbar-financial-snapshot");
   var currentStep = typeof budgetFlowCurrentStep === "number" ? budgetFlowCurrentStep : 0;
   var furthestStep = typeof budgetFlowFurthestStep === "number" ? budgetFlowFurthestStep : 0;
   var number = 0;
+  var previousRow = null;
   SNAPSHOT_STEP_CARDS.forEach(function(item) {
     var card = el(item.card);
-    if (!card) return;
+    if (!card || !item.slot) return;
     /* במסלול החובות יש שלב חובות ואין שלב תרומות */
     var inFlow = item.card === "topbar-debts-snapshot" ? AppState.profile.debtStatus
       : item.card === "topbar-donations-snapshot" ? !AppState.profile.debtStatus : true;
-    card.hidden = !inFlow;
+    item.slot.classList.toggle("out-of-flow", !inFlow);
     if (!inFlow) return;
+    card.hidden = false; /* הנראות נקבעת במשבצת השלב */
     number++;
+    var row = item.slot.parentElement;
+    item.slot.classList.toggle("first-step", number === 1);
+    item.slot.classList.toggle("link-v", number > 1 && row !== previousRow);
+    item.slot.classList.toggle("link-h", number > 1 && row === previousRow);
+    previousRow = row;
     var stepIndex = BUDGET_FLOW_STEP_IDS.indexOf(item.step);
-    var state = stepIndex === currentStep ? "current" : stepIndex <= furthestStep ? "done" : "upcoming";
-    card.classList.toggle("step-current", state === "current");
-    card.classList.toggle("step-done", state === "done");
-    card.classList.toggle("step-upcoming", state === "upcoming");
-    if (state === "current") card.setAttribute("aria-current", "step");
+    item.slot.classList.toggle("revealed", stepIndex <= furthestStep);
+    card.classList.toggle("step-current", stepIndex === currentStep);
+    card.classList.toggle("step-done", stepIndex !== currentStep && stepIndex <= furthestStep);
+    if (stepIndex === currentStep) card.setAttribute("aria-current", "step");
     else card.removeAttribute("aria-current");
-    var badge = card.querySelector(".snapshot-step-num");
-    if (!badge) {
-      badge = mk("span", "snapshot-step-num");
-      badge.setAttribute("aria-hidden", "true");
-      card.querySelector(".topbar-snapshot-label").insertBefore(badge, card.querySelector(".topbar-snapshot-label").firstChild);
-    }
-    badge.textContent = number;
+    item.number.textContent = number;
+    item.number.classList.toggle("is-current", stepIndex === currentStep);
   });
   if (snapshotContainer) {
-    /* שורה בלי כרטיסים גלויים מוסתרת, והתוכן מתחת לכרטיסים מפנה להם מקום */
+    /* שורה בלי שלב פתוח מוסתרת, והתוכן מתחת לכרטיסים מפנה להם מקום */
     Array.prototype.forEach.call(snapshotContainer.querySelectorAll(".snapshot-row"), function(row) {
-      row.hidden = !row.querySelector(".topbar-snapshot-item:not([hidden])");
+      row.hidden = !row.querySelector(".step-slot.revealed:not(.out-of-flow)");
     });
     document.documentElement.style.setProperty("--snapshot-space", snapshotContainer.offsetHeight + "px");
   }
