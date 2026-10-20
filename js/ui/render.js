@@ -83,10 +83,10 @@ function renderSnapshotAmount(element, amount) {
 /* כרטיסי הסיכום העליונים הם גם מפת השלבים: מספר בעיגול מחוץ לכל כרטיס,
    ונקודות שמחברות שלב לשלב. כרטיס נפתח רק כשמגיעים לשלב שלו */
 var SNAPSHOT_STEP_CARDS = [
-  {card: "topbar-debts-snapshot", step: "budget-flow-debts"},
-  {card: "topbar-income-snapshot", step: "budget-flow-income"},
-  {card: "topbar-donations-snapshot", step: "budget-flow-donations"},
-  {card: "topbar-expenses-snapshot", step: "budget-flow-expenses", lastStep: "budget-flow-special-expenses"}
+  {card: "topbar-debts-snapshot", step: "budget-flow-debts", color: "#163a5f"},
+  {card: "topbar-income-snapshot", step: "budget-flow-income", color: "#16a34a"},
+  {card: "topbar-donations-snapshot", step: "budget-flow-donations", color: "#d97706"},
+  {card: "topbar-expenses-snapshot", step: "budget-flow-expenses", lastStep: "budget-flow-special-expenses", color: "#dc2626"}
 ];
 
 function stepDots(className) {
@@ -121,6 +121,7 @@ function updateTopbarDonationVisibility() {
   var furthestStep = typeof budgetFlowFurthestStep === "number" ? budgetFlowFurthestStep : 0;
   var number = 0;
   var previousRow = null;
+  var previousColor = null;
   SNAPSHOT_STEP_CARDS.forEach(function(item) {
     var card = el(item.card);
     if (!card || !item.slot) return;
@@ -136,6 +137,10 @@ function updateTopbarDonationVisibility() {
     item.slot.classList.toggle("link-v", number > 1 && row !== previousRow);
     item.slot.classList.toggle("link-h", number > 1 && row === previousRow);
     previousRow = row;
+    /* צבע השלב, וצבע השלב הקודם לנקודות שמחברות ביניהם */
+    item.slot.style.setProperty("--step-color", item.color);
+    item.slot.style.setProperty("--prev-color", previousColor || item.color);
+    previousColor = item.color;
     /* כרטיס יכול לכסות כמה שלבים ברצף (כרטיס ההוצאות: קבועות, משתנות ומיוחדות) */
     var stepIndex = BUDGET_FLOW_STEP_IDS.indexOf(item.step);
     var lastIndex = item.lastStep ? BUDGET_FLOW_STEP_IDS.indexOf(item.lastStep) : stepIndex;
