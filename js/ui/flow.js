@@ -24,12 +24,28 @@ function startBudgetFlow() {
   goToBudgetFlowStep(budgetFlowFurthestStep, false);
 }
 
+/* שלב ההוצאות המיוחדות מוסתר בגרסה הזו (הקוד והנתונים נשמרים). true מחזיר אותו */
+var SHOW_SPECIAL_EXPENSES_STEP = false;
+
+/* שלב שמדלגים עליו: חובות מחוץ למסלול החובות, תרומות בתוך מסלול החובות,
+   והוצאות מיוחדות כשהן מוסתרות. אם כבר הוזנו הוצאות מיוחדות החודש, השלב מוצג
+   כדי שסכום שנספר בתקציב לא יהיה נסתר */
+function isBudgetFlowStepSkipped(stepIndex) {
+  var id = BUDGET_FLOW_STEP_IDS[stepIndex];
+  if (id === "budget-flow-debts") return !AppState.profile.debtStatus;
+  if (id === "budget-flow-donations") return AppState.profile.debtStatus;
+  if (id === "budget-flow-special-expenses") {
+    return !SHOW_SPECIAL_EXPENSES_STEP && !(AppState.result && AppState.result.oneTimeExpenses > 0);
+  }
+  return false;
+}
+
 function goToBudgetFlowStep(stepIndex, shouldScroll) {
-  if (!AppState.profile.debtStatus && stepIndex === 0) stepIndex = 1;
-  /* במסלול החובות אין שלב תרומות: מדלגים עליו בכיוון התנועה */
-  var donationsStep = BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-donations");
-  if (AppState.profile.debtStatus && stepIndex === donationsStep) {
-    stepIndex = budgetFlowCurrentStep > donationsStep ? donationsStep - 1 : donationsStep + 1;
+  /* מדלגים על שלבים מוסתרים בכיוון התנועה */
+  var direction = stepIndex < budgetFlowCurrentStep ? -1 : 1;
+  while (stepIndex >= 0 && stepIndex < BUDGET_FLOW_STEP_IDS.length && isBudgetFlowStepSkipped(stepIndex)) {
+    stepIndex += direction;
+    if (stepIndex < 0) { stepIndex = 0; direction = 1; }
   }
   if (stepIndex < 0 || stepIndex >= BUDGET_FLOW_STEP_IDS.length) return;
   var overdraftInput = el("debt-overdraft-input");
