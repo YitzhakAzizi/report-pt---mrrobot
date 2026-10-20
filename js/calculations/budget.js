@@ -4,8 +4,9 @@
    4. LOGIC
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function calculate() {
-  var s1 = sumArr(AppState.income1);
-  var s2 = AppState.profile.single ? 0 : sumArr(AppState.income2);
+  /* משכורת שהוסרה לא נספרת; ההכנסות הנוספות של אותו אדם כן נספרות */
+  var s1 = sumArr(incomeItemsInBudget(AppState.income1, 1));
+  var s2 = AppState.profile.single ? 0 : sumArr(incomeItemsInBudget(AppState.income2, 2));
   var fixedExpenses = sumArr(getActiveFixedExpenseItems());
   var childrenExpenses = AppState.profile.children ? sumArr(AppState.childrenExpenses) : 0;
   var variableExpenses = sumArr(AppState.variableExpenses);
@@ -82,6 +83,15 @@ function savedMonthSummary(saved) {
     livingExpenses: living,
     liabilityPayments: 0
   };
+}
+
+function isSalaryHidden(person) {
+  var hidden = AppState.profile.hiddenSalaries || {};
+  return hidden[person] === true;
+}
+
+function incomeItemsInBudget(items, person) {
+  return isSalaryHidden(person) ? (items || []).slice(1) : (items || []);
 }
 
 function isRentExpense(item) {

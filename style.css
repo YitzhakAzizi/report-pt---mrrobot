@@ -1711,3 +1711,9 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
   .budget-flow-step{scroll-margin-top:84px}
 }
 .irow.swipe-active::after{visibility:hidden}
+/* salary rows can be removed (and restored) like other rows */
+.income-add-actions{display:flex;flex-direction:column;gap:8px}
+.income-add-actions .additional-income-add{margin-top:0}
+.income-add-actions{margin-top:12px}
+.restore-salary[hidden]{display:none}
+@media (max-width:700px){#budget-flow-income .salary-remove{display:none}}

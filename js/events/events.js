@@ -65,6 +65,23 @@ function onPeriodChange() {
   refreshWithoutSaving();
 }
 
+/* הסרת שורת משכורת: השורה מוסתרת והמשכורת לא נספרת. אפשר להחזיר אותה בכפתור שמתחת */
+function confirmRemoveSalary(person) {
+  askDeleteExpenseCategory(salaryLabel(person), function() {
+    AppState.profile.hiddenSalaries[person] = true;
+    saveProfileSettings();
+    pipeline();
+  });
+}
+
+function restoreSalary(person) {
+  AppState.profile.hiddenSalaries[person] = false;
+  saveProfileSettings();
+  pipeline();
+  var input = el("inp-s" + person);
+  if (input) input.focus();
+}
+
 function updateIncomeLabel(person, value) {
   AppState.profile.incomeLabels[person] = String(value || "").trim().slice(0, 40);
   saveProfileSettings();

@@ -197,17 +197,17 @@
     <div class="budget-flow-step" id="budget-flow-income">
       <h2 class="budget-flow-stage-title">הכנסות</h2>
       <section class="card inputs-card">
-        <div class="irow">
+        <div class="irow" id="income-partner-1-row">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(1)" aria-label="פתיחת תלוש משכורת" title="תלוש משכורת">payments</button><div class="income-person"><input type="text" class="label-main income-label-input" id="income-partner-1-name" maxlength="40" aria-label="שם ההכנסה הראשונה (לחצו לעריכה)" oninput="updateIncomeLabel(1,this.value)" onblur="if(!this.value.trim())renderFields()"></div></div>
-          <div class="iright"><input type="number" id="inp-s1" placeholder="0" min="0" inputmode="decimal"/></div>
+          <div class="iright"><input type="number" id="inp-s1" placeholder="0" min="0" inputmode="decimal"/><button type="button" class="custom-category-remove salary-remove material-symbols-rounded" onclick="confirmRemoveSalary(1)" aria-label="הסרת המשכורת" title="הסרת המשכורת">delete</button></div>
         </div>
         <div class="irow" id="income-partner-2-row">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(2)" aria-label="פתיחת תלוש המשכורת השנייה" title="תלוש משכורת">payments</button><div class="income-person"><input type="text" class="label-main income-label-input" id="income-partner-2-name" maxlength="40" aria-label="שם ההכנסה השנייה (לחצו לעריכה)" oninput="updateIncomeLabel(2,this.value)" onblur="if(!this.value.trim())renderFields()"></div></div>
-          <div class="iright"><input type="number" id="inp-s2" placeholder="0" min="0" inputmode="decimal"/></div>
+          <div class="iright"><input type="number" id="inp-s2" placeholder="0" min="0" inputmode="decimal"/><button type="button" class="custom-category-remove salary-remove material-symbols-rounded" onclick="confirmRemoveSalary(2)" aria-label="הסרת המשכורת" title="הסרת המשכורת">delete</button></div>
         </div>
         <div class="additional-income-list" id="additional-income-list"></div>
       </section>
-      <button type="button" class="additional-income-add" onclick="addAdditionalIncome()"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הכנסה נוספת</span></button>
+      <div class="income-add-actions"><button type="button" class="additional-income-add" onclick="addAdditionalIncome()"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הכנסה נוספת</span></button><button type="button" class="additional-income-add restore-salary" id="restore-salary-1" onclick="restoreSalary(1)" hidden></button><button type="button" class="additional-income-add restore-salary" id="restore-salary-2" onclick="restoreSalary(2)" hidden></button></div>
       <div class="budget-flow-controls budget-flow-controls-forward">
         <button type="button" class="budget-flow-back income-back-to-debts" id="income-back-to-debts" onclick="previousBudgetFlowStep()" hidden><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
         <button type="button" class="budget-flow-next" onclick="nextBudgetFlowStep()">הבא</button>

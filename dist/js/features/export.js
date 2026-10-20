@@ -44,8 +44,8 @@ function exportPDF() {
       '<span class="allocation-label">' + label + '</span><strong class="allocation-value">' + money(amount) + '</strong></div></article>';
   }
 
-  var incomeDetails = amountLine(salaryLabel(1), Number(AppState.income1[0] && AppState.income1[0].val) || 0);
-  if (!AppState.profile.single) {
+  var incomeDetails = isSalaryHidden(1) ? "" : amountLine(salaryLabel(1), Number(AppState.income1[0] && AppState.income1[0].val) || 0);
+  if (!AppState.profile.single && !isSalaryHidden(2)) {
     incomeDetails += amountLine(salaryLabel(2), Number(AppState.income2[0] && AppState.income2[0].val) || 0);
   }
   (AppState.income1 || []).slice(1).forEach(function(item) {

@@ -258,6 +258,20 @@ test("קריאת תלוש: קובץ בלי תוויות מוכרות לא מזו
   assert.strictEqual(r.found, false);
 });
 
+test("משכורת שהוסרה לא נספרת, והכנסה נוספת של אותו אדם כן", function() {
+  var app = createApp();
+  household(app, 0, 0);
+  app.AppState.profile.single = false;
+  app.AppState.income1 = [{name: "משכורת", val: 9000}];
+  app.AppState.income2 = [{name: "משכורת", val: 7000}, {name: "שכירות", val: 1500}];
+  app.AppState.profile.hiddenSalaries = {1: false, 2: true};
+  app.calculate();
+  assert.strictEqual(app.AppState.result.total, 10500);
+  app.AppState.profile.hiddenSalaries[2] = false;
+  app.calculate();
+  assert.strictEqual(app.AppState.result.total, 17500);
+});
+
 var failed = 0;
 tests.forEach(function(t) {
   try {

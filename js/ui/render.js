@@ -191,8 +191,16 @@ function renderFields() {
     var labelInput = el("income-partner-" + person + "-name");
     if (labelInput && document.activeElement !== labelInput) labelInput.value = salaryLabel(person);
   });
+  var partner1Row = el("income-partner-1-row");
   var partner2Row = el("income-partner-2-row");
-  if (partner2Row) partner2Row.hidden = AppState.profile.single === true;
+  if (partner1Row) partner1Row.hidden = isSalaryHidden(1);
+  if (partner2Row) partner2Row.hidden = AppState.profile.single === true || isSalaryHidden(2);
+  [1, 2].forEach(function(person) {
+    var restore = el("restore-salary-" + person);
+    if (!restore) return;
+    restore.hidden = !isSalaryHidden(person) || (person === 2 && AppState.profile.single === true);
+    restore.innerHTML = '<span class="material-symbols-rounded" aria-hidden="true">add</span><span>' + escapeHtml(salaryLabel(person)) + '</span>';
+  });
   renderAdditionalIncomeRows();
 
   var expEl = el("inp-exp");

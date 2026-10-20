@@ -37,6 +37,8 @@ function loadProfileSettings() {
     AppState.profile.names = {1: String(names[1] || "").slice(0, 40), 2: String(names[2] || "").slice(0, 40)};
     var labels = saved.incomeLabels && typeof saved.incomeLabels === "object" ? saved.incomeLabels : {};
     AppState.profile.incomeLabels = {1: String(labels[1] || "").slice(0, 40), 2: String(labels[2] || "").slice(0, 40)};
+    var hidden = saved.hiddenSalaries && typeof saved.hiddenSalaries === "object" ? saved.hiddenSalaries : {};
+    AppState.profile.hiddenSalaries = {1: hidden[1] === true, 2: hidden[2] === true};
   } catch(e) {}
 }
 
