@@ -4,16 +4,18 @@ function audienceText(singleText, pluralText) {
   return AppState && AppState.profile && AppState.profile.single ? singleText : pluralText;
 }
 
+/* השמות בגרסה האישית; אפשר לשנות אותם בלחיצה על השם במסך ההכנסות */
+var DEFAULT_PERSON_NAMES = {1: "יצחק", 2: "הילה"};
+
 /* שם בעל/ת ההכנסה כפי שהמשתמשים הזינו, או כינוי ניטרלי כברירת מחדל */
 function personName(person) {
   var names = AppState && AppState.profile && AppState.profile.names || {};
   var name = String(names[person] || "").trim();
-  return name || "בן/בת זוג " + person;
+  return name || DEFAULT_PERSON_NAMES[person] || "בן/בת זוג " + person;
 }
 
 function salaryLabel(person) {
-  var salaryMonth = MONTHS[(AppState.period.month + 11) % 12];
-  return "משכורת " + salaryMonth + (AppState.profile.single ? "" : " - " + personName(person));
+  return "משכורת " + personName(person);
 }
 
 function sumArr(arr) {

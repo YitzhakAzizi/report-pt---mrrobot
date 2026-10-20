@@ -1627,3 +1627,12 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
   .side-menu-brand-icon{display:flex;align-items:center;justify-content:center;width:36px;height:36px;border-radius:10px;
     color:#fff;background:var(--info);font-size:21px}
 }
+
+/* "משכורת יצחק": the name reads as part of the title and becomes editable on tap */
+.income-person-label{display:flex;align-items:baseline;gap:5px;cursor:text}
+.income-person .income-person-name,#calculator-app .income-person .income-person-name{width:auto;max-width:150px;min-width:0;min-height:0;
+  padding:1px 3px;margin:0;border:0;border-bottom:1.5px dashed transparent;border-radius:0;background:none;box-shadow:none;
+  color:inherit;font:inherit;font-weight:inherit;text-align:right}
+.income-person .income-person-name:hover{border-bottom-color:#cbd5e1}
+.income-person .income-person-name:focus{outline:none;border-bottom:1.5px solid var(--info);background:var(--info-bg)}
+@media (max-width:700px){#calculator-app .income-person .income-person-name{font-size:17px}}

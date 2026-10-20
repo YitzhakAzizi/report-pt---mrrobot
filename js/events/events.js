@@ -66,7 +66,9 @@ function onPeriodChange() {
 }
 
 function updatePersonName(person, value) {
-  AppState.profile.names[person] = String(value || "").slice(0, 40);
+  var nameInput = el("income-partner-" + person + "-name");
+  if (nameInput) nameInput.size = Math.max(2, String(value || "").length);
+  AppState.profile.names[person] = String(value || "").trim().slice(0, 20);
   saveProfileSettings();
   flashSaved();
 }
