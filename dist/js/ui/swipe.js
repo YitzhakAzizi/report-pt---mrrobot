@@ -6,7 +6,7 @@
    של השורה, כך שכל אישור או לוגיקת מחיקה נשארים כפי שהם.
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 var SWIPE_ROWS = [
-  {row: "#budget-main .irow", remove: ".custom-category-remove, .additional-income-remove, .salary-remove"},
+  {row: "#budget-main .irow", remove: ".custom-category-remove, .income-extra-remove, .salary-remove"},
   {row: ".expense-detail-row", remove: ".expense-detail-remove"},
   {row: ".insurance-edit-row", remove: ".insurance-edit-delete"},
   {row: ".liability-editor-row", remove: ".liability-remove-btn"},

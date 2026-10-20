@@ -354,11 +354,10 @@ function renderAdditionalIncomeRows() {
     items.slice(1).forEach(function(item, offset) {
       var index = offset + 1;
       var row = mk("div", "irow additional-income-row");
-      var label = mk("div", "additional-income-name-wrap");
-      var remove = mkText("button", "row-icon row-icon-btn additional-income-remove material-symbols-rounded", "delete");
-      remove.type = "button";
-      remove.setAttribute("aria-label", "מחיקת הכנסה נוספת");
-      remove.onclick = function() { removeAdditionalIncome(person, index); };
+      /* אותו מבנה כמו שורת משכורת: אייקון שטר, שם שנערך וסכום בתיבה. מחיקה בגרירה ימינה (או בפח במחשב) */
+      var label = mk("div", "ilabel additional-income-name-wrap");
+      var icon = mkText("span", "row-icon material-symbols-rounded", "payments");
+      icon.setAttribute("aria-hidden", "true");
       var name = document.createElement("input");
       name.type = "text";
       name.className = "additional-income-name";
@@ -366,10 +365,10 @@ function renderAdditionalIncomeRows() {
       name.placeholder = "שם ההכנסה";
       name.setAttribute("aria-label", "שם ההכנסה הנוספת");
       name.oninput = function() { updateAdditionalIncomeName(person, index, name.value); };
-      label.appendChild(remove);
+      label.appendChild(icon);
       label.appendChild(name);
 
-      var controls = mk("div", "additional-income-controls");
+      var controls = mk("div", "iright additional-income-controls");
       var amount = document.createElement("input");
       amount.type = "number";
       amount.className = "additional-income-amount";
@@ -379,7 +378,15 @@ function renderAdditionalIncomeRows() {
       amount.value = Number(item.val) || "";
       amount.setAttribute("aria-label", "סכום ההכנסה הנוספת");
       amount.oninput = function() { updateAdditionalIncomeAmount(person, index, amount.value); };
+      var remove = mkText("button", "custom-category-remove income-extra-remove material-symbols-rounded", "delete");
+      remove.type = "button";
+      remove.setAttribute("aria-label", "מחיקת ההכנסה");
+      remove.title = "מחיקת ההכנסה";
+      remove.onclick = function() {
+        askDeleteExpenseCategory(item.name || "ההכנסה הנוספת", function() { removeAdditionalIncome(person, index); });
+      };
       controls.appendChild(amount);
+      controls.appendChild(remove);
       row.appendChild(label);
       row.appendChild(controls);
       list.appendChild(row);
