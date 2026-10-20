@@ -34,22 +34,34 @@ function showLandingConfetti() {
   landing.appendChild(layer);
 }
 
+/* מסך הפתיחה עובר ישירות לתקציב. פרטי משק הבית נערכים מתפריט הצד, ולא בכל כניסה */
 function startBudgetMeeting() {
   var landing = el("landing-screen");
-  var profileSetup = el("profile-setup-screen");
-  if (!landing || !profileSetup) return;
+  var calculator = el("calculator-app");
+  if (!landing || !calculator) return;
 
   landing.classList.add("landing-screen-exit");
+  calculator.classList.add("calculator-app-visible");
+  calculator.setAttribute("aria-hidden", "false");
 
   setTimeout(function() {
     landing.hidden = true;
-    profileSetup.hidden = false;
-    profileSetup.setAttribute("aria-hidden", "false");
-    profileSetup.classList.add("profile-setup-screen-visible");
-    var firstStatus = profileSetup.querySelector("input[type='checkbox']");
-    syncProfileSetupChoices();
-    if (firstStatus) firstStatus.focus({preventScroll: true});
+    calculator.classList.add("calculator-app-entered");
+    startBudgetFlow();
   }, 320);
+}
+
+function openProfileSetup() {
+  closeSideMenu();
+  var profileSetup = el("profile-setup-screen");
+  if (!profileSetup) return;
+  profileSetup.classList.remove("profile-setup-screen-exit");
+  profileSetup.hidden = false;
+  profileSetup.setAttribute("aria-hidden", "false");
+  profileSetup.classList.add("profile-setup-screen-visible");
+  syncProfileSetupChoices();
+  var firstStatus = profileSetup.querySelector("input[type='checkbox']");
+  if (firstStatus) firstStatus.focus({preventScroll: true});
 }
 
 function syncProfileSetupChoices() {
