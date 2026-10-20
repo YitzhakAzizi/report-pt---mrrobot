@@ -1478,3 +1478,5 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
   .topbar .snapshot-row-expenses .topbar-snapshot-item strong{max-width:100%;text-align:center}
   .budget-flow-step{scroll-margin-top:250px}
 }
+.calendar-google-option{margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:14px;font-weight:700;cursor:pointer}
+.calendar-google-option input{width:18px;height:18px;accent-color:var(--info)}

@@ -189,6 +189,17 @@ test("גיבוי פגום או זר נדחה", function() {
   assert.ok(app.validateBackup(null).error);
 });
 
+test("אירוע היומן כולל תאריך נכון ותזכורת", function() {
+  var app = createApp();
+  var ics = app.meetingIcs(new Date(2026, 10, 10));
+  assert.ok(ics.indexOf("DTSTART;VALUE=DATE:20261110") >= 0);
+  assert.ok(ics.indexOf("DTEND;VALUE=DATE:20261111") >= 0);
+  assert.ok(ics.indexOf("BEGIN:VALARM") >= 0 && ics.indexOf("TRIGGER;RELATED=START:PT9H") >= 0);
+  assert.ok(/DTSTAMP:\d{8}T\d{6}Z/.test(ics), "חותמת זמן תקינה");
+  var url = app.googleCalendarUrl(new Date(2026, 10, 10));
+  assert.ok(url.indexOf("dates=20261110/20261111") >= 0);
+});
+
 var failed = 0;
 tests.forEach(function(t) {
   try {
