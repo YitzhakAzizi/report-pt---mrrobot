@@ -1559,10 +1559,9 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
   .snapshot-step-num{flex-basis:24px;width:24px;height:24px;font-size:13px}
   .step-slot.link-v .step-link-v{inset-inline-start:10px}
 
-  /* large title + secondary explanation instead of the banner and box */
+  /* section title in the blue bar, explanation as secondary text under it */
   .content{gap:12px}
-  .budget-flow-stage-title{min-height:0;margin:6px 0 2px;padding:0 4px;justify-content:flex-start;text-align:right;
-    color:#000;background:none;border:0;box-shadow:none;font-size:28px;font-weight:800;letter-spacing:-.3px}
+  .budget-flow-stage-title{min-height:48px;margin:4px 0 10px;padding:10px 18px;border-radius:14px;font-size:17px;font-weight:700;box-shadow:0 6px 16px rgba(22,58,95,.16)}
   .flow-stage-explainer{min-height:0;margin:0 0 14px;padding:0 4px;justify-content:flex-start;text-align:right;
     color:#6b7280;background:none;border:0;box-shadow:none;font-family:inherit;font-size:15px;font-weight:400;line-height:1.4}
 
