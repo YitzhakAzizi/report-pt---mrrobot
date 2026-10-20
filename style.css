@@ -1763,3 +1763,27 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 /* result: the report button above "back" */
 .budget-flow-result-actions{grid-template-columns:1fr}
 .budget-flow-result-actions .budget-flow-back{width:100%}
+
+/* steady screens: every step starts at the same place at the top, with a short fade */
+.content{justify-content:flex-start}
+@keyframes budgetFlowEnter{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:none}}
+.budget-flow-step-active{animation:budgetFlowEnter .22s ease-out both}
+.budget-flow-stage-title:focus{outline:none}
+
+/* variable expenses: details under a row ("help me estimate" + payment history) */
+.flat-expense-row .ilabel{cursor:pointer}
+.flat-expense-arrow{flex:0 0 auto;color:#94a3b8;font-size:20px;transition:transform .2s}
+.flat-expense-row.is-open .flat-expense-arrow{transform:rotate(180deg)}
+.flat-expense-details{padding:4px 14px 14px;background:#f8fafc;border-top:1px solid #eef2f6}
+.flat-expense-details[hidden]{display:none}
+.flat-expense-details .living-estimate-panel{margin:4px 0 10px}
+.payment-history{margin-top:8px;display:flex;flex-direction:column}
+.payment-history-title{margin-bottom:4px;color:var(--text);font-size:14px;font-weight:700}
+.payment-history-empty{margin:0;color:var(--muted);font-size:13px}
+.payment-history-row{display:grid;grid-template-columns:1fr auto auto;align-items:center;gap:12px;padding:7px 0;border-top:1px solid #eef2f6;font-size:14px}
+.payment-history-row:first-of-type{border-top:0}
+.payment-history-month{color:var(--text)}
+.payment-history-amount{min-width:70px;color:var(--text);font:700 14px Rubik,Heebo,sans-serif;direction:ltr;text-align:left}
+.payment-history-change{min-width:58px;color:var(--muted);font-size:12px;font-weight:700;text-align:center}
+.payment-history-change.is-up{color:#b91c1c;background:#fef2f2;border-radius:999px;padding:2px 8px}
+.payment-history-change.is-down{color:#15803d;background:#ecfdf3;border-radius:999px;padding:2px 8px}

@@ -290,7 +290,7 @@ var FLAT_VARIABLE_DISPLAY = {
   "מים": {icon: "water_drop"},
   "גז": {icon: "local_fire_department"},
   "ארנונה": {icon: "apartment"},
-  "דלק / תחבורה": {icon: "local_gas_station"},
+  "דלק / תחבורה": {icon: "local_gas_station", label: "דלק"},
   "קניות סופר (מזון ומוצרי ניקוי)": {icon: "shopping_cart", label: "קניות סופר", sub: "מזון ומוצרי ניקוי"}
 };
 
@@ -355,7 +355,83 @@ function renderFlatVariableExpenses() {
     row.appendChild(label);
     row.appendChild(right);
     list.appendChild(row);
+
+    /* לחיצה על השם או האייקון פותחת: "עזור לי להעריך" והיסטוריית תשלומים */
+    var key = item.name || "item-" + index;
+    var details = buildFlatExpenseDetails(item, amount);
+    details.hidden = !_flatExpenseOpen[key];
+    var arrow = mkText("span", "flat-expense-arrow material-symbols-rounded", "expand_more");
+    arrow.setAttribute("aria-hidden", "true");
+    label.appendChild(arrow);
+    row.classList.toggle("is-open", !details.hidden);
+    label.onclick = function(event) {
+      if (event.target.closest("input")) return;
+      details.hidden = !details.hidden;
+      _flatExpenseOpen[key] = !details.hidden;
+      /* בפתיחה ההיסטוריה מתעדכנת, כולל סכום שהוזן החודש */
+      if (!details.hidden) details.replaceChild(paymentHistoryElement(item), details.querySelector(".payment-history"));
+      row.classList.toggle("is-open", !details.hidden);
+    };
+    list.appendChild(details);
   });
+}
+
+var _flatExpenseOpen = {};
+
+function buildFlatExpenseDetails(item, amountInput) {
+  var panel = mk("div", "flat-expense-details");
+  var type = item.name ? livingExpenseEstimateType(item.name) : "";
+  if (type) {
+    var toggle = document.createElement("button");
+    toggle.type = "button";
+    toggle.className = "living-estimate-toggle";
+    toggle.innerHTML = '<span class="material-symbols-rounded" aria-hidden="true">calculate</span><span>' + audienceText("עזור לי להעריך", "עזרו לי להעריך") + '</span>';
+    var fields = mk("div", "living-estimate-panel");
+    fields.hidden = true;
+    fields.innerHTML = livingEstimateFieldsHtml(type);
+    toggle.onclick = function() { fields.hidden = !fields.hidden; };
+    fields.querySelector(".living-estimate-apply").onclick = function() {
+      var estimate = Math.round(livingEstimateAmount(fields, type));
+      item.val = estimate;
+      amountInput.value = estimate || "";
+      refreshAfterInlineEdit();
+      fields.hidden = true;
+    };
+    panel.appendChild(toggle);
+    panel.appendChild(fields);
+  }
+  panel.appendChild(paymentHistoryElement(item));
+  return panel;
+}
+
+/* היסטוריית תשלומים לפי חודשים: שינוי באחוזים, אדום כשהתייקר וירוק כשהוזל */
+function paymentHistoryElement(item) {
+  var box = mk("div", "payment-history");
+  box.appendChild(mkText("strong", "payment-history-title", "היסטוריית תשלומים"));
+  var current = periodIndex(AppState.period.month, AppState.period.year);
+  var entries = item.name ? getVariableExpenseHistory(item.name, AppState.period.month, AppState.period.year).slice(0, 6) : [];
+  if (Number(item.val) > 0) entries.unshift({periodIndex: current, amount: Number(item.val)});
+  if (!entries.length) {
+    box.appendChild(mkText("p", "payment-history-empty", "עדיין אין היסטוריה. היא תיבנה מחודש לחודש."));
+    return box;
+  }
+  entries.forEach(function(entry, i) {
+    var line = mk("div", "payment-history-row");
+    var monthName = MONTHS[entry.periodIndex % 12] + " " + Math.floor(entry.periodIndex / 12);
+    line.appendChild(mkText("span", "payment-history-month", entry.periodIndex === current ? monthName + " (החודש)" : monthName));
+    var older = entries[i + 1];
+    var change = mk("span", "payment-history-change");
+    if (older && older.amount > 0) {
+      var percent = Math.round((entry.amount - older.amount) / older.amount * 100);
+      if (percent > 0) { change.textContent = "▲ " + percent + "%"; change.classList.add("is-up"); }
+      else if (percent < 0) { change.textContent = "▼ " + Math.abs(percent) + "%"; change.classList.add("is-down"); }
+      else { change.textContent = "ללא שינוי"; }
+    }
+    line.appendChild(change);
+    line.appendChild(mkText("span", "payment-history-amount", money(entry.amount)));
+    box.appendChild(line);
+  });
+  return box;
 }
 
 function addVariableExpense() {

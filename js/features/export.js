@@ -22,7 +22,7 @@ function exportPDF() {
     });
     if (!visible.length) return '<div class="detail-empty">טרם הוזן פירוט</div>';
     return '<div class="detail-list">' + visible.map(function(item) {
-      return '<div class="detail-row"><span>' + escapeHtml(item.name || "ללא שם") +
+      return '<div class="detail-row"><span>' + escapeHtml(expenseDisplayName(item.name) || "ללא שם") +
         '</span><strong>' + money(Number(item.val) || 0) + '</strong></div>';
     }).join("") + '</div>';
   }

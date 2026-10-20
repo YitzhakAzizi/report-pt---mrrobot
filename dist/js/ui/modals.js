@@ -313,7 +313,7 @@ function openModal(type) {
 }
 
 function openFuelExpensesModal() {
-  openScopedLivingExpensesModal("fuelExpenses", "דלק / תחבורה", FUEL_EXPENSE_NAMES);
+  openScopedLivingExpensesModal("fuelExpenses", "דלק", FUEL_EXPENSE_NAMES);
 }
 
 function openHousingUtilitiesModal() {
@@ -543,18 +543,16 @@ function livingEstimateFieldsHtml(type) {
     '<button type="button" class="living-estimate-apply">' + audienceText("השתמש בהערכה", "השתמשו בהערכה") + '</button>';
 }
 
+/* חישוב ההערכה מהשדות שבחלונית "עזור לי להעריך" (משותף לחלון ולרשימה) */
+function livingEstimateAmount(container, type) {
+  var primary = toAmount(container.querySelector(".living-estimate-primary").value);
+  if (type === "food" || type === "fuel") return primary * toAmount(container.querySelector(".living-estimate-secondary").value);
+  if (type === "bill") return primary / (parseFloat(container.querySelector(".living-estimate-frequency").value) || 1);
+  return primary;
+}
+
 function applyLivingExpenseEstimate(wrapper, type) {
-  var primary = toAmount(wrapper.querySelector(".living-estimate-primary").value);
-  var amount = primary;
-  if (type === "food") {
-    amount = primary * (toAmount(wrapper.querySelector(".living-estimate-secondary").value));
-  }
-  if (type === "fuel") {
-    amount = primary * (toAmount(wrapper.querySelector(".living-estimate-secondary").value));
-  }
-  if (type === "bill") {
-    amount = primary / (parseFloat(wrapper.querySelector(".living-estimate-frequency").value) || 1);
-  }
+  var amount = livingEstimateAmount(wrapper, type);
   wrapper.querySelector(".exp-amt").value = amount ? Math.round(amount) : "";
   updateGenTotal();
 }

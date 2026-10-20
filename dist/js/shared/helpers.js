@@ -22,6 +22,12 @@ function salaryLabel(person) {
   return label || "משכורת " + personName(person);
 }
 
+/* שם תצוגה לסעיפים שהשם השמור שלהם ארוך יותר (השם השמור לא משתנה, כדי לא לשבור נתונים קיימים) */
+var EXPENSE_DISPLAY_NAMES = {"דלק / תחבורה": "דלק", "קניות סופר (מזון ומוצרי ניקוי)": "קניות סופר"};
+function expenseDisplayName(name) {
+  return EXPENSE_DISPLAY_NAMES[name] || name;
+}
+
 function sumArr(arr) {
   var t = 0;
   arr.forEach(function(item) { t += (Number(item.val) || 0); });

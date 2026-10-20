@@ -339,7 +339,8 @@ function getSavedMonthData(month, year) {
   }
 }
 
-function getPreviousVariableExpenseStats(expenseName, month, year) {
+/* היסטוריית תשלומים של הוצאה משתנה בחודשים שלפני החודש הנבחר, מהחדש לישן */
+function getVariableExpenseHistory(expenseName, month, year) {
   try {
     var all = JSON.parse(localStorage.getItem(STORAGE_KEY) || "{}");
     var selectedPeriodIndex = Number(year) * 12 + Number(month);
@@ -359,13 +360,17 @@ function getPreviousVariableExpenseStats(expenseName, month, year) {
       if (amount > 0) history.push({periodIndex: savedYear * 12 + savedMonth, amount: amount});
     });
 
-    if (!history.length) return null;
-    history.sort(function(a, b) { return b.periodIndex - a.periodIndex; });
-    var total = history.reduce(function(sum, entry) { return sum + entry.amount; }, 0);
-    return {last: history[0].amount, average: total / history.length, count: history.length};
+    return history.sort(function(a, b) { return b.periodIndex - a.periodIndex; });
   } catch(e) {
-    return null;
+    return [];
   }
+}
+
+function getPreviousVariableExpenseStats(expenseName, month, year) {
+  var history = getVariableExpenseHistory(expenseName, month, year);
+  if (!history.length) return null;
+  var total = history.reduce(function(sum, entry) { return sum + entry.amount; }, 0);
+  return {last: history[0].amount, average: total / history.length, count: history.length};
 }
 
 function removeLegacyDefaultExpenses(expenses) {

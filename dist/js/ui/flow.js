@@ -85,15 +85,14 @@ function goToBudgetFlowStep(stepIndex, shouldScroll) {
   var activeStep = el(BUDGET_FLOW_STEP_IDS[stepIndex]);
   if (!activeStep) return;
 
-  if (shouldScroll !== false) {
-    var reduceMotion = window.matchMedia && window.matchMedia("(prefers-reduced-motion: reduce)").matches;
-    activeStep.scrollIntoView({behavior: reduceMotion ? "auto" : "smooth", block: "start"});
+  /* כל שלב מתחיל באותו מקום בראש העמוד, בלי גלילה מונפשת שגורמת לקפיצות.
+     הפוקוס עובר לכותרת השלב (לקוראי מסך) ולא לשדה, כדי שהמקלדת באייפון לא תיפתח ותזיז את הדף */
+  if (shouldScroll !== false) window.scrollTo(0, 0);
+  var title = activeStep.querySelector(".budget-flow-stage-title");
+  if (title) {
+    title.tabIndex = -1;
+    title.focus({preventScroll: true});
   }
-
-  setTimeout(function() {
-    var firstControl = activeStep.querySelector("button:not([disabled]), input:not([disabled]), select:not([disabled])");
-    if (firstControl) firstControl.focus({preventScroll: true});
-  }, 80);
 }
 
 function updateDebtStepOverdraft(value) {
