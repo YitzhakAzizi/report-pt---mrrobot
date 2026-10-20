@@ -1058,6 +1058,7 @@ function renderPayslipStatus() {
     status.className = "payslip-status";
     if (!record) {
       status.appendChild(mkText("p", "payslip-empty", "עדיין לא נשמר תלוש לחודש הזה."));
+      showPayslipFindings(null, _payslipPerson);
       return;
     }
     var card = mk("div", "payslip-file-card");
@@ -1079,6 +1080,7 @@ function renderPayslipStatus() {
     card.appendChild(info);
     card.appendChild(actions);
     status.appendChild(card);
+    showPayslipFindings(record, _payslipPerson);
   }).catch(function() {
     showPayslipMessage("לא הצלחנו לגשת לאחסון המקומי במכשיר.", true);
   });

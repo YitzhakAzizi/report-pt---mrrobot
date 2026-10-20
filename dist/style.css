@@ -1636,3 +1636,29 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 .income-person .income-person-name:hover{border-bottom-color:#cbd5e1}
 .income-person .income-person-name:focus{outline:none;border-bottom:1.5px solid var(--info);background:var(--info-bg)}
 @media (max-width:700px){#calculator-app .income-person .income-person-name{font-size:17px}}
+
+/* ═══════════════════════════════════════════════
+   PAYSLIP FINDINGS — what was read from the payslip, with explanations
+═══════════════════════════════════════════════ */
+.payslip-findings-box{margin-top:14px}
+.payslip-findings-empty{margin:0;color:var(--muted);font-size:13px;line-height:1.5;text-align:center}
+.payslip-findings{padding:14px;background:#fff;border:1px solid var(--border);border-radius:16px}
+.payslip-findings h3{margin:0 0 8px;color:var(--info);font-size:15px;font-weight:800}
+.payslip-findings-list{display:flex;flex-direction:column}
+.payslip-finding,.payslip-bank{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:9px 0;border-top:1px solid #eef2f6}
+.payslip-findings-list .payslip-finding:first-child{border-top:0}
+.payslip-finding-text{min-width:0;display:flex;flex-direction:column;gap:1px}
+.payslip-finding-text strong{color:var(--text);font-size:14px;font-weight:700}
+.payslip-finding-text small{color:var(--muted);font-size:12px;line-height:1.4}
+.payslip-finding-amount{flex:0 0 auto;color:var(--text);font:700 15px Rubik,Heebo,sans-serif;direction:ltr}
+.payslip-finding-amount.is-deduction{color:#b91c1c}
+.payslip-bank{margin-top:4px;padding:12px;background:var(--green-bg);border:1px solid rgba(34,197,94,.25);border-radius:12px}
+.payslip-bank-amount{flex:0 0 auto;color:#15803d;font:800 19px Rubik,Heebo,sans-serif;direction:ltr}
+.payslip-use-btn,.payslip-invest-btn{width:100%;min-height:46px;margin-top:10px;border-radius:12px;font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.payslip-use-btn{color:#fff;background:var(--info);border:1px solid var(--info)}
+.payslip-invest-btn{color:var(--info);background:#fff;border:1px solid rgba(22,58,95,.25)}
+.payslip-use-btn:disabled,.payslip-invest-btn:disabled{cursor:default;opacity:1;color:#15803d;background:var(--green-bg);border-color:rgba(34,197,94,.3)}
+.payslip-check{margin:10px 0 0;color:#15803d;font-size:12px;font-weight:700}
+.payslip-check.is-warning{color:#b45309}
+.payslip-employer{margin-top:12px;padding-top:12px;border-top:1px solid #eef2f6;display:flex;flex-direction:column;gap:3px;font-size:13px;color:var(--muted)}
+.payslip-employer strong{color:var(--text);font-size:14px}

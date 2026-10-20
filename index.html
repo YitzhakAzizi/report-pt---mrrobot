@@ -436,8 +436,9 @@
           <span><strong>העלה תמונה או קובץ</strong><small>PDF, JPG, PNG או WEBP</small></span>
         </label>
         <input type="file" id="payslip-file-input" class="payslip-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" onchange="uploadPayslipFile(this.files[0])">
-        <p class="payslip-privacy"><span class="material-symbols-rounded" aria-hidden="true">lock</span><span>התלוש נשמר רק במכשיר הזה ואינו נשלח לשרת.</span></p>
+        <p class="payslip-privacy"><span class="material-symbols-rounded" aria-hidden="true">lock</span><span>התלוש נשמר ונקרא רק במכשיר הזה, ואינו נשלח לשרת.</span></p>
         <div class="payslip-status" id="payslip-status" aria-live="polite"></div>
+        <div class="payslip-findings-box" id="payslip-findings" aria-live="polite"></div>
       </div>
     </div>
   </div>
@@ -519,6 +520,7 @@
   <script src="js/features/export.js"></script>
   <script src="js/features/calendar.js"></script>
   <script src="js/features/backup.js"></script>
+  <script src="js/features/payslip-reader.js"></script>
   <script src="js/main.js"></script>
 </body>
 </html>

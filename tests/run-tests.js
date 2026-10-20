@@ -11,7 +11,7 @@ var ROOT = path.join(__dirname, "..");
 var SCRIPTS = [
   "js/shared/constants.js", "js/shared/helpers.js", "js/shared/utils.js", "js/shared/state.js",
   "js/storage/storage.js", "js/calculations/budget.js", "js/features/export.js",
-  "js/features/calendar.js", "js/features/backup.js"
+  "js/features/calendar.js", "js/features/backup.js", "js/features/payslip-reader.js"
 ];
 
 function createApp() {
@@ -21,7 +21,7 @@ function createApp() {
     setItem: function(key, value) { store[key] = String(value); },
     removeItem: function(key) { delete store[key]; }
   };
-  var context = vm.createContext({localStorage: localStorage, console: console, Date: Date, JSON: JSON, Math: Math});
+  var context = vm.createContext({localStorage: localStorage, console: console, Date: Date, JSON: JSON, Math: Math, window: {}});
   SCRIPTS.forEach(function(file) {
     vm.runInContext(fs.readFileSync(path.join(ROOT, file), "utf8"), context, {filename: file});
   });
@@ -198,6 +198,64 @@ test("אירוע היומן כולל תאריך נכון ותזכורת", functi
   assert.ok(/DTSTAMP:\d{8}T\d{6}Z/.test(ics), "חותמת זמן תקינה");
   var url = app.googleCalendarUrl(new Date(2026, 10, 10));
   assert.ok(url.indexOf("dates=20261110/20261111") >= 0);
+});
+
+/* תלוש מומצא במבנה של מלם שכר: אותן תוויות ומיקומים, סכומים בדויים */
+function fakeMalamPayslipItems() {
+  function t(s, x, y, w) { return {s: s, x: x, y: y, w: w || 30}; }
+  return [
+    t("ינואר 2027", 345, 775, 55),
+    t("- ניכויי חובה -", 348, 496, 48),
+    t("מס הכנסה", 330, 478, 31), t("1,100.00", 115, 478), t("0.00", 170, 478, 16), t("1,100.00", 226, 478),
+    t("ביטוח לאומי", 325, 467, 36), t("400.00", 122, 467, 24), t("400.00", 233, 467, 24),
+    t("ביטוח בריאות", 320, 457, 41), t("500.00", 122, 457, 24), t("500.00", 233, 457, 24),
+    t("הפרשות מעסיק לגמל", 500, 459, 76),
+    t("קרן פנסיה", 504, 449, 50), t("650.00", 480, 449, 24), t("6.50", 440, 449, 16),
+    t("קרן פנסיה", 504, 438, 50), t("833.00", 480, 438, 24),
+    t("כלל השתלמות", 511, 428, 43), t("750.00", 480, 428, 24),
+    t("- קופות גמל -", 349, 433, 48),
+    t("קרן פנסיה", 315, 412, 43), t("700.00", 118, 412, 24), t("10,000.00", 230, 412),
+    t("כלל השתלמות", 316, 402, 43), t("250.00", 118, 402, 24),
+    t("בסיס לפנסיה", 515, 407, 39), t("10,000.00", 470, 407),
+    t('סה"כ ניכויים שוטף', 194, 373, 66),
+    t("סך תשלומים", 266, 95, 33), t("ניכויי חובה", 229, 95, 28), t("שכר נטו", 191, 95, 21),
+    t("ניכויי משרד", 148, 95, 30), t('ניכויי חו"ז', 109, 95, 25), t("סכום בבנק", 62, 95, 27),
+    t("13,000.00", 267, 72), t("2,000.00", 229, 72, 26), t("11,000.00", 187, 72), t("0.00", 155, 72, 16),
+    t("950.00", 109, 72, 26), t("10,050.00", 58, 70, 39)
+  ];
+}
+
+test("קריאת תלוש: כל השדות מזוהים לפי התוויות", function() {
+  var app = createApp();
+  var r = app.parsePayslipItems(fakeMalamPayslipItems());
+  assert.strictEqual(r.month, "ינואר 2027");
+  assert.strictEqual(r.gross, 13000);
+  assert.strictEqual(r.incomeTax, 1100);
+  assert.strictEqual(r.nationalInsurance, 400);
+  assert.strictEqual(r.health, 500);
+  assert.strictEqual(r.mandatory, 2000);
+  assert.strictEqual(r.net, 11000);
+  assert.strictEqual(r.savings, 950);
+  assert.strictEqual(r.bank, 10050);
+  assert.strictEqual(r.pensionEmployee, 700);
+  assert.strictEqual(r.studyEmployee, 250);
+  assert.strictEqual(r.pensionEmployer, 1483);
+  assert.strictEqual(r.studyEmployer, 750);
+  assert.strictEqual(r.consistent, true);
+});
+
+test("קריאת תלוש: סכומים שלא מסתדרים מסומנים", function() {
+  var app = createApp();
+  var items = fakeMalamPayslipItems().map(function(item) { return item.s === "10,050.00" ? Object.assign({}, item, {s: "9,000.00"}) : item; });
+  var r = app.parsePayslipItems(items);
+  assert.strictEqual(r.bank, 9000);
+  assert.strictEqual(r.consistent, false);
+});
+
+test("קריאת תלוש: קובץ בלי תוויות מוכרות לא מזוהה", function() {
+  var app = createApp();
+  var r = app.parsePayslipItems([{s: "מסמך אחר", x: 100, y: 500, w: 40}, {s: "1,234.00", x: 50, y: 480, w: 30}]);
+  assert.strictEqual(r.found, false);
 });
 
 var failed = 0;
