@@ -3,10 +3,10 @@
 var BUDGET_FLOW_STEP_IDS = [
   "budget-flow-debts",
   "budget-flow-income",
-  "budget-flow-donations",
   "budget-flow-expenses",
   "budget-flow-variable-expenses",
   "budget-flow-special-expenses",
+  "budget-flow-donations",
   "budget-flow-calculate",
   "budget-flow-result"
 ];
@@ -33,14 +33,29 @@ var SHOW_SPECIAL_EXPENSES_STEP = false;
 function isBudgetFlowStepSkipped(stepIndex) {
   var id = BUDGET_FLOW_STEP_IDS[stepIndex];
   if (id === "budget-flow-debts") return !AppState.profile.debtStatus;
-  if (id === "budget-flow-donations") return AppState.profile.debtStatus;
+  /* תרומות אחרי ההוצאות: בלי יתרה לתרומה (או במסלול החובות) השלב לא מוצג */
+  if (id === "budget-flow-donations") return AppState.profile.debtStatus || !hasBalanceForDonation();
   if (id === "budget-flow-special-expenses") {
     return !SHOW_SPECIAL_EXPENSES_STEP && !(AppState.result && AppState.result.oneTimeExpenses > 0);
   }
   return false;
 }
 
+function hasBalanceForDonation() {
+  return !!(AppState.result && AppState.result.availableBeforeMaaser > 0);
+}
+
+function nextBudgetFlowStep() {
+  goToBudgetFlowStep(budgetFlowCurrentStep + 1);
+}
+
+function previousBudgetFlowStep() {
+  goToBudgetFlowStep(budgetFlowCurrentStep - 1);
+}
+
+/* מקבל מספר שלב או את מזהה השלב (למשל "budget-flow-donations") */
 function goToBudgetFlowStep(stepIndex, shouldScroll) {
+  if (typeof stepIndex === "string") stepIndex = BUDGET_FLOW_STEP_IDS.indexOf(stepIndex);
   /* מדלגים על שלבים מוסתרים בכיוון התנועה */
   var direction = stepIndex < budgetFlowCurrentStep ? -1 : 1;
   while (stepIndex >= 0 && stepIndex < BUDGET_FLOW_STEP_IDS.length && isBudgetFlowStepSkipped(stepIndex)) {

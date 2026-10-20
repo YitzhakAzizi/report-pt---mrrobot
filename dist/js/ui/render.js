@@ -90,8 +90,8 @@ function renderSnapshotAmount(element, amount) {
 var SNAPSHOT_STEP_CARDS = [
   {card: "topbar-debts-snapshot", step: "budget-flow-debts", color: "#163a5f"},
   {card: "topbar-income-snapshot", step: "budget-flow-income", color: "#16a34a"},
-  {card: "topbar-donations-snapshot", step: "budget-flow-donations", color: "#d97706"},
-  {card: "topbar-expenses-snapshot", step: "budget-flow-expenses", lastStep: "budget-flow-special-expenses", color: "#dc2626"}
+  {card: "topbar-expenses-snapshot", step: "budget-flow-expenses", lastStep: "budget-flow-special-expenses", color: "#dc2626"},
+  {card: "topbar-donations-snapshot", step: "budget-flow-donations", color: "#d97706"}
 ];
 
 /* לחיצה על ריבוע בכרטיס ההוצאות עוברת לשלב שלו; לחיצה על שאר הכרטיס פותחת את הקבועות */
@@ -139,7 +139,7 @@ function updateTopbarDonationVisibility() {
     if (!card || !item.slot) return;
     /* במסלול החובות יש שלב חובות ואין שלב תרומות */
     var inFlow = item.card === "topbar-debts-snapshot" ? AppState.profile.debtStatus
-      : item.card === "topbar-donations-snapshot" ? !AppState.profile.debtStatus : true;
+      : item.card === "topbar-donations-snapshot" ? !AppState.profile.debtStatus && hasBalanceForDonation() : true;
     item.slot.classList.toggle("out-of-flow", !inFlow);
     if (!inFlow) return;
     card.hidden = false; /* הנראות נקבעת במשבצת השלב */
