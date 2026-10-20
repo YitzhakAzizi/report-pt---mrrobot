@@ -5,12 +5,23 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function render() {
   renderFields();
+  formatReadonlyAmounts();
   renderAudienceCopy();
   renderTopbarSnapshot();
   renderMaaser(AppState.result);
   renderPreAllocation(AppState.result);
   renderActions(AppState.result);
   renderFinancialPages();
+}
+
+/* סכומים לקריאה בלבד בשורות התקציב מוצגים כסכום כספי מעוצב (₪5,200) */
+function formatReadonlyAmounts() {
+  Array.prototype.forEach.call(document.querySelectorAll("#budget-main .irow input[readonly]"), function(input) {
+    var amount = Number(String(input.value).replace(/[^\d.-]/g, "")) || 0;
+    if (input.type !== "text") input.type = "text";
+    input.value = money(amount);
+    input.tabIndex = -1;
+  });
 }
 
 function renderAudienceCopy() {
@@ -170,7 +181,7 @@ function renderFields() {
     if (!nameInput) return;
     nameInput.hidden = AppState.profile.single === true;
     if (document.activeElement !== nameInput) nameInput.value = AppState.profile.names[person] || "";
-    nameInput.placeholder = personName(person) + " (אפשר לערוך)";
+    nameInput.placeholder = personName(person);
   });
   var partner2Row = el("income-partner-2-row");
   if (partner2Row) partner2Row.hidden = AppState.profile.single === true;

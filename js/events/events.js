@@ -5,6 +5,13 @@ function registerEvents() {
   document.documentElement.setAttribute("data-theme", "light");
 
   el("sel-month").onchange = onPeriodChange;
+  /* לחיצה בכל מקום בשורת סיכום פותחת את חלון העריכה שלה, לא רק על האייקון */
+  el("budget-main").addEventListener("click", function(event) {
+    var row = event.target.closest(".irow");
+    if (!row || event.target.closest("button, input:not([readonly]), select, textarea")) return;
+    var opener = row.querySelector(".row-icon-btn");
+    if (opener && row.querySelector("input[readonly]")) opener.click();
+  });
   el("inp-s1").oninput = onIncome1Input;
   el("inp-s2").oninput = onIncome2Input;
   document.addEventListener("keydown", function(event) {

@@ -1516,3 +1516,87 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
   .step-link-h i{width:3px;height:3px}
   .step-slot.link-v .step-link-v{top:-12px;height:12px;inset-inline-start:9px}
 }
+
+/* read-only amounts are text fields (to show ₪5,200) but look like the original amount fields */
+.irow input[type=text][readonly]{width:130px;font-size:17px;font-weight:700;font-family:'Rubik',sans-serif;color:var(--text);
+  background:var(--track);border:1.5px solid transparent;border-radius:16px;padding:9px 12px;text-align:left;direction:ltr;outline:none}
+/* one-word step labels can be read at a normal size */
+.topbar-financial-snapshot .topbar-snapshot-label{font-size:13px}
+.topbar-financial-snapshot .topbar-snapshot-item strong,.topbar-financial-snapshot .topbar-snapshot-item strong.snapshot-amount-long{font-size:15px}
+
+/* ═══════════════════════════════════════════════
+   iPHONE FEEL — iOS conventions on phone screens
+═══════════════════════════════════════════════ */
+/* Apple devices get the system font (SF Pro / SF Hebrew), like native apps */
+@supports (font:-apple-system-body){
+  body,button,input,select,textarea{font-family:-apple-system,BlinkMacSystemFont,"Heebo",sans-serif}
+}
+@media (max-width:700px){
+  body{background:#f2f2f7}
+  body::before,body::after{display:none}
+
+  /* translucent navigation bar */
+  .topbar{background:rgba(249,249,251,.86);-webkit-backdrop-filter:saturate(180%) blur(20px);backdrop-filter:saturate(180%) blur(20px);
+    box-shadow:0 .5px 0 rgba(0,0,0,.2);padding-bottom:12px}
+  .brand-title{font-size:17px;font-weight:700}
+  .brand-emoji{width:32px;height:32px;border-radius:9px;font-size:19px}
+  .topbar-period select{min-height:36px;font-size:15px;font-weight:600}
+  .topbar-period .period-cell{border-radius:10px}
+  .calendar-topbar-icon{width:34px;height:34px;flex-basis:34px}
+  .save-indicator:not(.save-failed){display:none}
+
+  /* step cards: one-word label, large amount */
+  .topbar .topbar-financial-snapshot .topbar-snapshot-item{min-height:44px;padding:8px 14px;border-radius:12px;background:#fff;border:1px solid transparent;box-shadow:0 1px 2px rgba(0,0,0,.06)}
+  .topbar .topbar-financial-snapshot .topbar-snapshot-label{font-size:15px;font-weight:600;color:#3c3c43}
+  .topbar .topbar-financial-snapshot .topbar-snapshot-item strong,
+  .topbar .topbar-financial-snapshot .topbar-snapshot-item strong.snapshot-amount-long,
+  .topbar .topbar-financial-snapshot .topbar-snapshot-item strong.snapshot-amount-very-long{font-size:17px;font-weight:700;letter-spacing:-.2px;max-width:60%}
+  .topbar .topbar-snapshot-income strong{color:#15803d}
+  .topbar .topbar-snapshot-donations strong{color:#b45309}
+  .topbar .topbar-snapshot-expenses strong{color:#b91c1c}
+  .topbar .topbar-snapshot-debts strong{color:var(--info)}
+  .topbar .topbar-financial-snapshot .topbar-snapshot-item.step-current{border:2px solid var(--info);box-shadow:0 4px 14px rgba(22,58,95,.14)}
+  .snapshot-step-num{flex-basis:24px;width:24px;height:24px;font-size:13px}
+  .step-slot.link-v .step-link-v{inset-inline-start:10px}
+
+  /* large title + secondary explanation instead of the banner and box */
+  .content{gap:12px}
+  .budget-flow-stage-title{min-height:0;margin:6px 0 2px;padding:0 4px;justify-content:flex-start;text-align:right;
+    color:#000;background:none;border:0;box-shadow:none;font-size:28px;font-weight:800;letter-spacing:-.3px}
+  .flow-stage-explainer{min-height:0;margin:0 0 14px;padding:0 4px;justify-content:flex-start;text-align:right;
+    color:#6b7280;background:none;border:0;box-shadow:none;font-family:inherit;font-size:15px;font-weight:400;line-height:1.4}
+
+  /* inset grouped lists, like Settings */
+  .card{border:0;border-radius:12px;box-shadow:none}
+  .expense-cards-stack{gap:0}
+  .irow{min-height:52px;padding:6px 14px;gap:10px;border-top:.5px solid #e5e5ea;flex-wrap:nowrap}
+  .inputs-card .irow:first-child{border-top:0}
+  .irow .ilabel{gap:12px;flex:1 1 auto;min-width:0}
+  .irow .row-icon,.irow .row-icon.material-symbols-rounded{width:30px;height:30px;flex:0 0 30px;border-radius:8px;font-size:18px;color:#fff;background:var(--info);border:0}
+  .label-main{font-size:17px;font-weight:400;color:#000}
+  .label-sub{font-size:13px;color:#8e8e93}
+  .irow .iright{gap:2px;margin-inline-start:auto}
+  /* read-only amounts: grey value + chevron, the whole row opens the editor */
+  #calculator-app .irow input[readonly]{width:auto;max-width:130px;min-height:0;padding:0;border:0;background:none;box-shadow:none;
+    color:#8e8e93;font-size:17px;font-weight:400;text-align:left;pointer-events:none}
+  .irow:has(input[readonly]){cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,.05)}
+  .irow:has(input[readonly]):active{background:#e5e5ea}
+  .irow:has(input[readonly])::after{content:"‹";flex:0 0 auto;color:#c7c7cc;font-size:26px;font-weight:300;line-height:1;margin-inline-start:2px}
+  .expense-section-card .custom-category-remove{display:none}
+  /* editable amounts: plain right-aligned value, as in iOS forms */
+  #calculator-app .irow input[type=number]:not([readonly]){width:120px;min-height:40px;padding:4px 0;border:0;background:none;color:#000;font-size:17px;font-weight:600;text-align:left}
+  #calculator-app .irow input[type=number]:not([readonly]):focus{box-shadow:none;color:var(--info)}
+  #calculator-app .income-person-name{min-height:32px;max-width:200px;padding:3px 8px;font-size:16px;border-radius:8px}
+  /* "add" rows as blue text actions */
+  .additional-income-add{min-height:48px;margin-top:10px;justify-content:flex-start;padding:0 16px;color:var(--info);background:#fff;border:0;border-radius:12px;font-size:17px;font-weight:400}
+
+  /* buttons */
+  .budget-flow-next,.budget-flow-calculate-btn,.export-btn{min-height:50px;border-radius:14px;font-size:17px;font-weight:600;box-shadow:none}
+  .budget-flow-back{min-height:44px;border:0;background:none;color:var(--info);font-size:17px;font-weight:400}
+
+  /* bottom sheets with a grabber */
+  .modal{border-radius:14px 14px 0 0}
+  .modal::before{content:"";display:block;flex:0 0 auto;width:36px;height:5px;margin:7px auto 0;border-radius:3px;background:#c7c7cc}
+  .modal-hdr{padding:10px 18px 12px;border-bottom:.5px solid #e5e5ea}
+  .modal-title{font-size:17px;font-weight:700;color:#000}
+}
