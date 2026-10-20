@@ -196,7 +196,6 @@
     <!-- Income -->
     <div class="budget-flow-step" id="budget-flow-income">
       <h2 class="budget-flow-stage-title">הכנסות</h2>
-      <div class="allocation-balance-summary flow-stage-explainer" id="income-stage-explainer"></div>
       <section class="card inputs-card">
         <div class="irow">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openPayslipModal(1)" aria-label="פתיחת תלוש משכורת" title="תלוש משכורת">payments</button><div class="income-person"><input type="text" class="label-main income-label-input" id="income-partner-1-name" maxlength="40" aria-label="שם ההכנסה הראשונה (לחצו לעריכה)" oninput="updateIncomeLabel(1,this.value)" onblur="if(!this.value.trim())renderFields()"></div></div>
@@ -218,7 +217,6 @@
     <!-- Fixed expenses and liabilities -->
     <div class="budget-flow-step" id="budget-flow-expenses" hidden>
       <h2 class="budget-flow-stage-title">הוצאות קבועות</h2>
-      <div class="allocation-balance-summary flow-stage-explainer" id="fixed-expenses-stage-explainer"></div>
       <div class="expense-cards-stack">
       <section class="card inputs-card expense-section-card">
         <div class="irow">
@@ -262,7 +260,6 @@
     <!-- Recurring expenses with a changing monthly amount -->
     <div class="budget-flow-step" id="budget-flow-variable-expenses" hidden>
       <h2 class="budget-flow-stage-title">הוצאות משתנות</h2>
-      <div class="allocation-balance-summary flow-stage-explainer" id="variable-expenses-stage-explainer"></div>
       <section class="card inputs-card expense-section-card">
         <div class="irow">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openHousingUtilitiesModal()" aria-label="עריכת חיובי דיור משתנים" title="עריכת חיובי דיור משתנים">home</button><div><span class="label-main">חיובי דיור</span><span class="label-sub">חשמל, מים, גז וארנונה</span></div></div>
@@ -311,7 +308,6 @@
     <!-- Tithe -->
     <div class="budget-flow-step" id="budget-flow-donations" hidden>
       <h2 class="budget-flow-stage-title">תרומות</h2>
-      <div class="allocation-balance-summary flow-stage-explainer">התרומה מחושבת מההכנסה נטו, ולעולם אינה גדולה ממה שנשאר אחרי ההוצאות.</div>
       <div class="maaser-no-balance" id="maaser-no-balance" role="status" hidden><span class="material-symbols-rounded" aria-hidden="true">info</span><span>לא נותרה יתרה זמינה לתרומה החודש.</span></div>
       <div class="maaser-mode-box" id="maaser-mode-box"></div>
       <section class="card maaser-card" id="maaser-card">

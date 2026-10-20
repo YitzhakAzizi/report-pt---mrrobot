@@ -28,18 +28,12 @@ function renderAudienceCopy() {
   var calendarChoice = el("calendar-choice-copy");
   var calendarCustom = el("calendar-custom-copy");
   var allocationQuestion = el("allocation-mode-question");
-  var incomeExplainer = el("income-stage-explainer");
-  var variableExpensesExplainer = el("variable-expenses-stage-explainer");
-  var fixedExpensesExplainer = el("fixed-expenses-stage-explainer");
   var specialExpensesExplainer = el("special-expenses-stage-explainer");
   var specialExpensesTitle = el("special-expenses-stage-title");
   var incomeBackToDebts = el("income-back-to-debts");
   var clearLoansButton = el("clear-loans-button");
   if (calendarChoice) calendarChoice.textContent = audienceText("בחר תאריך בחודש הבא", "בחרו תאריך בחודש הבא");
   if (calendarCustom) calendarCustom.textContent = audienceText("בחר תאריך", "בחרו תאריך");
-  if (incomeExplainer) incomeExplainer.textContent = audienceText("הזן את כל הכסף שנכנס לחשבון עבור תקציב החודש.", "הזינו את כל הכסף שנכנס לחשבון עבור תקציב החודש.");
-  if (variableExpensesExplainer) variableExpensesExplainer.textContent = audienceText("הזן הוצאות קבועות, אך הסכום שלהן משתנה בכל חודש.", "הזינו הוצאות קבועות, אך הסכום שלהן משתנה בכל חודש.");
-  if (fixedExpensesExplainer) fixedExpensesExplainer.textContent = audienceText("הזן תשלומים שחוזרים בסכום קבוע בכל חודש.", "הזינו תשלומים שחוזרים בסכום קבוע בכל חודש.");
   if (specialExpensesExplainer) specialExpensesExplainer.textContent = audienceText("הזן הוצאה חד־פעמית ודחופה שקיימת רק החודש.", "הזינו הוצאה חד־פעמית ודחופה שקיימת רק החודש.");
   if (specialExpensesTitle) specialExpensesTitle.textContent = AppState.profile.debtStatus ? "הוצאות מיוחדות / בלתי צפויות" : "הוצאות מיוחדות";
   if (incomeBackToDebts) {
