@@ -1787,3 +1787,19 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 .payment-history-change{min-width:58px;color:var(--muted);font-size:12px;font-weight:700;text-align:center}
 .payment-history-change.is-up{color:#b91c1c;background:#fef2f2;border-radius:999px;padding:2px 8px}
 .payment-history-change.is-down{color:#15803d;background:#ecfdf3;border-radius:999px;padding:2px 8px}
+
+/* "לחצו לבחירה": a bolder, more present hint (both screens) */
+.pick-hint,.allocation-pick-hint.pick-hint{margin:0 0 10px;display:flex;align-items:center;justify-content:center;gap:6px;
+  color:var(--info);font:800 15px Rubik,Heebo,sans-serif;letter-spacing:.2px}
+.pick-hint .material-symbols-rounded{font-size:19px;color:#0e7490}
+/* donations: "define myself" in light blue */
+.maaser-percentage-choice.maaser-custom-choice{color:#0369a1;background:#e0f2fe;border-color:#7dd3fc}
+.maaser-percentage-choice.maaser-custom-choice.selected{color:#075985;background:#bae6fd;border-color:#0284c7}
+/* charity details in their own box under the donation card */
+.charity-box{margin-top:12px}
+.charity-box[hidden]{display:none}
+.charity-box .charity-details{border-radius:16px;box-shadow:var(--shadow)}
+/* interested / not interested: bolder */
+.maaser-radio{font-weight:800;border-width:1.5px}
+.maaser-radio .maaser-radio-label{font-weight:800}
+.maaser-radio.active{border-width:2px;border-color:var(--info);box-shadow:0 4px 12px rgba(22,58,95,.12)}

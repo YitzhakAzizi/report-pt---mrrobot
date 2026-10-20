@@ -17,15 +17,21 @@ function renderMaaser(d) {
   }
 
   modeBox.innerHTML = maaserToggleHtml(effectiveEnabled, canDonate);
+  var charityBox = el("charity-box");
+  if (charityBox) {
+    charityBox.hidden = !effectiveEnabled;
+    /* לא בונים מחדש בזמן הקלדה בפרטי העמותה */
+    if (effectiveEnabled && !charityBox.contains(document.activeElement)) charityBox.innerHTML = charityDetailsHtml();
+  }
   if (!effectiveEnabled) { box.innerHTML = ""; return; }
 
-  box.innerHTML = maaserPercentageChoicesHtml() +
+  box.innerHTML = '<p class="pick-hint"><span class="material-symbols-rounded" aria-hidden="true">touch_app</span><span>לחצו לבחירה</span></p>' +
+    maaserPercentageChoicesHtml() +
     '<label class="maaser-summary"><span>סכום לתרומה</span><div class="maaser-summary-input"><input type="number" value="' +
       formatMaaserSettingsNumber(d.maaserRequested) + '" min="0" step="any" inputmode="decimal" aria-label="סכום לתרומה" ' +
       'onchange="saveMainMaaserAmount(this.value)" /><b>₪</b></div></label>' +
     (d.maaserCapped ? '<p class="maaser-capped-note" role="status">' + escapeHtml(maaserCappedText(d)) + '</p>' : '') +
-    '<div class="maaser-validation" id="maaser-validation">' + getMaaserValidationMessage() + '</div>' +
-    charityDetailsHtml();
+    '<div class="maaser-validation" id="maaser-validation">' + getMaaserValidationMessage() + '</div>';
 }
 
 /* פרטי העמותה: מלבן שנפתח בלחיצה, עם הפרטים היבשים בלבד */

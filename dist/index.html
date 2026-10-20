@@ -308,12 +308,13 @@
 
     <!-- Tithe -->
     <div class="budget-flow-step" id="budget-flow-donations" hidden>
-      <h2 class="budget-flow-stage-title">תרומות</h2>
+      <h2 class="budget-flow-stage-title">הגדירו תרומות</h2>
       <div class="maaser-no-balance" id="maaser-no-balance" role="status" hidden><span class="material-symbols-rounded" aria-hidden="true">info</span><span>לא נותרה יתרה זמינה לתרומה החודש.</span></div>
       <div class="maaser-mode-box" id="maaser-mode-box"></div>
       <section class="card maaser-card" id="maaser-card">
         <div id="maaser-box" class="maaser-box"></div>
       </section>
+      <div id="charity-box" class="charity-box" hidden></div>
       <div class="budget-flow-controls">
         <button type="button" class="budget-flow-back" onclick="previousBudgetFlowStep()"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
         <button type="button" class="budget-flow-next" onclick="nextBudgetFlowStep()">הבא</button>
@@ -340,7 +341,7 @@
           <div class="recovery-remaining"><span>יתרה לשימוש החודש</span><strong id="recovery-remaining-total">₪0</strong></div>
         </section>
         <p class="allocation-mode-question" id="allocation-mode-question">כיצד תרצו את חודש אוגוסט?</p>
-        <p class="allocation-pick-hint" id="allocation-pick-hint">לחצו לבחירה</p>
+        <p class="allocation-pick-hint pick-hint" id="allocation-pick-hint"><span class="material-symbols-rounded" aria-hidden="true">touch_app</span><span>לחצו לבחירה</span></p>
         <div class="allocation-mode-box" id="allocation-mode-box" aria-label="בחירת אופן החלוקה"></div>
         <button type="button" class="allocation-custom-btn allocation-custom-wide" id="allocation-custom-btn" onclick="openAllocationSettingsModal()">אני רוצה לחלק לבד</button>
         <div class="budget-flow-loader" id="budget-flow-loader" hidden>
