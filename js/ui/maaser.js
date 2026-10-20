@@ -50,19 +50,45 @@ function maaserTitleHtml() {
   return '<div class="maaser-toggle-title"><button type="button" class="maaser-title-icon material-symbols-rounded" onclick="openMaaserCharitiesModal()" aria-label="ניהול עמותות" title="ניהול עמותות">volunteer_activism</button><span>תרומות</span></div>';
 }
 
+var MAASER_PRESETS = [1, 2, 5, 7.5, 10];
+var _maaserCustomOpen = false;
+
 function maaserPercentageChoicesHtml() {
-  var presets = [1, 2, 5, 7.5, 10];
   var current = Number(AppState.settings.maaserPercent) || 0;
+  var isPreset = MAASER_PRESETS.some(function(value) { return Math.abs(value - current) < 0.000001; });
+  var customSelected = _maaserCustomOpen || !isPreset;
   return '<div class="maaser-percentage-choices" role="group" aria-label="בחירת אחוז תרומה">' +
-    presets.map(function(value) {
-      var selected = Math.abs(value - current) < 0.000001;
+    MAASER_PRESETS.map(function(value) {
+      var selected = !customSelected && Math.abs(value - current) < 0.000001;
       return '<button type="button" class="maaser-percentage-choice' + (selected ? ' selected' : '') + '" ' +
         'aria-pressed="' + selected + '" onclick="setMaaserPercentagePreset(' + value + ')">' + value + '%</button>';
     }).join('') +
-  '</div>';
+    '<button type="button" class="maaser-percentage-choice maaser-custom-choice' + (customSelected ? ' selected' : '') + '" ' +
+      'aria-pressed="' + customSelected + '" onclick="openMaaserCustomPercent()">הגדר לבד</button>' +
+  '</div>' +
+  (customSelected ? '<label class="maaser-custom-percent"><span>אחוז לתרומה</span><span class="maaser-custom-control">' +
+    '<input type="number" id="maaser-custom-percent" value="' + formatMaaserSettingsNumber(current) + '" min="0" max="100" step="any" inputmode="decimal" ' +
+    'onchange="setMaaserCustomPercent(this.value)" aria-label="אחוז תרומה מותאם"><b>%</b></span></label>' : '');
 }
 
-function setMaaserPercentagePreset(percentage) {
+function openMaaserCustomPercent() {
+  _maaserCustomOpen = true;
+  render();
+  var input = el("maaser-custom-percent");
+  if (input) { input.focus(); input.select(); }
+}
+
+function setMaaserCustomPercent(value) {
+  var percentage = parseNonNegativeNumber(value);
+  if (percentage === null || percentage > 100) {
+    showMaaserValidation("יש להזין אחוז בין 0 ל־100");
+    return;
+  }
+  setMaaserPercentagePreset(percentage, true);
+}
+
+function setMaaserPercentagePreset(percentage, keepCustom) {
+  _maaserCustomOpen = !!keepCustom;
   AppState.settings.maaserPercent = percentage;
   saveMaaserPercentage();
   calculate();

@@ -1569,16 +1569,17 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
   .label-main{font-size:17px;font-weight:400;color:#000}
   .label-sub{font-size:13px;color:#8e8e93}
   .irow .iright{gap:2px;margin-inline-start:auto}
-  /* read-only amounts: grey value + chevron, the whole row opens the editor */
-  #calculator-app .irow input[readonly]{width:auto;max-width:130px;min-height:0;padding:0;border:0;background:none;box-shadow:none;
-    color:#8e8e93;font-size:17px;font-weight:400;text-align:left;pointer-events:none}
+  /* amounts sit in a box (feels editable); read-only ones open the editor with the whole row */
+  #calculator-app .irow input[readonly]{width:auto;min-width:92px;max-width:132px;min-height:40px;padding:8px 12px;border:0;border-radius:12px;
+    background:var(--track);box-shadow:none;color:#000;font-size:17px;font-weight:600;text-align:left;pointer-events:none}
   .irow:has(input[readonly]){cursor:pointer;-webkit-tap-highlight-color:rgba(0,0,0,.05)}
   .irow:has(input[readonly]):active{background:#e5e5ea}
   .irow:has(input[readonly])::after{content:"‹";flex:0 0 auto;color:#c7c7cc;font-size:26px;font-weight:300;line-height:1;margin-inline-start:2px}
   .expense-section-card .custom-category-remove{display:none}
   /* editable amounts: plain right-aligned value, as in iOS forms */
-  #calculator-app .irow input[type=number]:not([readonly]){width:120px;min-height:40px;padding:4px 0;border:0;background:none;color:#000;font-size:17px;font-weight:600;text-align:left}
-  #calculator-app .irow input[type=number]:not([readonly]):focus{box-shadow:none;color:var(--info)}
+  #calculator-app .irow input[type=number]:not([readonly]){width:120px;min-height:40px;padding:8px 12px;border:1.5px solid transparent;border-radius:12px;
+    background:var(--track);color:#000;font-size:17px;font-weight:600;text-align:left}
+  #calculator-app .irow input[type=number]:not([readonly]):focus{border-color:var(--border-f);background:#fff;box-shadow:none}
   /* "add" rows as blue text actions */
   .additional-income-add{min-height:48px;margin-top:10px;justify-content:flex-start;padding:0 16px;color:var(--info);background:#fff;border:0;border-radius:12px;font-size:17px;font-weight:400}
 
@@ -1687,3 +1688,26 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
   #calculator-app .irow input.income-label-input[type=text],
   #calculator-app .irow input.additional-income-name[type=text]{font-size:17px;font-weight:400}
 }
+
+/* donations: "הגדר לבד" next to the percentages */
+.maaser-percentage-choices{grid-template-columns:repeat(6,minmax(0,1fr))}
+.maaser-custom-choice{white-space:nowrap}
+.maaser-custom-percent{display:flex;align-items:center;justify-content:space-between;gap:12px;padding:10px 14px;background:var(--info-bg);border-radius:14px;color:var(--info);font-size:14px;font-weight:700}
+.maaser-custom-control{display:flex;align-items:center;gap:6px}
+#calculator-app .maaser-custom-control input{width:96px;min-height:40px;padding:6px 10px;border:1.5px solid var(--border);border-radius:10px;background:#fff;font:700 17px Rubik,Heebo,sans-serif;text-align:center;direction:ltr}
+@media (max-width:700px){.maaser-percentage-choices{grid-template-columns:repeat(3,minmax(0,1fr))}}
+
+/* swipe right to delete: a red strip with "מחיקה" opens behind the row */
+#budget-main .irow,.expense-detail-row,.insurance-edit-row,.liability-editor-row,.dream-row{touch-action:pan-y}
+.swipe-active{position:relative;overflow:hidden;background:linear-gradient(90deg,#ef4444 var(--swipe,0px),var(--card) var(--swipe,0px)) !important}
+.swipe-active>*{transform:translateX(var(--swipe,0px))}
+.swipe-active::before{content:"מחיקה";position:absolute;top:0;bottom:0;left:0;width:var(--swipe,0px);z-index:1;display:flex;align-items:center;justify-content:center;
+  overflow:hidden;color:#fff;font-size:15px;font-weight:700;white-space:nowrap}
+
+/* phone: the step cards are hidden, so steps scroll to just below the top bar */
+@media (max-width:700px){
+  .topbar .topbar-financial-snapshot{display:none}
+  .topbar{padding-bottom:10px}
+  .budget-flow-step{scroll-margin-top:84px}
+}
+.irow.swipe-active::after{visibility:hidden}
