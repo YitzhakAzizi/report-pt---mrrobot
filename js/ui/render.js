@@ -49,24 +49,13 @@ function renderAudienceCopy() {
 function renderTopbarSnapshot() {
   var debts = el("topbar-debts-total");
   var income = el("topbar-income-total");
-  var variableExpenses = el("topbar-variable-expenses-total");
-  var fixedExpenses = el("topbar-fixed-expenses-total");
-  var specialExpenses = el("topbar-special-expenses-total");
+  var expenses = el("topbar-expenses-total");
   var donations = el("topbar-donations-total");
   var allocationBalance = el("allocation-balance-total");
   if (debts) renderSnapshotAmount(debts, recoveryDebtBalance(AppState.liabilities));
   if (income) renderSnapshotAmount(income, AppState.result.total || 0);
-  if (variableExpenses) renderSnapshotAmount(variableExpenses, AppState.result.variableExpenses || 0);
-  if (fixedExpenses) {
-    var fixedExpensesTotal = (AppState.result.fixedExpenses || 0) +
-      (AppState.result.subscriptionExpenses || 0) +
-      (AppState.result.healthBeautyExpenses || 0) +
-      (AppState.result.childrenExpenses || 0) +
-      (AppState.result.insurance || 0) +
-      (AppState.result.liabilityPayments || 0);
-    renderSnapshotAmount(fixedExpenses, fixedExpensesTotal);
-  }
-  if (specialExpenses) renderSnapshotAmount(specialExpenses, AppState.result.oneTimeExpenses || 0);
+  /* כל ההוצאות בכרטיס אחד: קבועות (כולל התחייבויות), משתנות ומיוחדות */
+  if (expenses) renderSnapshotAmount(expenses, (AppState.result.exp || 0) + (AppState.result.insurance || 0) + (AppState.result.liabilityPayments || 0));
   if (donations) renderSnapshotAmount(donations, AppState.result.maaser || 0);
   updateTopbarDonationVisibility();
   if (allocationBalance) allocationBalance.textContent = money(Math.max(0, AppState.result.balance || 0));
@@ -86,9 +75,7 @@ var SNAPSHOT_STEP_CARDS = [
   {card: "topbar-debts-snapshot", step: "budget-flow-debts"},
   {card: "topbar-income-snapshot", step: "budget-flow-income"},
   {card: "topbar-donations-snapshot", step: "budget-flow-donations"},
-  {card: "topbar-fixed-expenses-snapshot", step: "budget-flow-expenses"},
-  {card: "topbar-variable-expenses-snapshot", step: "budget-flow-variable-expenses"},
-  {card: "topbar-special-expenses-snapshot", step: "budget-flow-special-expenses"}
+  {card: "topbar-expenses-snapshot", step: "budget-flow-expenses", lastStep: "budget-flow-special-expenses"}
 ];
 
 function stepDots(className) {
@@ -138,14 +125,17 @@ function updateTopbarDonationVisibility() {
     item.slot.classList.toggle("link-v", number > 1 && row !== previousRow);
     item.slot.classList.toggle("link-h", number > 1 && row === previousRow);
     previousRow = row;
+    /* כרטיס יכול לכסות כמה שלבים ברצף (כרטיס ההוצאות: קבועות, משתנות ומיוחדות) */
     var stepIndex = BUDGET_FLOW_STEP_IDS.indexOf(item.step);
+    var lastIndex = item.lastStep ? BUDGET_FLOW_STEP_IDS.indexOf(item.lastStep) : stepIndex;
+    var isCurrent = currentStep >= stepIndex && currentStep <= lastIndex;
     item.slot.classList.toggle("revealed", stepIndex <= furthestStep);
-    card.classList.toggle("step-current", stepIndex === currentStep);
-    card.classList.toggle("step-done", stepIndex !== currentStep && stepIndex <= furthestStep);
-    if (stepIndex === currentStep) card.setAttribute("aria-current", "step");
+    card.classList.toggle("step-current", isCurrent);
+    card.classList.toggle("step-done", !isCurrent && stepIndex <= furthestStep);
+    if (isCurrent) card.setAttribute("aria-current", "step");
     else card.removeAttribute("aria-current");
     item.number.textContent = number;
-    item.number.classList.toggle("is-current", stepIndex === currentStep);
+    item.number.classList.toggle("is-current", isCurrent);
   });
   if (snapshotContainer) {
     /* שורה בלי שלב פתוח מוסתרת, והתוכן מתחת לכרטיסים מפנה להם מקום */

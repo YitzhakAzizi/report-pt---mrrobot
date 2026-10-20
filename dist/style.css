@@ -1472,12 +1472,6 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
   .topbar .topbar-financial-snapshot .topbar-snapshot-item strong.snapshot-amount-very-long,
   .topbar #topbar-fixed-expenses-snapshot strong.snapshot-amount-very-long{font-size:10px}
   .topbar #topbar-fixed-expenses-snapshot{padding-inline:8px;gap:4px}
-  /* three expense cards share one row: the amount sits under the label so nothing overlaps */
-  .topbar .snapshot-row-expenses .topbar-snapshot-item,
-  .topbar .snapshot-row-expenses #topbar-fixed-expenses-snapshot{flex-direction:column;justify-content:center;gap:3px;padding:6px 4px}
-  .topbar .snapshot-row-expenses .topbar-snapshot-label,
-  .topbar .snapshot-row-expenses #topbar-fixed-expenses-snapshot .topbar-snapshot-label{flex:0 0 auto;justify-content:center;text-align:center}
-  .topbar .snapshot-row-expenses .topbar-snapshot-item strong{max-width:100%;text-align:center}
   .budget-flow-step{scroll-margin-top:250px}
 }
 .calendar-google-option{margin-top:14px;display:flex;align-items:center;justify-content:center;gap:8px;color:var(--muted);font-size:14px;font-weight:700;cursor:pointer}
@@ -1521,5 +1515,4 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
   .step-link-h{gap:2px}
   .step-link-h i{width:3px;height:3px}
   .step-slot.link-v .step-link-v{top:-12px;height:12px;inset-inline-start:9px}
-  .topbar .snapshot-row-expenses .topbar-snapshot-item{padding:6px 3px}
 }
