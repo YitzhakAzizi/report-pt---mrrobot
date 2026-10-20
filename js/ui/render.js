@@ -80,40 +80,46 @@ function renderSnapshotAmount(element, amount) {
   element.title = formatted;
 }
 
+/* כרטיסי הסיכום העליונים הם גם מפת השלבים: לכל כרטיס מספר בעיגול,
+   והצבע מראה אם השלב הושלם, נוכחי או עדיין לפנינו */
+var SNAPSHOT_STEP_CARDS = [
+  {card: "topbar-debts-snapshot", step: "budget-flow-debts"},
+  {card: "topbar-income-snapshot", step: "budget-flow-income"},
+  {card: "topbar-donations-snapshot", step: "budget-flow-donations"},
+  {card: "topbar-fixed-expenses-snapshot", step: "budget-flow-expenses"},
+  {card: "topbar-variable-expenses-snapshot", step: "budget-flow-variable-expenses"},
+  {card: "topbar-special-expenses-snapshot", step: "budget-flow-special-expenses"}
+];
+
 function updateTopbarDonationVisibility() {
-  var debtsCard = el("topbar-debts-snapshot");
-  var incomeCard = el("topbar-income-snapshot");
-  var variableExpensesCard = el("topbar-variable-expenses-snapshot");
-  var fixedExpensesCard = el("topbar-fixed-expenses-snapshot");
-  var specialExpensesCard = el("topbar-special-expenses-snapshot");
-  var donationsCard = el("topbar-donations-snapshot");
   var snapshotContainer = document.querySelector(".topbar-financial-snapshot");
-  var donationStepIndex = typeof BUDGET_FLOW_STEP_IDS !== "undefined"
-    ? BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-donations")
-    : 3;
+  var currentStep = typeof budgetFlowCurrentStep === "number" ? budgetFlowCurrentStep : 0;
   var furthestStep = typeof budgetFlowFurthestStep === "number" ? budgetFlowFurthestStep : 0;
-  var variableExpensesStepIndex = typeof BUDGET_FLOW_STEP_IDS !== "undefined"
-    ? BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-variable-expenses")
-    : 1;
-  var fixedExpensesStepIndex = typeof BUDGET_FLOW_STEP_IDS !== "undefined"
-    ? BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-expenses")
-    : 2;
-  var specialExpensesStepIndex = typeof BUDGET_FLOW_STEP_IDS !== "undefined"
-    ? BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-special-expenses")
-    : 3;
-  var incomeStepIndex = typeof BUDGET_FLOW_STEP_IDS !== "undefined"
-    ? BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-income")
-    : 0;
-  var showVariableExpenses = furthestStep >= variableExpensesStepIndex;
-  var showFixedExpenses = furthestStep >= fixedExpensesStepIndex;
-  var showSpecialExpenses = furthestStep >= specialExpensesStepIndex;
-  var showDonations = !AppState.profile.debtStatus && !!(AppState.maaser && AppState.maaser.enabled) && furthestStep >= donationStepIndex;
-  if (debtsCard) debtsCard.hidden = !AppState.profile.debtStatus;
-  if (incomeCard) incomeCard.hidden = AppState.profile.debtStatus && furthestStep < incomeStepIndex;
-  if (variableExpensesCard) variableExpensesCard.hidden = !showVariableExpenses;
-  if (fixedExpensesCard) fixedExpensesCard.hidden = !showFixedExpenses;
-  if (specialExpensesCard) specialExpensesCard.hidden = !showSpecialExpenses;
-  if (donationsCard) donationsCard.hidden = !showDonations;
+  var number = 0;
+  SNAPSHOT_STEP_CARDS.forEach(function(item) {
+    var card = el(item.card);
+    if (!card) return;
+    /* במסלול החובות יש שלב חובות ואין שלב תרומות */
+    var inFlow = item.card === "topbar-debts-snapshot" ? AppState.profile.debtStatus
+      : item.card === "topbar-donations-snapshot" ? !AppState.profile.debtStatus : true;
+    card.hidden = !inFlow;
+    if (!inFlow) return;
+    number++;
+    var stepIndex = BUDGET_FLOW_STEP_IDS.indexOf(item.step);
+    var state = stepIndex === currentStep ? "current" : stepIndex <= furthestStep ? "done" : "upcoming";
+    card.classList.toggle("step-current", state === "current");
+    card.classList.toggle("step-done", state === "done");
+    card.classList.toggle("step-upcoming", state === "upcoming");
+    if (state === "current") card.setAttribute("aria-current", "step");
+    else card.removeAttribute("aria-current");
+    var badge = card.querySelector(".snapshot-step-num");
+    if (!badge) {
+      badge = mk("span", "snapshot-step-num");
+      badge.setAttribute("aria-hidden", "true");
+      card.querySelector(".topbar-snapshot-label").insertBefore(badge, card.querySelector(".topbar-snapshot-label").firstChild);
+    }
+    badge.textContent = number;
+  });
   if (snapshotContainer) {
     /* שורה בלי כרטיסים גלויים מוסתרת, והתוכן מתחת לכרטיסים מפנה להם מקום */
     Array.prototype.forEach.call(snapshotContainer.querySelectorAll(".snapshot-row"), function(row) {
