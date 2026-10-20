@@ -1665,3 +1665,6 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 .payslip-preview:empty{display:none}
 .payslip-preview{margin-top:12px}
 .payslip-preview-image{display:block;width:100%;height:auto;border:1px solid var(--border);border-radius:12px;background:#fff}
+.error-report{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:500;padding:12px 14px;
+  color:#fff;background:#b91c1c;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.3);font-size:14px;font-weight:600;line-height:1.45;direction:rtl}
+.side-menu-version{margin:6px 2px 0;color:var(--muted);font-size:12px}
