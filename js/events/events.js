@@ -65,10 +65,8 @@ function onPeriodChange() {
   refreshWithoutSaving();
 }
 
-function updatePersonName(person, value) {
-  var nameInput = el("income-partner-" + person + "-name");
-  if (nameInput) nameInput.size = Math.max(2, String(value || "").length);
-  AppState.profile.names[person] = String(value || "").trim().slice(0, 20);
+function updateIncomeLabel(person, value) {
+  AppState.profile.incomeLabels[person] = String(value || "").trim().slice(0, 40);
   saveProfileSettings();
   flashSaved();
 }

@@ -35,6 +35,8 @@ function loadProfileSettings() {
     AppState.profile.debtStatus = saved.debtStatus === true;
     var names = saved.names && typeof saved.names === "object" ? saved.names : {};
     AppState.profile.names = {1: String(names[1] || "").slice(0, 40), 2: String(names[2] || "").slice(0, 40)};
+    var labels = saved.incomeLabels && typeof saved.incomeLabels === "object" ? saved.incomeLabels : {};
+    AppState.profile.incomeLabels = {1: String(labels[1] || "").slice(0, 40), 2: String(labels[2] || "").slice(0, 40)};
   } catch(e) {}
 }
 

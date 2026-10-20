@@ -14,8 +14,12 @@ function personName(person) {
   return name || DEFAULT_PERSON_NAMES[person] || "בן/בת זוג " + person;
 }
 
+/* כותרת שורת המשכורת, כולה טקסט אחד שנערך בלחיצה ("משכורת יצחק").
+   אם עוד לא נערכה, נבנית מהשם שנשמר בגרסה קודמת או משם ברירת המחדל */
 function salaryLabel(person) {
-  return "משכורת " + personName(person);
+  var labels = AppState && AppState.profile && AppState.profile.incomeLabels || {};
+  var label = String(labels[person] || "").trim();
+  return label || "משכורת " + personName(person);
 }
 
 function sumArr(arr) {

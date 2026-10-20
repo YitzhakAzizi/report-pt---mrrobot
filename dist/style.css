@@ -1425,12 +1425,6 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 .save-indicator.save-failed span:last-child{display:inline}
 .allocation-balance-summary.is-deficit{color:var(--danger);background:#fef2f2;border-color:rgba(220,38,38,.32);box-shadow:0 6px 16px rgba(220,38,38,.08)}
 .maaser-capped-note{margin:0;padding:10px 12px;color:#9a5b00;background:#fff7e6;border:1px solid rgba(245,158,11,.28);border-radius:14px;font-size:13px;font-weight:700;line-height:1.55;text-align:center}
-.income-person{min-width:0;display:flex;flex-direction:column;gap:3px}
-.income-person-name{width:100%;max-width:190px;min-width:0;padding:4px 7px;border:1px dashed var(--border);border-radius:9px;background:transparent;color:var(--muted);font:inherit;font-size:13px;font-weight:700;text-align:right;outline:none}
-.income-person-name:hover{background:var(--info-bg)}
-.income-person-name:focus{color:var(--text);border-style:solid;border-color:var(--info);background:var(--card);box-shadow:0 0 0 3px rgba(22,58,95,.08)}
-.income-person-name[hidden]{display:none}
-.income-person-name::placeholder{opacity:.85;font-weight:600}
 .side-menu-data{display:flex;flex-direction:column;gap:10px;margin-top:22px;padding-top:18px;border-top:1px solid var(--border)}
 .side-menu-data h3{margin:0 2px 2px;color:var(--muted);font-size:13px;font-weight:800}
 .side-menu-data-note{margin:2px 2px 0;color:var(--muted);font-size:12px;line-height:1.6}
@@ -1585,7 +1579,6 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
   /* editable amounts: plain right-aligned value, as in iOS forms */
   #calculator-app .irow input[type=number]:not([readonly]){width:120px;min-height:40px;padding:4px 0;border:0;background:none;color:#000;font-size:17px;font-weight:600;text-align:left}
   #calculator-app .irow input[type=number]:not([readonly]):focus{box-shadow:none;color:var(--info)}
-  #calculator-app .income-person-name{min-height:32px;max-width:200px;padding:3px 8px;font-size:16px;border-radius:8px}
   /* "add" rows as blue text actions */
   .additional-income-add{min-height:48px;margin-top:10px;justify-content:flex-start;padding:0 16px;color:var(--info);background:#fff;border:0;border-radius:12px;font-size:17px;font-weight:400}
 
@@ -1628,14 +1621,6 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
     color:#fff;background:var(--info);font-size:21px}
 }
 
-/* "משכורת יצחק": the name reads as part of the title and becomes editable on tap */
-.income-person-label{display:flex;align-items:baseline;gap:5px;cursor:text}
-.income-person .income-person-name,#calculator-app .income-person .income-person-name{width:auto;max-width:150px;min-width:0;min-height:0;
-  padding:1px 3px;margin:0;border:0;border-bottom:1.5px dashed transparent;border-radius:0;background:none;box-shadow:none;
-  color:inherit;font:inherit;font-weight:inherit;text-align:right}
-.income-person .income-person-name:hover{border-bottom-color:#cbd5e1}
-.income-person .income-person-name:focus{outline:none;border-bottom:1.5px solid var(--info);background:var(--info-bg)}
-@media (max-width:700px){#calculator-app .income-person .income-person-name{font-size:17px}}
 
 /* ═══════════════════════════════════════════════
    PAYSLIP FINDINGS — what was read from the payslip, with explanations
@@ -1668,9 +1653,6 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 .error-report{position:fixed;left:12px;right:12px;bottom:calc(12px + env(safe-area-inset-bottom,0px));z-index:500;padding:12px 14px;
   color:#fff;background:#b91c1c;border-radius:12px;box-shadow:0 10px 30px rgba(0,0,0,.3);font-size:14px;font-weight:600;line-height:1.45;direction:rtl}
 .side-menu-version{margin:6px 2px 0;color:var(--muted);font-size:12px}
-/* the name is typed in a field, but must look exactly like the word "משכורת" next to it */
-#calculator-app .income-person-label input.income-person-name[type=text]{font-family:inherit;font-size:inherit;font-weight:inherit;
-  line-height:inherit;letter-spacing:inherit;color:inherit;-webkit-text-fill-color:currentColor;-webkit-appearance:none;appearance:none}
 
 /* expenses card: two small boxes, fixed and variable */
 #topbar-expenses-snapshot{gap:8px}
@@ -1689,3 +1671,19 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
   .expense-part b{font-size:15px}
 }
 @media (max-width:700px){.budget-flow-step{scroll-margin-top:300px}}
+
+/* income titles ("משכורת יצחק", additional incomes): one editable text that looks like the row title */
+.income-person{min-width:0;flex:1 1 auto}
+#calculator-app .irow input.income-label-input[type=text],
+#calculator-app .irow input.additional-income-name[type=text]{width:100%;min-width:0;min-height:0;margin:0;padding:3px 0;
+  border:0;border-bottom:1.5px dashed transparent;border-radius:0;background:none;box-shadow:none;outline:none;
+  font-family:inherit;font-size:15px;font-weight:700;line-height:1.35;color:var(--text);-webkit-text-fill-color:currentColor;
+  text-align:right;-webkit-appearance:none;appearance:none}
+#calculator-app .irow input.income-label-input[type=text]:hover,
+#calculator-app .irow input.additional-income-name[type=text]:hover{border-bottom-color:#cbd5e1}
+#calculator-app .irow input.income-label-input[type=text]:focus,
+#calculator-app .irow input.additional-income-name[type=text]:focus{border-bottom:1.5px solid var(--info);background:var(--info-bg)}
+@media (max-width:700px){
+  #calculator-app .irow input.income-label-input[type=text],
+  #calculator-app .irow input.additional-income-name[type=text]{font-size:17px;font-weight:400}
+}

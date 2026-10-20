@@ -192,12 +192,10 @@ function renderFields() {
   var s2el = el("inp-s2");
   if (s1el) s1el.value = Number(AppState.income1[0] && AppState.income1[0].val) || "";
   if (s2el) s2el.value = Number(AppState.income2[0] && AppState.income2[0].val) || "";
-  /* "משכורת יצחק": השם עצמו הוא שדה שנערך בלחיצה */
+  /* כותרת שורת המשכורת היא שדה טקסט אחד שנערך בלחיצה */
   [1, 2].forEach(function(person) {
-    var nameInput = el("income-partner-" + person + "-name");
-    if (!nameInput || document.activeElement === nameInput) return;
-    nameInput.value = personName(person);
-    nameInput.size = Math.max(2, nameInput.value.length);
+    var labelInput = el("income-partner-" + person + "-name");
+    if (labelInput && document.activeElement !== labelInput) labelInput.value = salaryLabel(person);
   });
   var partner2Row = el("income-partner-2-row");
   if (partner2Row) partner2Row.hidden = AppState.profile.single === true;
