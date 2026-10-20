@@ -640,6 +640,7 @@ function renderPreAllocation(d) {
   if (d.balance <= 0 || (AppState.profile.debtStatus && !hasValidRecoveryPayment())) {
     if (allocationModes) allocationModes.hidden = true;
     if (allocationQuestion) allocationQuestion.hidden = true;
+    if (el("allocation-pick-hint")) el("allocation-pick-hint").hidden = true;
     if (allocationCustomButton) allocationCustomButton.hidden = true;
     if (calculateButton) calculateButton.disabled = true;
   } else if (calculateButton) {
@@ -704,6 +705,7 @@ function renderAllocationModes() {
   if (AppState.profile.debtStatus || hasActiveDebtPlan()) {
     box.hidden = true;
     if (question) question.hidden = true;
+    if (el("allocation-pick-hint")) el("allocation-pick-hint").hidden = true;
     if (customButton) customButton.hidden = true;
     box.innerHTML = "";
     return;
@@ -711,6 +713,7 @@ function renderAllocationModes() {
 
   box.hidden = false;
   if (question) question.hidden = false;
+  if (el("allocation-pick-hint")) el("allocation-pick-hint").hidden = false;
   if (customButton) customButton.hidden = false;
   box.innerHTML = ALLOCATION_MODES.map(function(mode) {
     var selected = allocationsMatch(AppState.settings.allocation, mode.allocation);

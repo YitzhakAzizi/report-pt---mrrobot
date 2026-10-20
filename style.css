@@ -1739,3 +1739,27 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
   .action-row-link::after{content:"‹";flex:0 0 auto;margin-inline-start:8px;color:#c7c7cc;font-size:26px;font-weight:300;line-height:1}
   .action-row-link .act-left{flex:1 1 auto;min-width:0}
 }
+
+/* donations: details of the charity in a box that opens on tap */
+.maaser-card[hidden]{display:none}
+.charity-details{border:1px solid var(--border);border-radius:14px;background:#fff;overflow:hidden}
+.charity-details summary{min-height:50px;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px;
+  color:var(--info);font-size:15px;font-weight:700;cursor:pointer;list-style:none}
+.charity-details summary::-webkit-details-marker{display:none}
+.charity-details summary .material-symbols-rounded{transition:transform .2s}
+.charity-details[open] summary .material-symbols-rounded{transform:rotate(180deg)}
+.charity-fields{padding:4px 14px 14px;display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.charity-field{display:flex;flex-direction:column;gap:4px;color:var(--muted);font-size:13px;font-weight:600}
+#calculator-app .charity-field input{width:100%;min-height:42px;padding:8px 10px;border:1.5px solid transparent;border-radius:10px;background:var(--track);color:var(--text);font-size:16px;font-weight:600}
+#calculator-app .charity-field input:focus{border-color:var(--border-f);background:#fff}
+
+/* allocation: hint above the options, "divide myself" in red under them */
+.allocation-pick-hint{margin:0 0 8px;color:var(--muted);font-size:14px;font-weight:600;text-align:center}
+.allocation-pick-hint[hidden]{display:none}
+.allocation-custom-btn.allocation-custom-wide{margin-top:12px;color:#b91c1c;background:#fef2f2;border:1.5px solid rgba(220,38,38,.45);box-shadow:none;animation:none}
+.allocation-custom-btn.allocation-custom-wide:hover,.allocation-custom-btn.allocation-custom-wide:active{color:#991b1b;background:#fee2e2;border-color:#dc2626;box-shadow:none}
+@media (min-width:701px){.allocation-pick-hint{display:none}}
+
+/* result: the report button above "back" */
+.budget-flow-result-actions{grid-template-columns:1fr}
+.budget-flow-result-actions .budget-flow-back{width:100%}

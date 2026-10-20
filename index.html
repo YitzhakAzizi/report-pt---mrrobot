@@ -340,13 +340,14 @@
           <div class="recovery-remaining"><span>יתרה לשימוש החודש</span><strong id="recovery-remaining-total">₪0</strong></div>
         </section>
         <p class="allocation-mode-question" id="allocation-mode-question">כיצד תרצו את חודש אוגוסט?</p>
+        <p class="allocation-pick-hint" id="allocation-pick-hint">לחצו לבחירה</p>
         <div class="allocation-mode-box" id="allocation-mode-box" aria-label="בחירת אופן החלוקה"></div>
+        <button type="button" class="allocation-custom-btn allocation-custom-wide" id="allocation-custom-btn" onclick="openAllocationSettingsModal()">אני רוצה לחלק לבד</button>
         <div class="budget-flow-loader" id="budget-flow-loader" hidden>
           <span class="budget-flow-spinner" aria-hidden="true"></span>
           <span>מכינים את החלוקה שלך…</span>
         </div>
       </section>
-      <button type="button" class="allocation-custom-btn allocation-custom-wide" id="allocation-custom-btn" onclick="openAllocationSettingsModal()">אני רוצה לחלק לבד</button>
       <div class="budget-flow-controls budget-flow-calculate-controls">
         <button type="button" class="budget-flow-back" onclick="previousBudgetFlowStep()"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
         <button type="button" class="budget-flow-calculate-btn" id="budget-flow-calculate-btn" onclick="calculateBudgetFlow()">תחלק עבורי</button>
@@ -364,8 +365,8 @@
         <div id="actions-box" class="actions-box"></div>
       </section>
       <div class="budget-flow-result-actions">
-        <button type="button" class="budget-flow-back" onclick="previousBudgetFlowStep()"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
         <button class="export-btn" onclick="exportPDF()"><span class="material-symbols-rounded" aria-hidden="true">description</span><span>הפק דוח חודשי</span></button>
+        <button type="button" class="budget-flow-back" onclick="previousBudgetFlowStep()"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
       </div>
     </div>
   </main>

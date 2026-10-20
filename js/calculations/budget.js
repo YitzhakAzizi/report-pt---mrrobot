@@ -25,8 +25,9 @@ function calculate() {
   var maaserEnabled = !AppState.profile.debtStatus && !!(AppState.maaser && AppState.maaser.enabled);
   var availableBeforeMaaser = total - expenseTotal - liabilityPayments;
   /* התרומה מחושבת מההכנסה נטו, אך לעולם אינה גדולה מהיתרה שנשארה, כך שאינה יוצרת גירעון */
-  var maaserRequested = maaserEnabled ? percentageOf(total, AppState.settings.maaserPercent) : 0;
-  var maaser = Math.min(maaserRequested, Math.max(0, availableBeforeMaaser));
+  /* בשקלים שלמים, בלי אגורות; התקרה מעוגלת למטה כדי שגם אחרי העיגול לא ייווצר מינוס */
+  var maaserRequested = maaserEnabled ? Math.round(percentageOf(total, AppState.settings.maaserPercent)) : 0;
+  var maaser = Math.min(maaserRequested, Math.max(0, Math.floor(availableBeforeMaaser)));
   var balance = total - expenseTotal - liabilityPayments - maaser;
   AppState.result = {
     s1: s1, s2: s2, total: total, exp: exp, fixedExpenses: fixedExpenses,

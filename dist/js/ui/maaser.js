@@ -10,18 +10,38 @@ function renderMaaser(d) {
   var canDonate = Number(d.availableBeforeMaaser) > 0;
   var effectiveEnabled = state.enabled && canDonate;
   if (noBalance) noBalance.hidden = canDonate;
-  if (card) card.className = "card maaser-card" + (!effectiveEnabled ? " maaser-card-collapsed" : "");
+  /* "לא מעוניינים": נשארים רק שני ריבועי הבחירה */
+  if (card) {
+    card.className = "card maaser-card";
+    card.hidden = !effectiveEnabled;
+  }
 
   modeBox.innerHTML = maaserToggleHtml(effectiveEnabled, canDonate);
-  box.innerHTML = maaserTitleHtml();
-  if (!effectiveEnabled) return;
+  if (!effectiveEnabled) { box.innerHTML = ""; return; }
 
-  box.innerHTML += maaserPercentageChoicesHtml() +
+  box.innerHTML = maaserPercentageChoicesHtml() +
     '<label class="maaser-summary"><span>סכום לתרומה</span><div class="maaser-summary-input"><input type="number" value="' +
       formatMaaserSettingsNumber(d.maaserRequested) + '" min="0" step="any" inputmode="decimal" aria-label="סכום לתרומה" ' +
       'onchange="saveMainMaaserAmount(this.value)" /><b>₪</b></div></label>' +
     (d.maaserCapped ? '<p class="maaser-capped-note" role="status">' + escapeHtml(maaserCappedText(d)) + '</p>' : '') +
-    '<div class="maaser-validation" id="maaser-validation">' + getMaaserValidationMessage() + '</div>';
+    '<div class="maaser-validation" id="maaser-validation">' + getMaaserValidationMessage() + '</div>' +
+    charityDetailsHtml();
+}
+
+/* פרטי העמותה: מלבן שנפתח בלחיצה, עם הפרטים היבשים בלבד */
+var _charityDetailsOpen = false;
+
+function charityDetailsHtml() {
+  ensureAtLeastOneMaaserCharity();
+  var charity = AppState.maaser.charities[0];
+  var field = function(key, label, mode) {
+    return '<label class="charity-field"><span>' + label + '</span><input type="text" value="' + escapeHtml(charity[key] || "") + '"' +
+      (mode ? ' inputmode="' + mode + '"' : '') + ' oninput="updateMaaserCharity(0,\'' + key + '\',this.value,this)" /></label>';
+  };
+  return '<details class="charity-details"' + (_charityDetailsOpen ? ' open' : '') + ' ontoggle="_charityDetailsOpen=this.open">' +
+    '<summary><span>הזינו פרטי עמותה</span><span class="material-symbols-rounded" aria-hidden="true">expand_more</span></summary>' +
+    '<div class="charity-fields">' + field("bank", "בנק") + field("branch", "סניף", "numeric") +
+      field("account", "מספר חשבון", "numeric") + field("owner", "ע\"ש") + '</div></details>';
 }
 
 function maaserCappedText(d) {
