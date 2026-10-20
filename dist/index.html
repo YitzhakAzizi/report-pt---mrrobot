@@ -101,8 +101,13 @@
           </button>
         </div>
         <div class="snapshot-row snapshot-row-expenses">
-          <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-expenses-snapshot" onclick="goToBudgetFlowStep(3)" aria-label="חזרה לשלבי ההוצאות">
-            <span class="topbar-snapshot-label"><span>הוצאות</span></span><strong id="topbar-expenses-total">₪0</strong>
+          <button type="button" class="topbar-snapshot-item topbar-snapshot-expenses" id="topbar-expenses-snapshot" onclick="openExpensesSnapshot(event)" aria-label="חזרה לשלבי ההוצאות">
+            <span class="topbar-snapshot-label"><span>הוצאות</span></span>
+            <span class="expense-parts">
+              <span class="expense-part" data-step="budget-flow-expenses"><small>קבועות</small><b id="topbar-fixed-total">₪0</b></span>
+              <span class="expense-part" data-step="budget-flow-variable-expenses"><small>משתנות</small><b id="topbar-variable-total">₪0</b></span>
+              <span class="expense-part" data-step="budget-flow-special-expenses" id="topbar-special-part" hidden><small>מיוחדות</small><b id="topbar-special-total">₪0</b></span>
+            </span>
           </button>
         </div>
       </div>

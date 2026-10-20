@@ -60,13 +60,18 @@ function renderAudienceCopy() {
 function renderTopbarSnapshot() {
   var debts = el("topbar-debts-total");
   var income = el("topbar-income-total");
-  var expenses = el("topbar-expenses-total");
+  var r = AppState.result;
   var donations = el("topbar-donations-total");
   var allocationBalance = el("allocation-balance-total");
   if (debts) renderSnapshotAmount(debts, recoveryDebtBalance(AppState.liabilities));
   if (income) renderSnapshotAmount(income, AppState.result.total || 0);
-  /* כל ההוצאות בכרטיס אחד: קבועות (כולל התחייבויות), משתנות ומיוחדות */
-  if (expenses) renderSnapshotAmount(expenses, (AppState.result.exp || 0) + (AppState.result.insurance || 0) + (AppState.result.liabilityPayments || 0));
+  /* כרטיס ההוצאות: קבועות (כולל ביטוחים והתחייבויות) ומשתנות; מיוחדות רק אם הוזנו */
+  var fixedTotal = (r.fixedExpenses || 0) + (r.subscriptionExpenses || 0) + (r.healthBeautyExpenses || 0) +
+    (r.childrenExpenses || 0) + (r.insurance || 0) + (r.liabilityPayments || 0);
+  if (el("topbar-fixed-total")) el("topbar-fixed-total").textContent = money(fixedTotal);
+  if (el("topbar-variable-total")) el("topbar-variable-total").textContent = money(r.variableExpenses || 0);
+  if (el("topbar-special-total")) el("topbar-special-total").textContent = money(r.oneTimeExpenses || 0);
+  if (el("topbar-special-part")) el("topbar-special-part").hidden = !(r.oneTimeExpenses > 0);
   if (donations) renderSnapshotAmount(donations, AppState.result.maaser || 0);
   updateTopbarDonationVisibility();
   if (allocationBalance) allocationBalance.textContent = money(Math.max(0, AppState.result.balance || 0));
@@ -88,6 +93,13 @@ var SNAPSHOT_STEP_CARDS = [
   {card: "topbar-donations-snapshot", step: "budget-flow-donations", color: "#d97706"},
   {card: "topbar-expenses-snapshot", step: "budget-flow-expenses", lastStep: "budget-flow-special-expenses", color: "#dc2626"}
 ];
+
+/* לחיצה על ריבוע בכרטיס ההוצאות עוברת לשלב שלו; לחיצה על שאר הכרטיס פותחת את הקבועות */
+function openExpensesSnapshot(event) {
+  var part = event && event.target.closest ? event.target.closest(".expense-part") : null;
+  var stepId = part ? part.getAttribute("data-step") : "budget-flow-expenses";
+  goToBudgetFlowStep(BUDGET_FLOW_STEP_IDS.indexOf(stepId));
+}
 
 function stepDots(className) {
   var link = mk("span", className);
@@ -152,6 +164,10 @@ function updateTopbarDonationVisibility() {
     else card.removeAttribute("aria-current");
     item.number.textContent = number;
     item.number.classList.toggle("is-current", isCurrent);
+    /* בכרטיס ההוצאות מודגש גם התת־ריבוע של השלב הנוכחי */
+    Array.prototype.forEach.call(card.querySelectorAll(".expense-part"), function(part) {
+      part.classList.toggle("is-current", BUDGET_FLOW_STEP_IDS.indexOf(part.getAttribute("data-step")) === currentStep);
+    });
   });
   if (snapshotContainer) {
     /* שורה בלי שלב פתוח מוסתרת, והתוכן מתחת לכרטיסים מפנה להם מקום */
