@@ -1,7 +1,7 @@
 "use strict";
 
 /* דיווח שגיאות על המסך: באייפון אין כלי מפתחים, כך שהשגיאה מוצגת למשתמש וניתנת לצילום */
-var APP_VERSION = "62";
+var APP_VERSION = "63";
 function showErrorReport(message) {
   var bar = el("error-report");
   if (!bar) {
@@ -36,6 +36,7 @@ window.addEventListener("unhandledrejection", function(event) {
   loadInvestmentsOverview();
   openBudgetPeriod(AppState.period.month, AppState.period.year);
   addCarTestOnce();
+  addPlainFixedItemsOnce();
   refreshWithoutSaving();
 })();
 
@@ -49,5 +50,20 @@ function addCarTestOnce() {
     items.splice(fuel >= 0 ? fuel + 1 : items.length, 0, {name: "טסט לרכב", val: 0});
     if (AppState.monthHasRecord) saveData();
   }
+  writeStorage(flag, "1");
+}
+
+/* ביטוחים והחזר הלוואה קבוע כשורות רגילות בהוצאות הקבועות. פעם אחת בלבד, כדי שמחיקה תישאר מחיקה */
+function addPlainFixedItemsOnce() {
+  var flag = "addedPlainFixedItems_v1";
+  try { if (localStorage.getItem(flag)) return; } catch(e) { return; }
+  var items = AppState.expenses || (AppState.expenses = []);
+  var added = false;
+  ["ביטוחים", "החזר הלוואה קבוע"].forEach(function(name) {
+    if (items.some(function(item) { return !item.customCategory && item.name === name; })) return;
+    items.push({name: name, val: 0});
+    added = true;
+  });
+  if (added && AppState.monthHasRecord) saveData();
   writeStorage(flag, "1");
 }

@@ -928,14 +928,16 @@ function renderFixedCategoryVisibility() {
     var hasAmount = input && Number(String(input.value).replace(/[^\d.-]/g, "")) > 0;
     var available = !(key === "children" && AppState.profile.children !== true) && !(key === "mortgage" && AppState.profile.mortgage !== true);
     if (!available) return;
-    row.hidden = (FLAT_FIXED_EXPENSES && FLAT_FIXED_SOURCES[key]) || (hidden[key] === true && !hasAmount);
+    /* ביטוחים והחזר הלוואה הם עכשיו שורות רגילות ברשימה; השורות הישנות מוצגות רק אם יש בהן סכום */
+    var replacedByListItem = FLAT_FIXED_EXPENSES && (key === "insurances" || key === "loans") && !hasAmount;
+    row.hidden = (FLAT_FIXED_EXPENSES && FLAT_FIXED_SOURCES[key]) || replacedByListItem || (hidden[key] === true && !hasAmount);
   });
 }
 
 /* ━━ הוצאות קבועות כרשימה אחת (FLAT_FIXED_EXPENSES) ━━
    שם ההוצאה נשאר מחודש לחודש, וגם הסכום (בהוצאות המשתנות הסכום מתאפס) */
 var FLAT_FIXED_ICONS = {
-  "שכר דירה": "key", "ועד בית / מיסי יישוב": "apartment", "אינטרנט": "wifi", "סלולר": "smartphone",
+  "שכר דירה": "key", "ועד בית / מיסי יישוב": "apartment", "ביטוחים": "shield", "החזר הלוואה קבוע": "account_balance", "אינטרנט": "wifi", "סלולר": "smartphone",
   "Netflix": "movie", "צפייה ומוזיקה": "music_note", "חדר כושר / סטודיו": "fitness_center", "תוכנות ואפליקציות": "apps",
   "תרופות": "medication", "טיפולים רפואיים": "medical_services", "טיפולי שיניים": "dentistry", "מספרה": "content_cut",
   "קוסמטיקה וטיפוח": "spa", "מסגרות וחינוך": "school", "צהרון או מטפלת": "child_care", "חוגים": "sports_soccer"
