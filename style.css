@@ -2075,3 +2075,14 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 @keyframes balanceTwinkle{0%,100%{opacity:0;transform:scale(.7) translateY(3px)}35%,65%{opacity:.4;transform:scale(1) translateY(0)}}
 @media (prefers-reduced-motion:reduce){.balance-fx i{animation:none;opacity:.2}}
 .allocation-balance-summary.balance-hero span.tile-fx{position:absolute;inset:0;z-index:0;font-size:inherit}
+/* "סה״כ יתרה": soft blue inner tint like the other tiles, and icons sized and spaced for a long bar */
+.allocation-balance-summary.balance-hero{background:linear-gradient(180deg,#edf4fb,#fff 78%)}
+.balance-fx i{font-size:14px !important;animation:balanceFloat 7.2s ease-in-out infinite}
+.balance-fx i:nth-child(1){right:26%;top:22%;animation-delay:0s}
+.balance-fx i:nth-child(2){right:34%;top:52%;animation-delay:1.2s}
+.balance-fx i:nth-child(3){right:42%;top:20%;animation-delay:2.4s}
+.balance-fx i:nth-child(4){right:50%;top:54%;animation-delay:3.6s}
+.balance-fx i:nth-child(5){right:58%;top:24%;animation-delay:4.8s}
+.balance-fx i:nth-child(6){right:66%;top:50%;animation-delay:6s}
+@keyframes balanceFloat{0%,100%{opacity:0;transform:translateY(6px) scale(.85)}30%,60%{opacity:.32;transform:translateY(0) scale(1)}80%{opacity:0;transform:translateY(-6px) scale(.95)}}
+@media (prefers-reduced-motion:reduce){.balance-fx i{animation:none;opacity:.18}}
