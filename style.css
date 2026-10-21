@@ -2153,3 +2153,17 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 @keyframes modalPop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
 .goal-modal-sub{display:block;margin-top:3px;color:var(--muted);font-size:13px;font-weight:600;line-height:1.4}
 #investment-goal-footer{grid-template-columns:1fr 1fr}
+
+/* goal window: "מה הרעיון?" above the card; name + icon and "סכום נדרש" on one line */
+.goal-idea{margin:4px 2px 12px}
+.goal-idea strong{display:block;margin-bottom:3px;color:var(--text);font-size:15px;font-weight:800}
+.goal-idea p{margin:0;color:var(--muted);font-size:14px;line-height:1.55}
+.overlay-center .goal-header,.overlay-center .goal-card-acc .goal-header{grid-template-columns:auto minmax(0,1fr) 40px !important;grid-template-areas:"meta copy icon" !important;gap:10px}
+.overlay-center .goal-header-meta{width:auto}
+.overlay-center .goal-required-box{width:auto !important;min-width:0 !important;flex:none !important;padding:0 !important;background:none !important;text-align:left;direction:rtl}
+.overlay-center .goal-required-box span{font-size:11px;margin:0}
+.overlay-center .goal-required-box strong{font-size:16px !important;text-align:left}
+/* no empty strip under the buttons */
+.overlay.overlay-center .modal{padding-bottom:0}
+.overlay.overlay-center .modal-ftr{padding-bottom:14px}
+.overlay.overlay-center .modal-total-row[style*="none"]+.investment-goal-footer{margin-top:0}

@@ -113,10 +113,10 @@ function renderInvestGoalsModal() {
   var goalIndex = Math.max(0, Math.min(_visibleInvestmentGoalIndex, GOAL_DEFS.length - 1));
   var gd = GOAL_DEFS[goalIndex];
   var completed = !!AppState.goals[gd.id].completed;
-  /* הכותרת אומרת מה היעד נותן, למשל "ביטחון לטווח הקצר (מכסת שני חודשי מחייה ללא הכנסות)" */
-  var title = el("gen-modal-title");
-  title.innerHTML = escapeHtml(gd.headline) + '<small class="goal-modal-sub">(' + escapeHtml(gd.desc) + ')</small>';
-  body.innerHTML = '<div class="goal-accordion-list">' + buildGoalCardHtml(gd) + '</div>';
+  /* כותרת: מה היעד נותן ("ביטחון לטווח הקצר"); מתחת "מה הרעיון?" בקצרה, ואז כרטיס היעד */
+  el("gen-modal-title").textContent = gd.headline;
+  body.innerHTML = '<div class="goal-idea"><strong>מה הרעיון?</strong><p>' + escapeHtml(gd.idea) + '</p></div>' +
+    '<div class="goal-accordion-list">' + buildGoalCardHtml(gd) + '</div>';
   renderInvestmentGoalFooter(goalIndex, completed);
 }
 
