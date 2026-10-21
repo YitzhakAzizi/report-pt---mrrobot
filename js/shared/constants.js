@@ -5,10 +5,11 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 var MONTHS = ["ינואר", "פברואר", "מרץ", "אפריל", "מאי", "יוני", "יולי", "אוגוסט", "ספטמבר", "אוקטובר", "נובמבר", "דצמבר"];
 
+/* ברירת המחדל של ההוצאות הקבועות: רק שלושה סעיפים; כל השאר מוסיפים לפי הצורך */
 var DEFAULT_EXPENSES = [
-  {name: "ועד בית / מיסי יישוב", val: 0},
-  {name: "ביטוחים", val: 0},
-  {name: "החזר הלוואה קבוע", val: 0}
+  {name: "שכירות", val: 0},
+  {name: "הלוואה קבועה", val: 0},
+  {name: "ביטוח רכב", val: 0}
 ];
 var DEFAULT_CHILDREN_EXPENSES = [
   {name: "מסגרות וחינוך", val: 0},
@@ -33,21 +34,8 @@ var DEFAULT_VARIABLE_EXPENSES = [
 var HOUSING_UTILITY_NAMES = ["חשמל", "מים", "גז", "ארנונה"];
 var FUEL_EXPENSE_NAMES = ["דלק / תחבורה"];
 var SUPERMARKET_EXPENSE_NAMES = ["קניות סופר (מזון ומוצרי ניקוי)"];
-var DEFAULT_SUBSCRIPTIONS = [
-  {name: "אינטרנט", val: 0},
-  {name: "סלולר", val: 0},
-  {name: "Netflix", val: 0},
-  {name: "צפייה ומוזיקה", val: 0},
-  {name: "חדר כושר / סטודיו", val: 0},
-  {name: "תוכנות ואפליקציות", val: 0}
-];
-var DEFAULT_HEALTH_BEAUTY_EXPENSES = [
-  {name: "תרופות", val: 0},
-  {name: "טיפולים רפואיים", val: 0},
-  {name: "טיפולי שיניים", val: 0},
-  {name: "מספרה", val: 0},
-  {name: "קוסמטיקה וטיפוח", val: 0}
-];
+var DEFAULT_SUBSCRIPTIONS = [];
+var DEFAULT_HEALTH_BEAUTY_EXPENSES = [];
 
 var LEGACY_DEFAULT_EXPENSES = [
   {name: "ביטוח רכב (בן זוג)", val: 250},

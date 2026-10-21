@@ -1,7 +1,7 @@
 "use strict";
 
 /* דיווח שגיאות על המסך: באייפון אין כלי מפתחים, כך שהשגיאה מוצגת למשתמש וניתנת לצילום */
-var APP_VERSION = "63";
+var APP_VERSION = "64";
 function showErrorReport(message) {
   var bar = el("error-report");
   if (!bar) {
@@ -36,7 +36,7 @@ window.addEventListener("unhandledrejection", function(event) {
   loadInvestmentsOverview();
   openBudgetPeriod(AppState.period.month, AppState.period.year);
   addCarTestOnce();
-  addPlainFixedItemsOnce();
+  applyFixedDefaultsOnce();
   refreshWithoutSaving();
 })();
 
@@ -53,17 +53,21 @@ function addCarTestOnce() {
   writeStorage(flag, "1");
 }
 
-/* ביטוחים והחזר הלוואה קבוע כשורות רגילות בהוצאות הקבועות. פעם אחת בלבד, כדי שמחיקה תישאר מחיקה */
-function addPlainFixedItemsOnce() {
-  var flag = "addedPlainFixedItems_v1";
+/* ברירת מחדל חדשה להוצאות הקבועות: שכירות, הלוואה קבועה וביטוח רכב.
+   פעם אחת בלבד: סעיפי ברירת המחדל הישנים יורדים רק אם הסכום שלהם 0 (כסף לא נמחק), והשלושה נוספים */
+function applyFixedDefaultsOnce() {
+  /* הרשימה בתוך הפונקציה: היא רצה בזמן הטעינה, לפני שמשתנים בהמשך הקובץ מקבלים ערך */
+  var OLD_FIXED_DEFAULT_NAMES = ["ועד בית / מיסי יישוב", "ביטוחים", "החזר הלוואה קבוע", "אינטרנט", "סלולר", "Netflix", "צפייה ומוזיקה",
+    "חדר כושר / סטודיו", "תוכנות ואפליקציות", "תרופות", "טיפולים רפואיים", "טיפולי שיניים", "מספרה", "קוסמטיקה וטיפוח"];
+  var flag = "fixedDefaults_v2";
   try { if (localStorage.getItem(flag)) return; } catch(e) { return; }
-  var items = AppState.expenses || (AppState.expenses = []);
-  var added = false;
-  ["ביטוחים", "החזר הלוואה קבוע"].forEach(function(name) {
-    if (items.some(function(item) { return !item.customCategory && item.name === name; })) return;
-    items.push({name: name, val: 0});
-    added = true;
+  var keep = function(item) { return item.customCategory || OLD_FIXED_DEFAULT_NAMES.indexOf(item.name) < 0 || Number(item.val) > 0; };
+  AppState.expenses = (AppState.expenses || []).filter(keep);
+  AppState.subscriptions = (AppState.subscriptions || []).filter(keep);
+  AppState.healthBeautyExpenses = (AppState.healthBeautyExpenses || []).filter(keep);
+  DEFAULT_EXPENSES.slice().reverse().forEach(function(def) {
+    if (!AppState.expenses.some(function(item) { return !item.customCategory && item.name === def.name; })) AppState.expenses.unshift(clone(def));
   });
-  if (added && AppState.monthHasRecord) saveData();
+  if (AppState.monthHasRecord) saveData();
   writeStorage(flag, "1");
 }

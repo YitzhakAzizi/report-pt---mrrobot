@@ -937,7 +937,8 @@ function renderFixedCategoryVisibility() {
 /* ━━ הוצאות קבועות כרשימה אחת (FLAT_FIXED_EXPENSES) ━━
    שם ההוצאה נשאר מחודש לחודש, וגם הסכום (בהוצאות המשתנות הסכום מתאפס) */
 var FLAT_FIXED_ICONS = {
-  "שכר דירה": "key", "ועד בית / מיסי יישוב": "apartment", "ביטוחים": "shield", "החזר הלוואה קבוע": "account_balance", "אינטרנט": "wifi", "סלולר": "smartphone",
+  "שכר דירה": "key", "שכירות": "key", "הלוואה קבועה": "account_balance", "ביטוח רכב": "directions_car",
+  "ועד בית / מיסי יישוב": "apartment", "ביטוחים": "shield", "החזר הלוואה קבוע": "account_balance", "אינטרנט": "wifi", "סלולר": "smartphone",
   "Netflix": "movie", "צפייה ומוזיקה": "music_note", "חדר כושר / סטודיו": "fitness_center", "תוכנות ואפליקציות": "apps",
   "תרופות": "medication", "טיפולים רפואיים": "medical_services", "טיפולי שיניים": "dentistry", "מספרה": "content_cut",
   "קוסמטיקה וטיפוח": "spa", "מסגרות וחינוך": "school", "צהרון או מטפלת": "child_care", "חוגים": "sports_soccer"
