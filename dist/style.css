@@ -1999,3 +1999,6 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 .allocation-balance-summary.balance-hero strong{font-size:20px;font-weight:800;color:#163a5f;text-shadow:none}
 .allocation-balance-summary.balance-hero.is-deficit{background:linear-gradient(180deg,#fef2f2,#fff 75%);border-top-color:#dc2626;box-shadow:var(--shadow)}
 .allocation-balance-summary.balance-hero.is-deficit strong{color:#dc2626}
+
+/* no colored strip on top of the tiles */
+.summary-tile,.allocation-balance-summary.balance-hero{border-top:1px solid var(--border)}
