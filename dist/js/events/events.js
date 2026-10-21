@@ -37,6 +37,7 @@ function registerEvents() {
     if (el("history-overlay")) { closePaymentHistory(); return; }
     if (el("percent-picker")) { closePercentPicker(); return; }
     if (el("share-overlay")) { closeShareImage(); return; }
+    if (el("backup-overlay")) { closeBackupDialog(); return; }
     var closers = {
       "payslip-overlay": closePayslipModal, "gen-overlay": closeGenModal, "inc-overlay": closeIncomeModal,
       "liabilities-overlay": closeLiabilitiesModal, "mortgage-overlay": closeMortgageModal, "calendar-overlay": closeCalendarModal

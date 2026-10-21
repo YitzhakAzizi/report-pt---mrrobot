@@ -21,27 +21,80 @@ function buildBackup() {
   return {app: BACKUP_APP_ID, version: BACKUP_VERSION, exportedAt: new Date().toISOString(), data: data};
 }
 
+/* גיבוי: חלון עם שתי דרכים - שמירה/שיתוף כקובץ, או העתקה כטקסט (עובד גם כשהורדת קבצים חסומה) */
 function exportBackup() {
   closeSideMenu();
   var backup;
   try {
     backup = buildBackup();
   } catch(e) {
-    alert("לא הצלחנו לקרוא את הנתונים מהמכשיר לצורך גיבוי.");
+    showBackupDialog("גיבוי הנתונים", '<p class="backup-error">לא הצלחנו לקרוא את הנתונים מהמכשיר לצורך גיבוי.</p>');
     return;
   }
+  var text = JSON.stringify(backup);
   var fileName = "shlita-finansit-backup-" + calendarDateValue(new Date()) + ".json";
-  var blob = new Blob([JSON.stringify(backup, null, 2)], {type: "application/json"});
-  var file = typeof File === "function" ? new File([blob], fileName, {type: blob.type}) : null;
+  var box = showBackupDialog("גיבוי הנתונים",
+    '<p class="backup-hint">שמרו את הגיבוי כקובץ (למשל בקבצים או בוואטסאפ לעצמכם), או העתיקו את הטקסט והדביקו אותו בפתק.</p>' +
+    '<button type="button" class="backup-action" id="backup-save-file"><span class="material-symbols-rounded" aria-hidden="true">ios_share</span><span>שמירה / שיתוף כקובץ</span></button>' +
+    '<button type="button" class="backup-action backup-action-light" id="backup-copy-text"><span class="material-symbols-rounded" aria-hidden="true">content_copy</span><span>העתקה כטקסט</span></button>' +
+    '<textarea class="backup-text" readonly aria-label="טקסט הגיבוי"></textarea><p class="backup-status" id="backup-status" role="status"></p>');
+  var area = box.querySelector(".backup-text");
+  area.value = text;
+  box.querySelector("#backup-save-file").onclick = function() { saveBackupFile(text, fileName); };
+  box.querySelector("#backup-copy-text").onclick = function() { copyBackupText(area); };
+}
 
+function saveBackupFile(text, fileName) {
+  var blob = new Blob([text], {type: "application/json"});
+  var file = typeof File === "function" ? new File([blob], fileName, {type: blob.type}) : null;
   if (file && navigator.share && navigator.canShare && navigator.canShare({files: [file]})) {
     navigator.share({title: "גיבוי שליטה פיננסית", files: [file]}).catch(function(error) {
-      /* ביטול בידי המשתמש אינו כשל; בכל כשל אחר מורידים את הקובץ ישירות */
       if (!error || error.name !== "AbortError") downloadBackupBlob(blob, fileName);
     });
     return;
   }
   downloadBackupBlob(blob, fileName);
+  setBackupStatus("אם הקובץ לא נשמר, השתמשו ב״העתקה כטקסט״.");
+}
+
+function copyBackupText(area) {
+  area.focus();
+  area.select();
+  area.setSelectionRange(0, area.value.length);
+  var done = function() { setBackupStatus("✓ הועתק. הדביקו בפתק או שלחו לעצמכם בוואטסאפ."); };
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(area.value).then(done, function() {
+      try { document.execCommand("copy"); done(); } catch(e) { setBackupStatus("הטקסט מסומן: לחצו עליו לחיצה ארוכה ובחרו ״העתק״."); }
+    });
+    return;
+  }
+  try { document.execCommand("copy"); done(); } catch(e) { setBackupStatus("הטקסט מסומן: לחצו עליו לחיצה ארוכה ובחרו ״העתק״."); }
+}
+
+function setBackupStatus(message) {
+  var status = el("backup-status");
+  if (status) status.textContent = message;
+}
+
+function showBackupDialog(title, html) {
+  closeBackupDialog();
+  var overlay = mk("div", "history-overlay");
+  overlay.id = "backup-overlay";
+  overlay.onclick = function(event) { if (event.target === overlay) closeBackupDialog(); };
+  var box = mk("div", "history-box backup-box");
+  box.setAttribute("role", "dialog");
+  box.setAttribute("aria-modal", "true");
+  box.innerHTML = '<button type="button" class="history-close material-symbols-rounded" aria-label="סגירה">close</button>' +
+    '<h2 class="history-title">' + escapeHtml(title) + '</h2>' + html;
+  box.querySelector(".history-close").onclick = closeBackupDialog;
+  overlay.appendChild(box);
+  document.body.appendChild(overlay);
+  return box;
+}
+
+function closeBackupDialog() {
+  var overlay = el("backup-overlay");
+  if (overlay) overlay.remove();
 }
 
 function downloadBackupBlob(blob, fileName) {
@@ -55,12 +108,24 @@ function downloadBackupBlob(blob, fileName) {
   setTimeout(function() { URL.revokeObjectURL(url); }, 1000);
 }
 
+/* שחזור: מקובץ, או מהדבקת טקסט הגיבוי */
 function chooseBackupFile() {
   closeSideMenu();
-  var input = el("backup-file-input");
-  if (!input) return;
-  input.value = "";
-  input.click();
+  var box = showBackupDialog("שחזור מגיבוי",
+    '<p class="backup-hint">השחזור מחליף את כל נתוני התקציב וההגדרות במכשיר הזה בנתונים מהגיבוי.</p>' +
+    '<button type="button" class="backup-action" id="backup-pick-file"><span class="material-symbols-rounded" aria-hidden="true">upload_file</span><span>בחירת קובץ גיבוי</span></button>' +
+    '<textarea class="backup-text" placeholder="או הדביקו כאן את טקסט הגיבוי" aria-label="טקסט הגיבוי"></textarea>' +
+    '<button type="button" class="backup-action backup-action-light" id="backup-restore-text"><span class="material-symbols-rounded" aria-hidden="true">restore</span><span>שחזור מהטקסט</span></button>' +
+    '<p class="backup-status" id="backup-status" role="status"></p>');
+  box.querySelector("#backup-pick-file").onclick = function() {
+    var input = el("backup-file-input");
+    if (!input) return;
+    input.value = "";
+    input.click();
+  };
+  box.querySelector("#backup-restore-text").onclick = function() {
+    restoreBackupText(box.querySelector(".backup-text").value);
+  };
 }
 
 /* מחזיר את נתוני הגיבוי אם הקובץ תקין, אחרת הודעת שגיאה */
@@ -110,30 +175,42 @@ function restoreBackupData(data) {
 
 function importBackupFile(file) {
   if (!file) return;
+  if (!el("backup-overlay")) chooseBackupFile();
   if (file.size > 5 * 1024 * 1024) {
-    alert("הקובץ גדול מדי לגיבוי של שליטה פיננסית.");
+    setBackupStatus("הקובץ גדול מדי לגיבוי של שליטה פיננסית.");
     return;
   }
   var reader = new FileReader();
-  reader.onload = function() {
-    var backup;
-    try { backup = JSON.parse(reader.result); } catch(e) { backup = null; }
-    var checked = validateBackup(backup);
-    if (checked.error) {
-      alert(checked.error);
-      return;
-    }
-    var exportedAt = new Date(backup.exportedAt);
-    var dateText = isNaN(exportedAt.getTime()) ? "" : " מתאריך " + exportedAt.toLocaleDateString("he-IL");
-    var message = "השחזור יחליף את כל נתוני התקציב וההגדרות במכשיר הזה בנתונים מהגיבוי" + dateText +
-      " (" + checked.monthCount + " חודשים). תלושי שכר שמורים לא ישתנו.\n\nלהמשיך?";
-    if (!window.confirm(message)) return;
+  reader.onload = function() { restoreBackupText(reader.result); };
+  reader.onerror = function() { setBackupStatus("לא הצלחנו לקרוא את הקובץ."); };
+  reader.readAsText(file);
+}
+
+/* בודק את הגיבוי, מבקש אישור בחלון של האפליקציה (חלונות מערכת נחסמים בתוך Claude) ומשחזר */
+function restoreBackupText(text) {
+  var backup;
+  try { backup = JSON.parse(String(text || "").trim()); } catch(e) { backup = null; }
+  var checked = validateBackup(backup);
+  if (checked.error) {
+    setBackupStatus(checked.error);
+    return;
+  }
+  var exportedAt = new Date(backup.exportedAt);
+  var dateText = isNaN(exportedAt.getTime()) ? "" : " מתאריך " + exportedAt.toLocaleDateString("he-IL");
+  var box = el("backup-overlay").querySelector(".backup-box");
+  box.querySelectorAll(".backup-confirm").forEach(function(item) { item.remove(); });
+  var confirmBox = mk("div", "backup-confirm");
+  confirmBox.innerHTML = '<p>להחליף את הנתונים בגיבוי' + escapeHtml(dateText) + ' (' + checked.monthCount + ' חודשים)?</p>' +
+    '<div class="backup-confirm-actions"><button type="button" class="backup-action" id="backup-confirm-yes">כן, לשחזר</button>' +
+    '<button type="button" class="backup-action backup-action-light" id="backup-confirm-no">ביטול</button></div>';
+  box.appendChild(confirmBox);
+  confirmBox.querySelector("#backup-confirm-no").onclick = function() { confirmBox.remove(); };
+  confirmBox.querySelector("#backup-confirm-yes").onclick = function() {
     if (!restoreBackupData(checked.data)) {
-      alert("השחזור נכשל, והנתונים הקודמים נשארו כפי שהיו. ייתכן שהאחסון בדפדפן מלא.");
+      setBackupStatus("השחזור נכשל, והנתונים הקודמים נשארו כפי שהיו. ייתכן שהאחסון בדפדפן מלא.");
       return;
     }
     window.location.reload();
   };
-  reader.onerror = function() { alert("לא הצלחנו לקרוא את הקובץ."); };
-  reader.readAsText(file);
+  confirmBox.scrollIntoView({block: "nearest"});
 }
