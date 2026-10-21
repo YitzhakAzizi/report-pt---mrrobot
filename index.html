@@ -166,7 +166,7 @@
           <span class="side-menu-item-label">שחזור מגיבוי</span>
         </button>
         <input type="file" id="backup-file-input" class="payslip-file-input" accept=".json,application/json" aria-label="בחירת קובץ גיבוי" onchange="importBackupFile(this.files[0])">
-        <p class="side-menu-version">גרסה 18</p>
+        <p class="side-menu-version">גרסה 19</p>
         <p class="side-menu-data-note">הנתונים נשמרים רק בדפדפן הזה. כדאי לגבות מדי פעם. הגיבוי כולל את התקציב וההגדרות, ללא תלושי שכר.</p>
       </section>
     </aside>
@@ -356,7 +356,6 @@
         <p class="allocation-mode-question" id="allocation-mode-question">כיצד תרצו את חודש אוגוסט?</p>
         <p class="allocation-pick-hint pick-hint" id="allocation-pick-hint"><span class="material-symbols-rounded" aria-hidden="true">touch_app</span><span>לחצו לבחירה</span></p>
         <div class="allocation-mode-box" id="allocation-mode-box" aria-label="בחירת אופן החלוקה"></div>
-        <button type="button" class="allocation-custom-btn allocation-custom-wide" id="allocation-custom-btn" onclick="openAllocationSettingsModal()">אני רוצה לחלק לבד</button>
         <div class="budget-flow-loader" id="budget-flow-loader" hidden>
           <span class="budget-flow-spinner" aria-hidden="true"></span>
           <span>מכינים את החלוקה שלך…</span>
@@ -366,6 +365,7 @@
         <button type="button" class="budget-flow-back" onclick="previousBudgetFlowStep()"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
         <button type="button" class="budget-flow-calculate-btn" id="budget-flow-calculate-btn" onclick="calculateBudgetFlow()">תחלק עבורי</button>
       </div>
+      <button type="button" class="allocation-custom-btn allocation-custom-wide" id="allocation-custom-btn" onclick="openAllocationSettingsModal()">אני רוצה לחלק לבד</button>
     </div>
 
     <!-- Actions / Balance Breakdown -->

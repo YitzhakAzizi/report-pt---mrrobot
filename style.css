@@ -1846,3 +1846,12 @@ body::before{background:#16a34a;opacity:.09}
 .history-box .payment-history-row{display:flex;align-items:center;gap:10px}
 .history-box .payment-history-month{flex:1}
 @keyframes historyFade{from{opacity:0}to{opacity:1}}
+
+/* allocation plan: only the remaining total on top, each mode shows its split, "אני רוצה לחלק לבד" at the bottom */
+#budget-main:has(#budget-flow-calculate:not([hidden])) .summary-tiles{display:none}
+@media (max-width:700px){
+  .allocation-mode{min-height:0;padding:10px 4px;gap:2px}
+  .allocation-mode strong{margin-bottom:4px}
+  .allocation-mode span{display:block;font-size:11px;line-height:1.5;white-space:nowrap}
+}
+#budget-flow-calculate .allocation-custom-wide{margin-top:16px}
