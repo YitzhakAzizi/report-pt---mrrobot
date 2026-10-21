@@ -1888,8 +1888,11 @@ body::before{background:#16a34a;opacity:.09}
 @keyframes pickerUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .maaser-percentage-choice:disabled{opacity:.4;cursor:not-allowed}
 
-/* reorder: drag the handle up or down */
-.drag-handle{flex:0 0 26px;width:26px;height:40px;display:flex;align-items:center;justify-content:center;color:#a3acb9;font-size:22px;
-  cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
-.flat-expense-row.is-dragging{position:relative;z-index:2;background:var(--card);box-shadow:0 8px 24px rgba(15,23,42,.16);border-radius:12px}
+/* reorder like the iPhone: hold ☰ on the right, lift the row, the others slide to make room */
+.flat-expense-row .drag-handle{flex:0 0 28px;width:28px;height:44px;margin-inline-end:-4px;display:flex;align-items:center;justify-content:center;
+  color:#b0b7c3;font-size:22px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.flat-expense-row.reorder-active{position:relative;transition:transform .18s ease}
+.flat-expense-row.is-dragging{z-index:5;transition:none;background:var(--card);border-radius:14px;box-shadow:0 14px 34px rgba(15,23,42,.22)}
 .flat-expense-row.is-dragging .drag-handle{color:var(--info);cursor:grabbing}
+.flat-expense-row.is-dropping{transition:transform .18s ease}
+body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:none}

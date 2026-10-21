@@ -359,7 +359,7 @@ function renderFlatVariableExpenses() {
     };
     right.appendChild(amount);
     right.appendChild(remove);
-    right.appendChild(dragHandle(display.label || item.name || "ההוצאה"));
+    row.appendChild(dragHandle(display.label || item.name || "ההוצאה"));
     row.appendChild(label);
     row.appendChild(right);
     list.appendChild(row);
@@ -937,7 +937,7 @@ function buildFlatFixedRow(item, collection) {
   };
   right.appendChild(amount);
   right.appendChild(remove);
-  right.appendChild(dragHandle(item.name || "ההוצאה"));
+  row.appendChild(dragHandle(item.name || "ההוצאה"));
   row.appendChild(label);
   row.appendChild(right);
   return row;
