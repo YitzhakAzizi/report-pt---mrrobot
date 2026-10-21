@@ -166,7 +166,7 @@
           <span class="side-menu-item-label">שחזור מגיבוי</span>
         </button>
         <input type="file" id="backup-file-input" class="payslip-file-input" accept=".json,application/json" aria-label="בחירת קובץ גיבוי" onchange="importBackupFile(this.files[0])">
-        <p class="side-menu-version">גרסה 33</p>
+        <p class="side-menu-version">גרסה 34</p>
         <p class="side-menu-data-note">הנתונים נשמרים רק בדפדפן הזה. כדאי לגבות מדי פעם. הגיבוי כולל את התקציב וההגדרות, ללא תלושי שכר.</p>
       </section>
     </aside>
@@ -176,9 +176,9 @@
 
     <!-- Summary tiles: income, fixed and variable expenses in one row -->
     <div class="summary-tiles" aria-label="סיכום החודש">
-      <button type="button" class="summary-tile summary-income" onclick="goToBudgetFlowStep('budget-flow-income')"><span>הכנסות</span><strong id="summary-income">₪0</strong></button>
-      <button type="button" class="summary-tile summary-fixed" onclick="goToBudgetFlowStep('budget-flow-expenses')"><span>הוצאות קבועות</span><strong id="summary-fixed">₪0</strong></button>
-      <button type="button" class="summary-tile summary-variable" onclick="goToBudgetFlowStep('budget-flow-variable-expenses')"><span>הוצאות משתנות</span><strong id="summary-variable">₪0</strong></button>
+      <button type="button" class="summary-tile summary-income" onclick="goToBudgetFlowStep('budget-flow-income')"><span class="tile-fx tile-fx-rain" aria-hidden="true"><i>💵</i><i>🪙</i><i>💵</i><i>₪</i><i>🪙</i><i>💵</i><i>$</i><i>🪙</i></span><span>הכנסות</span><strong id="summary-income">₪0</strong></button>
+      <button type="button" class="summary-tile summary-fixed" onclick="goToBudgetFlowStep('budget-flow-expenses')"><span class="tile-fx tile-fx-fly" aria-hidden="true"><i>💸</i><i>💸</i><i>₪</i><i>💸</i><i>💸</i><i>₪</i></span><span>הוצאות קבועות</span><strong id="summary-fixed">₪0</strong></button>
+      <button type="button" class="summary-tile summary-variable" onclick="goToBudgetFlowStep('budget-flow-variable-expenses')"><span class="tile-fx tile-fx-fly" aria-hidden="true"><i>🛒</i><i>🧾</i><i>💸</i><i>🛒</i><i>🧾</i><i>💸</i></span><span>הוצאות משתנות</span><strong id="summary-variable">₪0</strong></button>
     </div>
 
     <!-- Debts: shown first only in recovery mode -->
@@ -321,7 +321,7 @@
 
     <!-- Tithe -->
     <div class="budget-flow-step" id="budget-flow-donations" hidden>
-      <div id="donation-balance" class="allocation-balance-summary" aria-live="polite"></div>
+      <div id="donation-balance" class="allocation-balance-summary balance-hero" aria-live="polite"></div>
       <h2 class="budget-flow-stage-title">הגדירו תרומות ומעשרות</h2>
       <div class="maaser-no-balance" id="maaser-no-balance" role="status" hidden><span class="material-symbols-rounded" aria-hidden="true">info</span><span>לא נותרה יתרה זמינה לתרומה החודש.</span></div>
       <div class="maaser-mode-box" id="maaser-mode-box"></div>
@@ -337,7 +337,7 @@
 
     <!-- Calculate allocation -->
     <div class="budget-flow-step" id="budget-flow-calculate" hidden>
-      <div id="pre-allocation-balance" class="allocation-balance-summary" aria-live="polite"></div>
+      <div id="pre-allocation-balance" class="allocation-balance-summary balance-hero" aria-live="polite"></div>
       <h2 class="budget-flow-stage-title">הגדרת תקציב לחודש הקרוב</h2>
       <div class="recovery-overview" id="recovery-overview" aria-label="סיכום חובות והוצאות" hidden>
         <div><span>חובות</span><strong id="recovery-debts-total">₪0</strong></div>
@@ -370,7 +370,7 @@
 
     <!-- Actions / Balance Breakdown -->
     <div class="budget-flow-step" id="budget-flow-result" hidden>
-      <div class="allocation-balance-summary" aria-live="polite">
+      <div class="allocation-balance-summary balance-hero" aria-live="polite">
         <span>סה״כ יתרה</span>
         <strong id="allocation-balance-total">₪0</strong>
       </div>
