@@ -61,6 +61,8 @@ document.addEventListener("touchstart", function(event) {
     }
     closeOpenSwipe();
   }
+  /* ידית הסידור גוררת מעלה ומטה, לא מוחקת */
+  if (event.target.closest(".drag-handle")) { _swipe = null; return; }
   /* בזמן עריכת שם (בחירת טקסט בשדה) הגרירה לא מוחקת */
   if (isEditingText(event.target)) { _swipe = null; return; }
   var found = swipeTarget(event.target);

@@ -407,6 +407,8 @@ function normalizeLivingExpenses(items) {
     if (!customCategory && (name === "מזון" || name === "קניות סופר - מזון ומוצרי ניקוי")) name = "קניות סופר (מזון ומוצרי ניקוי)";
     if (!customCategory && (name === "דלק" || name === "דלק ותחבורה")) name = "דלק / תחבורה";
     var normalizedItem = {name: name, val: Number(item && item.val) || 0};
+    /* הסדר שהמשתמשים בחרו בגרירה */
+    if (item && typeof item.order === "number") normalizedItem.order = item.order;
     if (customCategory) {
       normalizedItem.customCategory = true;
       if (Array.isArray(item.items)) {

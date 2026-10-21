@@ -310,10 +310,12 @@ function renderFlatVariableExpenses() {
   });
   if (list.contains(document.activeElement)) return; /* לא בונים מחדש בזמן הקלדה */
   list.innerHTML = "";
-  (AppState.variableExpenses || []).forEach(function(item, index) {
-    if (item.customCategory) return;
+  enableRowReorder(list);
+  var items = (AppState.variableExpenses || []).filter(function(item) { return !item.customCategory; });
+  sortByUserOrder(items, function(item) { return item; }).forEach(function(item) {
     var display = FLAT_VARIABLE_DISPLAY[item.name] || {};
     var row = mk("div", "irow flat-expense-row");
+    row._item = item;
     var label = mk("div", "ilabel");
     var icon = mkText("span", "row-icon material-symbols-rounded", display.icon || "receipt_long");
     icon.setAttribute("aria-hidden", "true");
@@ -357,6 +359,7 @@ function renderFlatVariableExpenses() {
     };
     right.appendChild(amount);
     right.appendChild(remove);
+    right.appendChild(dragHandle(display.label || item.name || "ההוצאה"));
     row.appendChild(label);
     row.appendChild(right);
     list.appendChild(row);
@@ -879,18 +882,23 @@ function renderFlatFixedExpenses() {
   if (!FLAT_FIXED_EXPENSES) { list.innerHTML = ""; return; }
   if (list.contains(document.activeElement)) return; /* לא בונים מחדש בזמן הקלדה */
   list.innerHTML = "";
+  enableRowReorder(list);
+  var entries = [];
   FLAT_FIXED_COLLECTIONS.forEach(function(collection) {
     if (collection.onlyWith && AppState.profile[collection.onlyWith] !== true) return;
     var items = collection.key === "expenses" ? getActiveFixedExpenseItems() : (AppState[collection.key] || []);
     items.forEach(function(item) {
-      if (item.customCategory) return;
-      list.appendChild(buildFlatFixedRow(item, collection));
+      if (!item.customCategory) entries.push({item: item, collection: collection});
     });
+  });
+  sortByUserOrder(entries, function(entry) { return entry.item; }).forEach(function(entry) {
+    list.appendChild(buildFlatFixedRow(entry.item, entry.collection));
   });
 }
 
 function buildFlatFixedRow(item, collection) {
   var row = mk("div", "irow flat-expense-row");
+  row._item = item;
   var label = mk("div", "ilabel");
   var icon = mkText("span", "row-icon material-symbols-rounded", FLAT_FIXED_ICONS[item.name] || collection.icon);
   icon.setAttribute("aria-hidden", "true");
@@ -929,6 +937,7 @@ function buildFlatFixedRow(item, collection) {
   };
   right.appendChild(amount);
   right.appendChild(remove);
+  right.appendChild(dragHandle(item.name || "ההוצאה"));
   row.appendChild(label);
   row.appendChild(right);
   return row;

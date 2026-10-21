@@ -1887,3 +1887,9 @@ body::before{background:#16a34a;opacity:.09}
 .percent-drum-item.is-center{color:#000;font-size:22px;font-weight:500}
 @keyframes pickerUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
 .maaser-percentage-choice:disabled{opacity:.4;cursor:not-allowed}
+
+/* reorder: drag the handle up or down */
+.drag-handle{flex:0 0 26px;width:26px;height:40px;display:flex;align-items:center;justify-content:center;color:#a3acb9;font-size:22px;
+  cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
+.flat-expense-row.is-dragging{position:relative;z-index:2;background:var(--card);box-shadow:0 8px 24px rgba(15,23,42,.16);border-radius:12px}
+.flat-expense-row.is-dragging .drag-handle{color:var(--info);cursor:grabbing}
