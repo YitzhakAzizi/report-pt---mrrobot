@@ -1866,3 +1866,5 @@ body::before{background:#16a34a;opacity:.09}
   .maaser-desktop-only{display:none}
   .maaser-amount-row{margin-top:0}
 }
+/* donation amount box: same white background and border as the percent box */
+#calculator-app .maaser-amount-row .maaser-summary-input input{height:44px;background:#fff;border:1.5px solid var(--border);border-radius:12px;color:var(--text)}
