@@ -21,6 +21,7 @@ var DEFAULT_ONE_TIME_EXPENSES = [
 ];
 var DEFAULT_VARIABLE_EXPENSES = [
   {name: "דלק / תחבורה", val: 0},
+  {name: "טסט לרכב", val: 0},
   {name: "קניות סופר (מזון ומוצרי ניקוי)", val: 0},
   {name: "חשמל", val: 0},
   {name: "מים", val: 0},

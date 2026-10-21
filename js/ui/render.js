@@ -313,6 +313,7 @@ var FLAT_VARIABLE_DISPLAY = {
   "גז": {icon: "local_fire_department"},
   "ארנונה": {icon: "apartment"},
   "דלק / תחבורה": {icon: "local_gas_station", label: "דלק"},
+  "טסט לרכב": {icon: "car_repair"},
   "קניות סופר (מזון ומוצרי ניקוי)": {icon: "shopping_cart", label: "קניות סופר"}
 };
 

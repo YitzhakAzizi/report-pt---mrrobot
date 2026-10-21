@@ -1,7 +1,7 @@
 "use strict";
 
 /* דיווח שגיאות על המסך: באייפון אין כלי מפתחים, כך שהשגיאה מוצגת למשתמש וניתנת לצילום */
-var APP_VERSION = "58";
+var APP_VERSION = "59";
 function showErrorReport(message) {
   var bar = el("error-report");
   if (!bar) {
@@ -35,5 +35,19 @@ window.addEventListener("unhandledrejection", function(event) {
   loadProfileSettings();
   loadInvestmentsOverview();
   openBudgetPeriod(AppState.period.month, AppState.period.year);
+  addCarTestOnce();
   refreshWithoutSaving();
 })();
+
+/* "טסט לרכב" נוסף להוצאות המשתנות. פעם אחת בלבד, כדי שמחיקה שלו בהמשך תישאר מחיקה */
+function addCarTestOnce() {
+  var flag = "addedCarTest_v1";
+  try { if (localStorage.getItem(flag)) return; } catch(e) { return; }
+  var items = AppState.variableExpenses || [];
+  if (!items.some(function(item) { return !item.customCategory && item.name === "טסט לרכב"; })) {
+    var fuel = items.findIndex(function(item) { return item.name === "דלק / תחבורה"; });
+    items.splice(fuel >= 0 ? fuel + 1 : items.length, 0, {name: "טסט לרכב", val: 0});
+    if (AppState.monthHasRecord) saveData();
+  }
+  writeStorage(flag, "1");
+}
