@@ -63,6 +63,9 @@ function renderTopbarSnapshot() {
   var fixedTotal = (r.fixedExpenses || 0) + (r.subscriptionExpenses || 0) + (r.healthBeautyExpenses || 0) +
     (r.childrenExpenses || 0) + (r.insurance || 0) + (r.liabilityPayments || 0);
   if (el("topbar-fixed-total")) el("topbar-fixed-total").textContent = money(fixedTotal);
+  if (el("summary-income")) el("summary-income").textContent = money(r.total || 0);
+  if (el("summary-fixed")) el("summary-fixed").textContent = money(fixedTotal);
+  if (el("summary-variable")) el("summary-variable").textContent = money(r.variableExpenses || 0);
   if (el("topbar-variable-total")) el("topbar-variable-total").textContent = money(r.variableExpenses || 0);
   if (el("topbar-special-total")) el("topbar-special-total").textContent = money(r.oneTimeExpenses || 0);
   if (el("topbar-special-part")) el("topbar-special-part").hidden = !(r.oneTimeExpenses > 0);
@@ -239,6 +242,7 @@ function renderFields() {
   if (liabilitiesEl) liabilitiesEl.value = Math.round(AppState.result.loanPayments + (AppState.profile.debtStatus ? 0 : AppState.result.debtPayments));
   if (mortgageEl) mortgageEl.value = Math.round(AppState.result.mortgagePayments);
   renderFixedCategoryVisibility();
+  renderFlatFixedExpenses();
   renderCustomExpenseCategories();
   renderFlatVariableExpenses();
 
@@ -292,7 +296,7 @@ var FLAT_VARIABLE_DISPLAY = {
   "גז": {icon: "local_fire_department"},
   "ארנונה": {icon: "apartment"},
   "דלק / תחבורה": {icon: "local_gas_station", label: "דלק"},
-  "קניות סופר (מזון ומוצרי ניקוי)": {icon: "shopping_cart", label: "קניות סופר", sub: "מזון ומוצרי ניקוי"}
+  "קניות סופר (מזון ומוצרי ניקוי)": {icon: "shopping_cart", label: "קניות סופר"}
 };
 
 function renderFlatVariableExpenses() {
@@ -847,22 +851,103 @@ function flashSaved() {
   if (!failed) _saveTimer = setTimeout(function() { dot.classList.remove("show"); }, 1800);
 }
 
-/* קטגוריה קבועה שנמחקה יורדת מהרשימה, אלא אם יש בה סכום (כסף לא מוסתר לעולם) */
+/* קטגוריה קבועה שנמחקה יורדת מהרשימה, אלא אם יש בה סכום (כסף לא מוסתר לעולם).
+   ברשימה האחת, הסעיפים של דיור/מנויים/בריאות/ילדים מוצגים כשורות נפרדות במקום הקטגוריה */
+var FLAT_FIXED_SOURCES = {housing: true, subscriptions: true, healthBeauty: true, children: true};
 function renderFixedCategoryVisibility() {
   var hidden = AppState.profile.hiddenFixedCategories || {};
-  var restoreList = el("restore-fixed-categories");
-  var restoreHtml = "";
   document.querySelectorAll("#budget-flow-expenses .irow[data-fixed-category]").forEach(function(row) {
     var key = row.getAttribute("data-fixed-category");
     var input = row.querySelector("input");
     var hasAmount = input && Number(String(input.value).replace(/[^\d.-]/g, "")) > 0;
     var available = !(key === "children" && AppState.profile.children !== true) && !(key === "mortgage" && AppState.profile.mortgage !== true);
-    var isHidden = hidden[key] === true && !hasAmount;
-    if (available) row.hidden = isHidden;
-    if (available && isHidden) {
-      restoreHtml += '<button type="button" class="additional-income-add restore-salary" onclick="restoreFixedCategory(\'' + key + '\')">' +
-        '<span class="material-symbols-rounded" aria-hidden="true">add</span><span>' + FIXED_CATEGORY_LABELS[key] + '</span></button>';
-    }
+    if (!available) return;
+    row.hidden = (FLAT_FIXED_EXPENSES && FLAT_FIXED_SOURCES[key]) || (hidden[key] === true && !hasAmount);
   });
-  if (restoreList) restoreList.innerHTML = restoreHtml;
+}
+
+/* ━━ הוצאות קבועות כרשימה אחת (FLAT_FIXED_EXPENSES) ━━
+   שם ההוצאה נשאר מחודש לחודש, וגם הסכום (בהוצאות המשתנות הסכום מתאפס) */
+var FLAT_FIXED_ICONS = {
+  "שכר דירה": "key", "ועד בית / מיסי יישוב": "apartment", "אינטרנט": "wifi", "סלולר": "smartphone",
+  "Netflix": "movie", "צפייה ומוזיקה": "music_note", "חדר כושר / סטודיו": "fitness_center", "תוכנות ואפליקציות": "apps",
+  "תרופות": "medication", "טיפולים רפואיים": "medical_services", "טיפולי שיניים": "dentistry", "מספרה": "content_cut",
+  "קוסמטיקה וטיפוח": "spa", "מסגרות וחינוך": "school", "צהרון או מטפלת": "child_care", "חוגים": "sports_soccer"
+};
+var FLAT_FIXED_COLLECTIONS = [
+  {key: "expenses", icon: "home"},
+  {key: "subscriptions", icon: "subscriptions"},
+  {key: "healthBeautyExpenses", icon: "spa"},
+  {key: "childrenExpenses", icon: "family_restroom", onlyWith: "children"}
+];
+
+function renderFlatFixedExpenses() {
+  var list = el("flat-fixed-expenses-list");
+  var addLabel = el("add-fixed-label");
+  if (addLabel) addLabel.textContent = FLAT_FIXED_EXPENSES ? "הוסף הוצאה" : "הוסף קטגוריה";
+  if (!list) return;
+  if (!FLAT_FIXED_EXPENSES) { list.innerHTML = ""; return; }
+  if (list.contains(document.activeElement)) return; /* לא בונים מחדש בזמן הקלדה */
+  list.innerHTML = "";
+  FLAT_FIXED_COLLECTIONS.forEach(function(collection) {
+    if (collection.onlyWith && AppState.profile[collection.onlyWith] !== true) return;
+    var items = collection.key === "expenses" ? getActiveFixedExpenseItems() : (AppState[collection.key] || []);
+    items.forEach(function(item) {
+      if (item.customCategory) return;
+      list.appendChild(buildFlatFixedRow(item, collection));
+    });
+  });
+}
+
+function buildFlatFixedRow(item, collection) {
+  var row = mk("div", "irow flat-expense-row");
+  var label = mk("div", "ilabel");
+  var icon = mkText("span", "row-icon material-symbols-rounded", FLAT_FIXED_ICONS[item.name] || collection.icon);
+  icon.setAttribute("aria-hidden", "true");
+  label.appendChild(icon);
+  var text = mk("div", "flat-expense-text");
+  var name = document.createElement("input");
+  name.type = "text";
+  name.className = "additional-income-name";
+  name.value = item.name || "";
+  name.placeholder = "שם ההוצאה";
+  name.setAttribute("aria-label", "שם ההוצאה");
+  name.oninput = function() { item.name = name.value; saveData(); flashSaved(); };
+  name.onkeydown = function(event) { if (event.key === "Enter") name.blur(); };
+  text.appendChild(name);
+  label.appendChild(text);
+
+  var right = mk("div", "iright");
+  var amount = document.createElement("input");
+  amount.type = "number";
+  amount.min = "0";
+  amount.inputMode = "decimal";
+  amount.placeholder = "0";
+  amount.value = Number(item.val) || "";
+  amount.setAttribute("aria-label", "סכום " + (item.name || "ההוצאה"));
+  amount.oninput = function() { item.val = toAmount(amount.value); refreshAfterInlineEdit(); };
+  var remove = mkText("button", "custom-category-remove material-symbols-rounded", "delete");
+  remove.type = "button";
+  remove.setAttribute("aria-label", "מחיקת " + (item.name || "ההוצאה"));
+  remove.onclick = function() {
+    askDeleteExpenseCategory(item.name || "ההוצאה", function() {
+      var items = AppState[collection.key] || [];
+      var position = items.indexOf(item);
+      if (position >= 0) items.splice(position, 1);
+      pipeline();
+    });
+  };
+  right.appendChild(amount);
+  right.appendChild(remove);
+  row.appendChild(label);
+  row.appendChild(right);
+  return row;
+}
+
+function addFixedExpense() {
+  if (!FLAT_FIXED_EXPENSES) { addCustomExpenseCategory("expenses"); return; }
+  AppState.expenses.push({name: "", val: 0});
+  pipeline();
+  var names = document.querySelectorAll("#flat-fixed-expenses-list .additional-income-name");
+  if (names.length) names[names.length - 1].focus();
 }

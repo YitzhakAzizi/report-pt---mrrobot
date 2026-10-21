@@ -298,9 +298,6 @@ function openModal(type) {
     if (AppState.profile.renting && !fixedExpenseItems.some(isRentExpense)) {
       fixedExpenseItems.unshift({name: "שכר דירה", val: 0});
     }
-    if (!fixedExpenseItems.some(function(item) { return item.name === "ועד בית / מיסי יישוב"; })) {
-      fixedExpenseItems.push({name: "ועד בית / מיסי יישוב", val: 0});
-    }
     appendExpenseGroup(body, "דיור", "", fixedExpenseItems, "expenses", "הוסף הוצאת דיור");
   }
 
@@ -812,7 +809,7 @@ function confirmExpenseDelete() {
   if (opener && opener.isConnected) opener.focus();
 }
 
-/* מחיקת קטגוריה קבועה: הסכומים נמחקים והשורה יורדת מהרשימה. אפשר להחזיר אותה בכפתור שמתחת */
+/* מחיקת קטגוריה קבועה: הסכומים נמחקים והשורה יורדת מהרשימה */
 function confirmClearExpenseCategory(key, name) {
   if (key === "loans" && AppState.profile.debtStatus) name = "הלוואות";
   askDeleteExpenseCategory(name, function() {
@@ -822,12 +819,6 @@ function confirmClearExpenseCategory(key, name) {
     }
     clearExpenseCategory(key);
   }, key === "loans" || key === "mortgage");
-}
-
-function restoreFixedCategory(key) {
-  delete AppState.profile.hiddenFixedCategories[key];
-  saveProfileSettings();
-  pipeline();
 }
 
 function clearExpenseCategory(key) {

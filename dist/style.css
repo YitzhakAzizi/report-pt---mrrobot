@@ -1812,11 +1812,27 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 .liability-editor-list:has(.expense-detail-row){gap:0}
 .insurance-edit-list:has(.expense-detail-row){gap:0}
 @media (max-width:700px){.insurance-row,.loan-editor-row,.debt-editor-row{flex-wrap:nowrap}.insurance-row .exp-name,.loan-editor-row .exp-name,.debt-editor-row .exp-name{flex:1 1 auto}}
-/* deleted fixed categories can be brought back */
-.restore-category-list{display:flex;flex-direction:column;gap:8px}
-.restore-category-list:empty{display:none}
 /* details pages (insurance, loans) */
 .financial-insurance-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;width:100%}
 .loan-detail-card{margin-bottom:10px;outline:none}
 .loan-detail-card:focus{box-shadow:0 0 0 2px var(--border-f)}
 .loan-detail-group-title{margin:14px 0 8px;font-size:15px;color:var(--text)}
+
+/* summary tiles: income, fixed and variable in one row (the numbered step cards are hidden) */
+.topbar .topbar-financial-snapshot{display:none}
+.summary-tiles{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;width:100%;max-width:760px;margin:0 auto 14px}
+.summary-tile{display:flex;flex-direction:column;align-items:center;gap:2px;min-width:0;padding:10px 6px;border:1px solid var(--border);border-top:3px solid var(--tile-color);
+  border-radius:14px;background:var(--card);box-shadow:var(--shadow);font:inherit;color:var(--text);cursor:pointer}
+.summary-tile span{font-size:12px;font-weight:700;color:var(--muted);white-space:nowrap}
+.summary-tile strong{font-family:'Rubik',sans-serif;font-size:16px;font-weight:800;color:var(--tile-color);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
+.summary-income{--tile-color:#16a34a}
+.summary-fixed{--tile-color:#dc2626}
+.summary-variable{--tile-color:#d97706}
+@media (max-width:380px){.summary-tile span{font-size:11px}.summary-tile strong{font-size:14px}}
+
+/* delicate green ornaments behind the app, also on phones */
+@media (max-width:700px){
+  body::before{display:block;opacity:.10}
+  body{background:#f3f6f4}
+}
+body::before{background:#16a34a;opacity:.09}
