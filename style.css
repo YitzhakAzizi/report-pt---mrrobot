@@ -1827,7 +1827,7 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 .summary-tile strong{font-family:'Rubik',sans-serif;font-size:16px;font-weight:800;color:var(--tile-color);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100%}
 .summary-income{--tile-color:#16a34a}
 .summary-fixed{--tile-color:#dc2626}
-.summary-variable{--tile-color:#d97706}
+.summary-variable{--tile-color:#dc2626}
 @media (max-width:380px){.summary-tile span{font-size:11px}.summary-tile strong{font-size:14px}}
 
 /* delicate green ornaments behind the app, also on phones */
