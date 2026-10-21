@@ -31,25 +31,71 @@ function renderMaaser(d) {
     '<div class="maaser-desktop-only">' + maaserPercentageChoicesHtml() + '</div>' +
     /* שורה אחת: "הגדר", משמאלו אחוז (גלגלת) והכי משמאל הסכום. שניהם ניתנים לעריכה */
     '<div class="maaser-summary maaser-amount-row"><span>הגדר</span>' +
-      '<select class="maaser-percent-wheel" aria-label="אחוז לתרומה" onchange="setMaaserPercentagePreset(Number(this.value))">' +
-        maaserPercentOptionsHtml(AppState.settings.maaserPercent) + '</select>' +
+      '<div class="percent-drum-wrap"><div class="percent-drum" id="percent-drum" tabindex="0" role="listbox" aria-label="אחוז לתרומה">' +
+        maaserPercentOptionsHtml(AppState.settings.maaserPercent) + '</div></div>' +
       '<div class="maaser-summary-input"><input type="number" value="' +
         formatMaaserSettingsNumber(d.maaserRequested) + '" min="0" step="any" inputmode="decimal" aria-label="סכום לתרומה" ' +
         'onchange="saveMainMaaserAmount(this.value)" /><b>₪</b></div>' +
     '</div>' +
     (d.maaserCapped ? '<p class="maaser-capped-note maaser-desktop-only" role="status">' + escapeHtml(maaserCappedText(d)) + '</p>' : '') +
     '<div class="maaser-validation" id="maaser-validation">' + getMaaserValidationMessage() + '</div>';
+  initPercentDrum();
 }
 
-/* אפשרויות הגלגלת: אותם אחוזים כמו בכפתורים. אחוז שחושב מסכום שהוקלד מופיע רק כשהוא הנבחר */
-function maaserPercentOptionsHtml(current) {
+/* גלגלת אחוזים כמו בכיוון שעון: גוללים, והערך שנעצר במרכז נבחר.
+   אותם אחוזים כמו בכפתורים; אחוז שחושב מסכום שהוקלד מופיע רק כשהוא הנבחר */
+var PERCENT_DRUM_ROW = 40;
+
+function maaserPercentValues(current) {
   var values = MAASER_PRESETS.slice();
   current = Math.round((Number(current) || 0) * 100) / 100;
   if (values.indexOf(current) < 0) values.push(current);
-  values.sort(function(a, b) { return a - b; });
-  return values.map(function(value) {
-    return '<option value="' + value + '"' + (value === current ? ' selected' : '') + '>' + value + '%</option>';
+  return values.sort(function(a, b) { return a - b; });
+}
+
+function maaserPercentOptionsHtml(current) {
+  current = Math.round((Number(current) || 0) * 100) / 100;
+  return maaserPercentValues(current).map(function(value) {
+    return '<div class="percent-drum-item" role="option" data-value="' + value + '" aria-selected="' + (value === current) + '">' + value + '%</div>';
   }).join("");
+}
+
+function initPercentDrum() {
+  var drum = el("percent-drum");
+  if (!drum) return;
+  var items = Array.prototype.slice.call(drum.querySelectorAll(".percent-drum-item"));
+  var selected = items.findIndex(function(item) { return item.getAttribute("aria-selected") === "true"; });
+  drum.scrollTop = Math.max(0, selected) * PERCENT_DRUM_ROW;
+  var timer = null;
+  var markCenter = function() {
+    var index = Math.max(0, Math.min(items.length - 1, Math.round(drum.scrollTop / PERCENT_DRUM_ROW)));
+    items.forEach(function(item, i) { item.classList.toggle("is-center", i === index); });
+    return index;
+  };
+  markCenter();
+  /* הבחירה נקבעת כשהגלילה נעצרת */
+  var touching = false;
+  var settle = function() {
+    clearTimeout(timer);
+    timer = setTimeout(function() {
+      if (touching) return;
+      var value = Number(items[markCenter()].getAttribute("data-value"));
+      if (Math.abs(value - (Number(AppState.settings.maaserPercent) || 0)) > 0.004) setMaaserPercentagePreset(value);
+    }, 160);
+  };
+  drum.addEventListener("scroll", function() { markCenter(); settle(); }, {passive: true});
+  /* כל עוד האצבע על הגלגלת לא בוחרים */
+  drum.addEventListener("touchstart", function() { touching = true; }, {passive: true});
+  drum.addEventListener("touchend", function() { touching = false; settle(); }, {passive: true});
+  items.forEach(function(item, i) {
+    item.onclick = function() { drum.scrollTo({top: i * PERCENT_DRUM_ROW, behavior: "smooth"}); };
+  });
+  drum.onkeydown = function(event) {
+    var step = event.key === "ArrowDown" ? 1 : event.key === "ArrowUp" ? -1 : 0;
+    if (!step) return;
+    event.preventDefault();
+    drum.scrollTo({top: (markCenter() + step) * PERCENT_DRUM_ROW, behavior: "smooth"});
+  };
 }
 
 /* פרטי העמותה: מלבן שנפתח בלחיצה, עם הפרטים היבשים בלבד */
