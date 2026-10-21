@@ -115,7 +115,8 @@ function renderInvestGoalsModal() {
   var completed = !!AppState.goals[gd.id].completed;
   /* כותרת: מה היעד נותן ("ביטחון לטווח הקצר"); מתחת "מה הרעיון?" בקצרה, ואז כרטיס היעד */
   el("gen-modal-title").textContent = gd.headline;
-  body.innerHTML = '<div class="goal-idea"><strong>מה הרעיון?</strong><p>' + escapeHtml(gd.idea) + '</p></div>' +
+  body.innerHTML = '<div class="goal-idea"><strong>מה הרעיון?</strong>' + goalIdeaHtml(gd.id) +
+    '<p class="term-tip" id="term-tip" hidden></p></div>' +
     '<div class="goal-accordion-list">' + buildGoalCardHtml(gd) + '</div>';
   renderInvestmentGoalFooter(goalIndex, completed);
 }
@@ -124,13 +125,13 @@ function renderInvestmentGoalFooter(goalIndex, completed) {
   var footer = el("investment-goal-footer");
   if (!footer) return;
 
-  footer.innerHTML =
-    '<button type="button" class="investment-goal-footer-nav" onclick="showPreviousInvestmentGoal()"' +
-      (goalIndex === 0 ? ' disabled' : '') + '>' +
-      '<span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזור</span></button>' +
-    '<button type="button" class="investment-goal-footer-nav investment-goal-footer-next" onclick="showNextInvestmentGoal()"' +
-      (goalIndex === GOAL_DEFS.length - 1 ? ' disabled' : '') + '>' +
-      '<span>הבא</span><span class="material-symbols-rounded" aria-hidden="true">arrow_back</span></button>';
+  /* שלושה שלבים בשורה אחת, במקום חזור/הבא */
+  var labels = ["שלב ראשון", "שלב שני", "שלב שלישי"];
+  footer.innerHTML = GOAL_DEFS.map(function(gd, index) {
+    var current = index === goalIndex;
+    return '<button type="button" class="goal-stage-tab' + (current ? ' is-current' : '') + '" aria-pressed="' + current + '" ' +
+      'onclick="showInvestmentGoal(' + index + ')">' + (labels[index] || ("שלב " + (index + 1))) + '</button>';
+  }).join("");
 }
 
 function investmentGoalStatusChoice(value, completed) {
@@ -1274,4 +1275,34 @@ function applyPayslipAmount(person, amount) {
     return;
   }
   updateState((person === 2 ? "income2" : "income1") + ".0.val", Math.floor(amount));
+}
+
+function showInvestmentGoal(index) {
+  if (index < 0 || index >= GOAL_DEFS.length) return;
+  _visibleInvestmentGoalIndex = index;
+  _expandedInvestmentGoalId = null;
+  renderInvestGoalsModal();
+}
+
+/* הטקסט של "מה הרעיון?", עם מונחים מודגשים שנפתח להם הסבר קצר בלחיצה */
+function goalIdeaHtml(goalId) {
+  return (GOAL_IDEAS[goalId] || []).map(function(line) {
+    var html = escapeHtml(line).replace(/\[\[(.+?)\]\]/g, function(match, term) {
+      return '<button type="button" class="goal-term" onclick="toggleGoalTerm(this)" data-term="' + term + '">' + term + '</button>';
+    });
+    return '<p>' + html + '</p>';
+  }).join("");
+}
+
+function toggleGoalTerm(button) {
+  var tip = el("term-tip");
+  if (!tip) return;
+  var term = button.getAttribute("data-term");
+  var open = !tip.hidden && tip.getAttribute("data-term") === term;
+  document.querySelectorAll(".goal-term").forEach(function(item) { item.classList.remove("is-open"); });
+  if (open) { tip.hidden = true; return; }
+  tip.setAttribute("data-term", term);
+  tip.innerHTML = '<strong>' + escapeHtml(term) + ':</strong> ' + escapeHtml(GOAL_TERMS[term] || "");
+  tip.hidden = false;
+  button.classList.add("is-open");
 }

@@ -2196,3 +2196,21 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 /* bigger touch area for the ☰ handle */
 .flat-expense-row .drag-handle,.dream-row .drag-handle{min-width:36px;height:44px;touch-action:none}
 .custom-allocation-row{cursor:pointer}
+
+/* idea text: several short paragraphs; terms underlined, tap opens a short explanation */
+.goal-idea p+p{margin-top:6px}
+.goal-term{display:inline;padding:0;border:0;background:none;color:var(--info);font:inherit;font-weight:800;text-decoration:underline;text-underline-offset:3px;cursor:pointer}
+.goal-term.is-open{text-decoration-thickness:2px}
+.term-tip{margin-top:10px !important;padding:10px 12px;background:#fff;border:1px solid var(--border);border-radius:12px;color:var(--text) !important;font-size:13px;line-height:1.55;animation:historyFade .18s ease}
+.term-tip[hidden]{display:none}
+
+/* three stage tabs instead of back/next */
+#investment-goal-footer{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+.goal-stage-tab{min-height:44px;padding:6px 4px;border:1.5px solid var(--border);border-radius:12px;background:#fff;color:var(--muted);font:inherit;font-size:14px;font-weight:700;cursor:pointer}
+.goal-stage-tab.is-current{border-color:var(--info);background:var(--info-bg);color:var(--info)}
+
+/* phones: no bank / investment-house picker inside the goals */
+@media (max-width:700px){
+  .goal-card-body{display:none !important}
+  .goal-emoji{pointer-events:none}
+}
