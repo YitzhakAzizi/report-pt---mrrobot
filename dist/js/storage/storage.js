@@ -247,6 +247,7 @@ function saveData() {
       healthBeautyExpenses: AppState.healthBeautyExpenses,
       insurances: AppState.insurances,
       recoveryPayment: AppState.recoveryPayment,
+      maaserEnabled: !!AppState.maaser.enabled,
       summary: currentMonthSummary()
     };
     var saved = writeStorage(STORAGE_KEY, JSON.stringify(all));
@@ -276,6 +277,8 @@ function loadData(month, year) {
     AppState.healthBeautyExpenses = Array.isArray(p.healthBeautyExpenses) ? p.healthBeautyExpenses : clone(DEFAULT_HEALTH_BEAUTY_EXPENSES);
     AppState.insurances = Array.isArray(p.insurances) ? p.insurances.map(normalizeInsurance) : [];
     AppState.recoveryPayment = parseNonNegativeNumber(p.recoveryPayment);
+    /* תרומה נבחרת בכל חודש מחדש: ברירת המחדל היא "לא מעוניינים" */
+    AppState.maaser.enabled = p.maaserEnabled === true;
     AppState.monthHasRecord = true;
     return true;
   } catch(e) {
@@ -323,6 +326,7 @@ function startMonthFromPrevious(month, year) {
   AppState.variableExpenses = zeroAmounts(AppState.variableExpenses);
   AppState.oneTimeExpenses = clone(DEFAULT_ONE_TIME_EXPENSES);
   AppState.recoveryPayment = null;
+  AppState.maaser.enabled = false;
   return true;
 }
 

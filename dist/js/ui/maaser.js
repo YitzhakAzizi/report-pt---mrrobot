@@ -10,6 +10,8 @@ function renderMaaser(d) {
   var canDonate = Number(d.availableBeforeMaaser) > 0;
   var effectiveEnabled = state.enabled && canDonate;
   if (noBalance) noBalance.hidden = canDonate;
+  var balanceBox = el("donation-balance");
+  if (balanceBox) balanceBox.innerHTML = '<span>סה״כ יתרה</span><strong>' + money(Math.max(0, Number(d.availableBeforeMaaser) || 0)) + '</strong>';
   /* "לא מעוניינים": נשארים רק שני ריבועי הבחירה */
   if (card) {
     card.className = "card maaser-card";
@@ -25,13 +27,31 @@ function renderMaaser(d) {
   }
   if (!effectiveEnabled) { box.innerHTML = ""; return; }
 
-  box.innerHTML = '<p class="pick-hint"><span class="material-symbols-rounded" aria-hidden="true">touch_app</span><span>לחצו לבחירה</span></p>' +
-    maaserPercentageChoicesHtml() +
-    '<label class="maaser-summary"><span>סכום לתרומה</span><div class="maaser-summary-input"><input type="number" value="' +
-      formatMaaserSettingsNumber(d.maaserRequested) + '" min="0" step="any" inputmode="decimal" aria-label="סכום לתרומה" ' +
-      'onchange="saveMainMaaserAmount(this.value)" /><b>₪</b></div></label>' +
-    (d.maaserCapped ? '<p class="maaser-capped-note" role="status">' + escapeHtml(maaserCappedText(d)) + '</p>' : '') +
+  box.innerHTML = '<p class="pick-hint maaser-desktop-only"><span class="material-symbols-rounded" aria-hidden="true">touch_app</span><span>לחצו לבחירה</span></p>' +
+    '<div class="maaser-desktop-only">' + maaserPercentageChoicesHtml() + '</div>' +
+    /* סכום לתרומה, ומימינו אחוז (גלגלת). שניהם ניתנים לעריכה */
+    '<div class="maaser-amount-row">' +
+      '<label class="maaser-percent-wheel"><select aria-label="אחוז לתרומה" onchange="setMaaserPercentagePreset(Number(this.value))">' +
+        maaserPercentOptionsHtml(AppState.settings.maaserPercent) + '</select></label>' +
+      '<label class="maaser-summary"><span>סכום לתרומה</span><div class="maaser-summary-input"><input type="number" value="' +
+        formatMaaserSettingsNumber(d.maaserRequested) + '" min="0" step="any" inputmode="decimal" aria-label="סכום לתרומה" ' +
+        'onchange="saveMainMaaserAmount(this.value)" /><b>₪</b></div></label>' +
+    '</div>' +
+    (d.maaserCapped ? '<p class="maaser-capped-note maaser-desktop-only" role="status">' + escapeHtml(maaserCappedText(d)) + '</p>' : '') +
     '<div class="maaser-validation" id="maaser-validation">' + getMaaserValidationMessage() + '</div>';
+}
+
+/* אפשרויות הגלגלת: 0%–20% בקפיצות של חצי, ואז עד 100% בקפיצות של 5. אחוז שחושב מסכום מופיע גם הוא */
+function maaserPercentOptionsHtml(current) {
+  var values = [];
+  for (var v = 0; v <= 20; v += 0.5) values.push(v);
+  for (var w = 25; w <= 100; w += 5) values.push(w);
+  current = Math.round((Number(current) || 0) * 100) / 100;
+  if (values.indexOf(current) < 0) values.push(current);
+  values.sort(function(a, b) { return a - b; });
+  return values.map(function(value) {
+    return '<option value="' + value + '"' + (value === current ? ' selected' : '') + '>' + value + '%</option>';
+  }).join("");
 }
 
 /* פרטי העמותה: מלבן שנפתח בלחיצה, עם הפרטים היבשים בלבד */
@@ -185,10 +205,7 @@ function maaserDetailInput(index, field, label, value) {
 function setMaaserEnabled(enabled) {
   if (enabled && Number(AppState.result.availableBeforeMaaser) <= 0) return;
   AppState.maaser.enabled = enabled;
-  saveMaaser();
-  calculate();
-  render();
-  flashSaved();
+  pipeline();
 }
 
 function addMaaserCharity() {

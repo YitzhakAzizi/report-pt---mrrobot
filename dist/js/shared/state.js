@@ -87,4 +87,5 @@ function resetToDefaults() {
   AppState.healthBeautyExpenses = clone(DEFAULT_HEALTH_BEAUTY_EXPENSES);
   AppState.insurances = [];
   AppState.recoveryPayment = null;
+  if (AppState.maaser) AppState.maaser.enabled = false;
 }
