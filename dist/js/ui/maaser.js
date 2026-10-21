@@ -34,7 +34,7 @@ function renderMaaser(d) {
   box.innerHTML = '<p class="pick-hint maaser-desktop-only"><span class="material-symbols-rounded" aria-hidden="true">touch_app</span><span>לחצו לבחירה</span></p>' +
     '<div class="maaser-desktop-only">' + maaserPercentageChoicesHtml() + '</div>' +
     /* שורה אחת: "הגדר", משמאלו אחוז (גלגלת) והכי משמאל הסכום. שניהם ניתנים לעריכה */
-    '<div class="maaser-summary maaser-amount-row"><span>הגדר</span>' +
+    '<div class="maaser-summary maaser-amount-row"><span>הזינו</span>' +
       '<button type="button" class="maaser-percent-wheel" aria-label="בחירת אחוז לתרומה" onclick="openPercentPicker()">' +
         effectiveMaaserPercent() + '%</button>' +
       '<div class="maaser-summary-input"><input type="number" value="' +
@@ -148,8 +148,8 @@ function charityDetailsHtml() {
       '<div class="charity-fields">' + field("bank", "בנק") + field("branch", "סניף", "numeric") +
         field("account", "מספר חשבון", "numeric") + field("owner", "ע\"ש") + '</div>' +
       '<div class="charity-actions">' +
-        (charities.length > 1 ? '<button type="button" class="charity-remove" onclick="removeCharity(' + index + ')">מחק עמותה</button>' : '') +
         '<button type="button" class="charity-add" onclick="addCharity()"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף עמותה</span></button>' +
+        (charities.length > 1 ? '<button type="button" class="charity-remove" onclick="removeCharity(' + index + ')">מחק עמותה</button>' : '') +
       '</div></details>';
   }).join("");
 }

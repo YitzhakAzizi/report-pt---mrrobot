@@ -1028,6 +1028,10 @@ function customAllocationTotal() {
 function renderResultBalance() {
   var allocationBalance = el("allocation-balance-total");
   if (!allocationBalance) return;
+  /* בסוף מוצג "סה״כ יתרה" רק בחלוקה עצמאית, כשמחלקים ממנו ידנית */
+  var customActive = !!(AppState.customAllocation && AppState.customAllocation.active);
+  var box = allocationBalance.closest(".allocation-balance-summary");
+  if (box) box.hidden = !customActive;
   var balance = Math.max(0, AppState.result.balance || 0);
   var used = AppState.customAllocation && AppState.customAllocation.active ? customAllocationTotal() : 0;
   allocationBalance.textContent = money(Math.max(0, balance - used));
