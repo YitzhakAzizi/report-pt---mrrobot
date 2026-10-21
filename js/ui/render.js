@@ -1049,7 +1049,7 @@ function setCustomAllocationAmount(key, input) {
 }
 
 /* אייקונים עדינים שמנצנצים לאורך כל מלבן "סה״כ יתרה" */
-var BALANCE_FX_HTML = '<span class="tile-fx balance-fx" aria-hidden="true"><i>💰</i><i>✨</i><i>🪙</i><i>✨</i><i>💵</i><i>✨</i></span>';
+var BALANCE_FX_HTML = '<span class="tile-fx balance-fx" aria-hidden="true"><i>💰</i><i>✨</i><i>💳</i><i>✨</i><i>💵</i><i>✨</i></span>';
 function addBalanceFx(box) {
   if (box && !box.querySelector(".balance-fx")) box.insertAdjacentHTML("beforeend", BALANCE_FX_HTML);
 }
