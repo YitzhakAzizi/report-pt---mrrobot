@@ -139,6 +139,8 @@ function updateAdditionalIncomeAmount(person, index, value) {
 function removeAdditionalIncome(person, index) {
   var items = person === 2 ? AppState.income2 : AppState.income1;
   if (index < 1 || !items[index]) return;
+  /* התלוש של ההכנסה נמחק יחד איתה */
+  if (items[index].id && typeof deletePayslipFile === "function") deletePayslipFile("x" + items[index].id).catch(function() {});
   items.splice(index, 1);
   pipeline();
 }

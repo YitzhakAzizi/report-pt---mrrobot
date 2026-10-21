@@ -541,8 +541,12 @@ function renderAdditionalIncomeRows() {
       var row = mk("div", "irow additional-income-row");
       /* אותו מבנה כמו שורת משכורת: אייקון שטר, שם שנערך וסכום בתיבה. מחיקה בגרירה ימינה (או בפח במחשב) */
       var label = mk("div", "ilabel additional-income-name-wrap");
-      var icon = mkText("span", "row-icon material-symbols-rounded", "payments");
-      icon.setAttribute("aria-hidden", "true");
+      /* כמו במשכורות: לחיצה על האייקון פותחת את חלון התלוש של ההכנסה הזו */
+      var icon = mkText("button", "row-icon row-icon-btn material-symbols-rounded", "payments");
+      icon.type = "button";
+      icon.setAttribute("aria-label", "תלוש עבור " + (item.name || "ההכנסה הנוספת"));
+      icon.title = "תלוש";
+      icon.onclick = function() { openExtraIncomePayslip(item); };
       var name = document.createElement("input");
       name.type = "text";
       name.className = "additional-income-name";

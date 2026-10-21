@@ -1027,8 +1027,9 @@ var _incPerson = 0;
 var _payslipPerson = 1;
 var _payslipOpener = null;
 
+/* person: 1 או 2 למשכורות, או "x<מזהה>" להכנסה נוספת */
 function openPayslipModal(person) {
-  _payslipPerson = person === 2 ? 2 : 1;
+  _payslipPerson = person === 2 ? 2 : typeof person === "string" ? person : 1;
   _payslipOpener = document.activeElement;
   el("payslip-file-input").value = "";
   clearPayslipPreview();
@@ -1226,4 +1227,38 @@ function applyIncome() {
 
 function closeIncomeModal() {
   var o = el("inc-overlay"); if (o) o.className = "overlay";
+}
+
+/* תלוש להכנסה נוספת: לכל הכנסה מזהה קבוע, כדי שהתלוש יישאר שלה גם כשהסדר משתנה */
+function openExtraIncomePayslip(item) {
+  if (!item.id) {
+    item.id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+    saveData();
+  }
+  openPayslipModal("x" + item.id);
+}
+
+function findExtraIncome(person) {
+  if (typeof person !== "string") return null;
+  var id = person.slice(1);
+  var all = (AppState.income1 || []).slice(1).concat((AppState.income2 || []).slice(1));
+  return all.filter(function(item) { return item.id === id; })[0] || null;
+}
+
+/* שם ההכנסה שהתלוש שייך אליה, ועדכון הסכום שלה מתוך התלוש */
+function payslipTargetLabel(person) {
+  var extra = findExtraIncome(person);
+  if (typeof person === "string") return extra && extra.name ? extra.name : "הכנסה נוספת";
+  return salaryLabel(person);
+}
+
+function applyPayslipAmount(person, amount) {
+  if (typeof person === "string") {
+    var extra = findExtraIncome(person);
+    if (!extra) return;
+    extra.val = Math.floor(amount);
+    pipeline();
+    return;
+  }
+  updateState((person === 2 ? "income2" : "income1") + ".0.val", Math.floor(amount));
 }

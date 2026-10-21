@@ -203,11 +203,11 @@ function renderPayslipFindings(container, result, person, errorDetail) {
     bank.appendChild(mkText("span", "payslip-bank-amount", money(result.bank)));
     card.appendChild(bank);
 
-    var use = mkText("button", "payslip-use-btn", "השתמש בסכום כ" + salaryLabel(person));
+    var use = mkText("button", "payslip-use-btn", "השתמש בסכום כ" + payslipTargetLabel(person));
     use.type = "button";
     use.onclick = function() {
-      updateState((person === 2 ? "income2" : "income1") + ".0.val", Math.floor(result.bank));
-      use.textContent = "✓ עודכן: " + salaryLabel(person) + " " + money(result.bank);
+      applyPayslipAmount(person, result.bank);
+      use.textContent = "✓ עודכן: " + payslipTargetLabel(person) + " " + money(result.bank);
       use.disabled = true;
     };
     card.appendChild(use);
