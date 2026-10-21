@@ -34,7 +34,7 @@ function renderMaaser(d) {
   box.innerHTML = '<p class="pick-hint maaser-desktop-only"><span class="material-symbols-rounded" aria-hidden="true">touch_app</span><span>לחצו לבחירה</span></p>' +
     '<div class="maaser-desktop-only">' + maaserPercentageChoicesHtml() + '</div>' +
     /* שורה אחת: "הגדר", משמאלו אחוז (גלגלת) והכי משמאל הסכום. שניהם ניתנים לעריכה */
-    '<div class="maaser-summary maaser-amount-row"><span>הזינו</span>' +
+    '<div class="maaser-summary maaser-amount-row"><span>הזינו סכום לתרומה</span>' +
       '<button type="button" class="maaser-percent-wheel" aria-label="בחירת אחוז לתרומה" onclick="openPercentPicker()">' +
         effectiveMaaserPercent() + '%</button>' +
       '<div class="maaser-summary-input"><input type="number" value="' +

@@ -6,7 +6,7 @@ function openAllocationSettingsModal() {
   el("gen-modal-body").innerHTML =
     '<div class="settings-form">' +
       allocationPercentageField("allocation-invest-input", "קרן השקעות", allocation.invest) +
-      allocationPercentageField("allocation-quality-input", "קרן איכות חיים", allocation.qualityOfLife) +
+      allocationPercentageField("allocation-quality-input", "קרן החלומות", allocation.qualityOfLife) +
       allocationPercentageField("allocation-spending-input", "בזבוזים", allocation.spending) +
       '<div class="settings-validation" id="settings-validation"></div>' +
     '</div>';
@@ -56,31 +56,28 @@ function showSettingsValidation(message) {
   if (validation) validation.textContent = message;
 }
 
+/* בזבוזים: שלושה ריבועים - תקציב יומי, שבועי וחודשי */
 function openSpendingModal() {
   var recoverySpending = AppState.profile.debtStatus && hasValidRecoveryPayment()
     ? Math.max(0, AppState.result.balance - AppState.recoveryPayment)
     : null;
-  var spendingPercentage = hasActiveDebtPlan()
-    ? DEFAULT_DEBT_PLAN_PERCENTAGES.spending
-    : AppState.settings.allocation.spending;
-  var monthlySpending = recoverySpending === null
-    ? percentageOf(AppState.result.balance, spendingPercentage)
-    : recoverySpending;
+  var balance = Math.max(0, AppState.result.balance || 0);
+  var monthlySpending = recoverySpending !== null ? recoverySpending
+    : hasActiveDebtPlan() ? percentageOf(balance, DEFAULT_DEBT_PLAN_PERCENTAGES.spending)
+    : allocationAmounts(balance).spending;
   var dailySpending = dailySpendingAmount(monthlySpending, budgetReferenceDate(AppState.period));
+  var tile = function(label, amount) {
+    return '<div class="spending-tile"><span>' + label + '</span><strong>' + money(amount) + '</strong></div>';
+  };
 
   el("gen-modal-title").textContent = AppState.profile.debtStatus ? "יתרה לשימוש החודש" : "בזבוזים";
-  el("gen-modal-body").innerHTML =
-    '<div class="settings-form">' +
-      '<div class="maaser-field"><span>' + (AppState.profile.debtStatus ? "סכום יומי זמין:" : "סכום יומי לבזבוזים:") + '</span><strong>' + money(dailySpending) + '</strong></div>' +
-    '</div>';
+  el("gen-modal-body").innerHTML = '<div class="spending-tiles">' +
+    tile("תקציב יומי", dailySpending) + tile("תקציב שבועי", dailySpending * 7) + tile("תקציב חודשי", monthlySpending) + '</div>';
 
   var totalRow = el("gen-modal-total-row");
   if (totalRow) totalRow.style.display = "none";
-
-  var apply = el("gen-apply-btn");
-  apply.textContent = "סגור";
-  apply.onclick = function() { closeGenModal(); };
-  el("gen-overlay").className = "overlay open overlay-center";
+  el("gen-apply-btn").hidden = true;
+  el("gen-overlay").className = "overlay open overlay-center overlay-no-footer";
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -911,10 +908,10 @@ function openCustomExpenseCategoryModal(collection, index) {
 }
 
 
-/* קרן איכות חיים: "מה הרעיון?", ורשימת חלומות לפי עדיפות. גוררים בידית ☰, והמספר מתעדכן לבד.
+/* קרן החלומות: "מה הרעיון?", ורשימת חלומות לפי עדיפות. גוררים בידית ☰, והמספר מתעדכן לבד.
    הכול נשמר אוטומטית, בלי כפתור שמירה */
 function openDreamsModal() {
-  el("gen-modal-title").textContent = "קרן איכות חיים";
+  el("gen-modal-title").textContent = "קרן החלומות";
   var body = el("gen-modal-body");
   body.innerHTML = '<div class="goal-idea"><strong>מה הרעיון?</strong><p>קופת חיסכון לחלומות יקרים (חופשות, חוויות, טיפולים קוסמטיים או קנייה גדולה).</p><p class="goal-idea-hint">הגדירו חלום, סכום ועדיפות (בגרירה).</p></div>';
 

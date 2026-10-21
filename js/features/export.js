@@ -125,7 +125,7 @@ function exportPDF() {
       '<li>משוך במזומן את סכום הבזבוזים החודשי - <strong>' + money(debtSpendingAmount) + '</strong></li></ol>';
   } else {
     html += allocationCard("קרן השקעות", investmentAmount);
-    html += allocationCard("קרן איכות חיים", qualityAmount);
+    html += allocationCard("קרן החלומות", qualityAmount);
     html += allocationCard("בזבוזים", spendingAmount);
     tasksHtml = '<ol class="allocation-instructions">' +
       '<li>העבר לתיק ההשקעות - <strong>' + money(investmentAmount) + '</strong></li>' +

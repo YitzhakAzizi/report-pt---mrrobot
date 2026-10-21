@@ -687,14 +687,14 @@ function renderActions(d) {
   /* 3. חלוקת היתרה */
   if (AppState.customAllocation.active) {
     addCustomAllocationRow("trending_up", "השקעות", "invest", openInvestGoalsModal);
-    addCustomAllocationRow("spa", "קרן איכות חיים", "qualityOfLife", openDreamsModal);
+    addCustomAllocationRow("spa", "קרן החלומות", "qualityOfLife", openDreamsModal);
     addCustomAllocationRow("credit_card", "בזבוזים", "spending", openSpendingModal);
     addDonationRow();
     return;
   }
   var amounts = allocationAmounts(d.balance);
   addRow("trending_up", "השקעות", "", amounts.invest, openInvestGoalsModal);
-  addRow("spa", "קרן איכות חיים", "", amounts.qualityOfLife, openDreamsModal);
+  addRow("spa", "קרן החלומות", "", amounts.qualityOfLife, openDreamsModal);
   addRow("credit_card", "בזבוזים", "", amounts.spending, openSpendingModal);
   addDonationRow();
 
@@ -852,7 +852,7 @@ function renderAllocationModes() {
       'aria-pressed="' + selected + '" onclick="setAllocationMode(\'' + mode.id + '\')">' +
       '<span class="allocation-emoji" aria-hidden="true">' + mode.emoji + '</span><strong>' + mode.name + '</strong>' +
       (selected ? '<span class="allocation-parts">' + allocationPart("השקעות", mode.allocation.invest) +
-        allocationPart("קרן איכות חיים", mode.allocation.qualityOfLife) + allocationPart("בזבוזים", mode.allocation.spending) + '</span>' : '') +
+        allocationPart("קרן החלומות", mode.allocation.qualityOfLife) + allocationPart("בזבוזים", mode.allocation.spending) + '</span>' : '') +
       '</button>';
   }).join("") +
     '<button type="button" class="allocation-mode allocation-mode-custom' + (customActive ? ' selected' : '') + '" aria-pressed="' + customActive + '" onclick="selectCustomAllocation()">' +
