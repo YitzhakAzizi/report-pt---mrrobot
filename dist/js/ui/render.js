@@ -797,6 +797,7 @@ function renderAllocationModes() {
     if (question) question.hidden = true;
     if (el("allocation-pick-hint")) el("allocation-pick-hint").hidden = true;
     if (customButton) customButton.hidden = true;
+    if (el("allocation-split-line")) el("allocation-split-line").hidden = true;
     box.innerHTML = "";
     return;
   }
@@ -805,21 +806,29 @@ function renderAllocationModes() {
   if (question) question.hidden = false;
   if (el("allocation-pick-hint")) el("allocation-pick-hint").hidden = false;
   if (customButton) customButton.hidden = false;
-  /* בכל ריבוע: "בחר", שם החודש, ושורות פירוט: שם מימין, אחוז משמאל (הסכומים מוצגים בסוף, אחרי החלוקה) */
-  var part = function(label, percent) {
-    return '<span class="allocation-part"><span>' + label + '</span><b>' + percent + '%</b></span>';
-  };
+  /* ריבועים נקיים: אימוג׳י ושם בלבד, ועוד ריבוע "אני רוצה לחלק לבד".
+     פירוט האחוזים מוצג בשורה אחת מתחת, רק לבחירה הנוכחית */
+  var current = AppState.settings.allocation;
+  var anySelected = false;
   box.innerHTML = ALLOCATION_MODES.map(function(mode) {
-    var selected = allocationsMatch(AppState.settings.allocation, mode.allocation);
+    var selected = allocationsMatch(current, mode.allocation);
+    if (selected) anySelected = true;
     return '<button type="button" class="allocation-mode' + (selected ? ' selected' : '') + '" ' +
       'aria-pressed="' + selected + '" onclick="setAllocationMode(\'' + mode.id + '\')">' +
-      '<small class="allocation-pick">בחר</small>' +
-      '<strong>' + mode.name + '</strong>' +
-      part("השקעות", mode.allocation.invest) +
-      part("איכות חיים", mode.allocation.qualityOfLife) +
-      part("בזבוזים", mode.allocation.spending) +
-    '</button>';
-  }).join("");
+      '<span class="allocation-emoji" aria-hidden="true">' + mode.emoji + '</span><strong>' + mode.name + '</strong></button>';
+  }).join("") +
+    '<button type="button" class="allocation-mode allocation-mode-custom' + (anySelected ? '' : ' selected') + '" aria-pressed="' + !anySelected + '" onclick="openAllocationSettingsModal()">' +
+      '<span class="allocation-emoji" aria-hidden="true">✏️</span><strong>אני רוצה לחלק לבד</strong></button>';
+  var splitLine = el("allocation-split-line");
+  if (splitLine) {
+    splitLine.textContent = "השקעות " + formatPercent(current.invest) + " · קרן איכות חיים " + formatPercent(current.qualityOfLife) +
+      " · בזבוזים " + formatPercent(current.spending);
+    splitLine.hidden = false;
+  }
+}
+
+function formatPercent(value) {
+  return Math.round((Number(value) || 0) * 10) / 10 + "%";
 }
 
 function allocationsMatch(current, candidate) {

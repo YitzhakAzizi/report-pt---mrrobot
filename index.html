@@ -166,7 +166,7 @@
           <span class="side-menu-item-label">שחזור מגיבוי</span>
         </button>
         <input type="file" id="backup-file-input" class="payslip-file-input" accept=".json,application/json" aria-label="בחירת קובץ גיבוי" onchange="importBackupFile(this.files[0])">
-        <p class="side-menu-version">גרסה 36</p>
+        <p class="side-menu-version">גרסה 37</p>
         <p class="side-menu-data-note">הנתונים נשמרים רק בדפדפן הזה. כדאי לגבות מדי פעם. הגיבוי כולל את התקציב וההגדרות, ללא תלושי שכר.</p>
       </section>
     </aside>
@@ -338,7 +338,7 @@
     <!-- Calculate allocation -->
     <div class="budget-flow-step" id="budget-flow-calculate" hidden>
       <div id="pre-allocation-balance" class="allocation-balance-summary balance-hero" aria-live="polite"></div>
-      <h2 class="budget-flow-stage-title">הגדרת תקציב לחודש הקרוב</h2>
+      <h2 class="budget-flow-stage-title">הגדירו תקציב חודשי</h2>
       <div class="recovery-overview" id="recovery-overview" aria-label="סיכום חובות והוצאות" hidden>
         <div><span>חובות</span><strong id="recovery-debts-total">₪0</strong></div>
         <div><span>הוצאות</span><strong id="recovery-expenses-total">₪0</strong></div>
@@ -356,6 +356,7 @@
         </section>
         <p class="allocation-mode-question" id="allocation-mode-question">כיצד תרצו את חודש אוגוסט?</p>
         <div class="allocation-mode-box" id="allocation-mode-box" aria-label="בחירת אופן החלוקה"></div>
+        <p class="allocation-split-line" id="allocation-split-line"></p>
         <div class="budget-flow-loader" id="budget-flow-loader" hidden>
           <span class="budget-flow-spinner" aria-hidden="true"></span>
           <span>מכינים את החלוקה שלך…</span>
@@ -363,7 +364,6 @@
       </section>
       <div class="budget-flow-controls budget-flow-calculate-controls">
         <button type="button" class="budget-flow-back" onclick="previousBudgetFlowStep()"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
-        <button type="button" class="allocation-custom-strong" id="allocation-custom-btn" onclick="openAllocationSettingsModal()">אני רוצה לחלק לבד</button>
         <button type="button" class="budget-flow-calculate-btn" id="budget-flow-calculate-btn" onclick="calculateBudgetFlow()">תחלק עבורי</button>
       </div>
     </div>

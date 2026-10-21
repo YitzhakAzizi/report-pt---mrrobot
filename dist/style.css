@@ -2002,3 +2002,22 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 
 /* no colored strip on top of the tiles */
 .summary-tile,.allocation-balance-summary.balance-hero{border-top:1px solid var(--border)}
+
+/* monthly budget: four calm squares (emoji + name), the split in one line under them */
+#calculator-app .allocation-mode-box{grid-template-columns:repeat(4,minmax(0,1fr));gap:10px}
+@media (max-width:700px){#calculator-app .allocation-mode-box{grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}}
+#calculator-app .allocation-mode{min-height:88px;padding:12px 8px;align-items:center;justify-content:center;gap:6px}
+#calculator-app .allocation-mode .allocation-emoji{display:block;font-size:26px;line-height:1}
+#calculator-app .allocation-mode strong{margin:0;font-size:15px;line-height:1.3;text-align:center;white-space:normal}
+#calculator-app .allocation-mode-custom strong{color:#b91c1c}
+#calculator-app .allocation-mode-custom.selected{background:#fef2f2;border-color:rgba(220,38,38,.35)}
+.allocation-split-line{margin:12px 0 0;text-align:center;color:var(--muted);font-size:13px;font-weight:600}
+.allocation-split-line[hidden]{display:none}
+
+/* "סה״כ יתרה" exactly like one summary tile */
+.allocation-balance-summary.balance-hero{width:calc((min(100%,760px) - 16px) / 3);min-width:110px;padding:10px 6px;margin:0 auto 14px;gap:2px;
+  background:var(--card);border:1px solid var(--border);border-radius:14px;box-shadow:var(--shadow)}
+.allocation-balance-summary.balance-hero span{font-size:12px;font-weight:700;color:var(--muted)}
+.allocation-balance-summary.balance-hero strong{font-family:'Rubik',sans-serif;font-size:16px;font-weight:800;color:#163a5f}
+.allocation-balance-summary.balance-hero.is-deficit{background:var(--card);border-top-color:var(--border)}
+@media (max-width:380px){.allocation-balance-summary.balance-hero span{font-size:11px}.allocation-balance-summary.balance-hero strong{font-size:14px}}
