@@ -2119,3 +2119,22 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
   color:var(--text);font:800 17px Rubik,Heebo,sans-serif;text-align:center}
 #calculator-app .maaser-amount-row .maaser-summary-input b{order:-1;color:var(--muted);font-size:15px;font-weight:700}
 #budget-flow-donations .maaser-box{padding:14px 16px}
+
+/* several charities, each in its own box */
+#charity-box{display:flex;flex-direction:column;gap:10px}
+.charity-actions{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:0 14px 14px}
+.charity-add{display:inline-flex;align-items:center;gap:4px;margin-inline-start:auto;padding:8px 4px;border:0;background:none;color:var(--info);font:inherit;font-size:15px;font-weight:700;cursor:pointer}
+.charity-add .material-symbols-rounded{font-size:20px}
+.charity-remove{padding:8px 4px;border:0;background:none;color:#dc2626;font:inherit;font-size:14px;font-weight:600;cursor:pointer}
+
+/* donation choice: the chosen one stays bright, the other one fades */
+#calculator-app .maaser-mode-box .maaser-radio:not(.active){opacity:.5}
+#calculator-app .maaser-mode-box .maaser-radio.active{opacity:1}
+
+/* "הגדר": a regular compact row, like the other rows in the app */
+#budget-flow-donations .maaser-box{padding:10px 14px}
+#calculator-app .maaser-amount-row>span{font-size:16px;font-weight:600}
+#calculator-app .maaser-amount-row .maaser-percent-wheel{flex:0 0 70px;width:70px;height:40px;border:0;border-radius:12px;background:var(--track);font-size:16px;font-weight:600}
+#calculator-app .maaser-amount-row .maaser-summary-input{flex:0 0 112px;width:112px;height:40px;padding:0 10px;border:1.5px solid transparent;border-radius:12px;background:var(--track)}
+#calculator-app .maaser-amount-row .maaser-summary-input:focus-within{border-color:var(--border-f);background:#fff}
+#calculator-app .maaser-amount-row .maaser-summary-input input{font-size:16px;font-weight:600}

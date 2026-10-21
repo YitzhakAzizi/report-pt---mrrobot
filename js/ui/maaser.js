@@ -128,20 +128,66 @@ function closePercentPicker() {
   if (picker) picker.remove();
 }
 
-/* פרטי העמותה: מלבן שנפתח בלחיצה, עם הפרטים היבשים בלבד */
-var _charityDetailsOpen = false;
+/* פרטי עמותה: מלבן לכל עמותה שנפתח בלחיצה. הכותרת היא השם שב"ע״ש", ולמטה "הוסף עמותה" */
+var _charityDetailsOpen = {};
+
+function charityTitle(charity) {
+  return String(charity.owner || "").trim() || "פרטי עמותה";
+}
 
 function charityDetailsHtml() {
   ensureAtLeastOneMaaserCharity();
-  var charity = AppState.maaser.charities[0];
-  var field = function(key, label, mode) {
-    return '<label class="charity-field"><span>' + label + '</span><input type="text" value="' + escapeHtml(charity[key] || "") + '"' +
-      (mode ? ' inputmode="' + mode + '"' : '') + ' oninput="updateMaaserCharity(0,\'' + key + '\',this.value,this)" /></label>';
-  };
-  return '<details class="charity-details"' + (_charityDetailsOpen ? ' open' : '') + ' ontoggle="_charityDetailsOpen=this.open">' +
-    '<summary><span>פרטי עמותה</span><span class="material-symbols-rounded" aria-hidden="true">expand_more</span></summary>' +
-    '<div class="charity-fields">' + field("bank", "בנק") + field("branch", "סניף", "numeric") +
-      field("account", "מספר חשבון", "numeric") + field("owner", "ע\"ש") + '</div></details>';
+  var charities = AppState.maaser.charities;
+  return charities.map(function(charity, index) {
+    var field = function(key, label, mode) {
+      return '<label class="charity-field"><span>' + label + '</span><input type="text" value="' + escapeHtml(charity[key] || "") + '"' +
+        (mode ? ' inputmode="' + mode + '"' : '') + ' oninput="updateCharityField(' + index + ',\'' + key + '\',this)" /></label>';
+    };
+    return '<details class="charity-details"' + (_charityDetailsOpen[index] ? ' open' : '') + ' ontoggle="_charityDetailsOpen[' + index + ']=this.open">' +
+      '<summary><span class="charity-title">' + escapeHtml(charityTitle(charity)) + '</span><span class="material-symbols-rounded" aria-hidden="true">expand_more</span></summary>' +
+      '<div class="charity-fields">' + field("bank", "בנק") + field("branch", "סניף", "numeric") +
+        field("account", "מספר חשבון", "numeric") + field("owner", "ע\"ש") + '</div>' +
+      '<div class="charity-actions">' +
+        (charities.length > 1 ? '<button type="button" class="charity-remove" onclick="removeCharity(' + index + ')">מחק עמותה</button>' : '') +
+        '<button type="button" class="charity-add" onclick="addCharity()"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף עמותה</span></button>' +
+      '</div></details>';
+  }).join("");
+}
+
+function updateCharityField(index, key, input) {
+  updateMaaserCharity(index, key, input.value, input);
+  if (key !== "owner") return;
+  var title = input.closest(".charity-details").querySelector(".charity-title");
+  if (title) title.textContent = charityTitle(AppState.maaser.charities[index]);
+}
+
+function addCharity() {
+  AppState.maaser.charities.push(defaultMaaserCharity());
+  var index = AppState.maaser.charities.length - 1;
+  _charityDetailsOpen = {};
+  _charityDetailsOpen[index] = true;
+  saveMaaser();
+  rebuildCharityBox();
+  var box = el("charity-box");
+  var fresh = box && box.querySelectorAll(".charity-details")[index];
+  if (fresh) fresh.scrollIntoView({block: "nearest"});
+}
+
+function removeCharity(index) {
+  var charity = AppState.maaser.charities[index];
+  if (!charity) return;
+  askDeleteExpenseCategory(charityTitle(charity), function() {
+    AppState.maaser.charities.splice(index, 1);
+    _charityDetailsOpen = {};
+    saveMaaser();
+    rebuildCharityBox();
+  });
+}
+
+function rebuildCharityBox() {
+  var box = el("charity-box");
+  if (box) box.innerHTML = charityDetailsHtml();
+  flashSaved();
 }
 
 function maaserCappedText(d) {

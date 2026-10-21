@@ -350,9 +350,8 @@ function renderFlatVariableExpenses() {
       name.oninput = function() { item.name = name.value; saveData(); flashSaved(); };
       text.appendChild(name);
     }
-    var history = item.name ? getPreviousVariableExpenseStats(item.name, AppState.period.month, AppState.period.year) : null;
-    var sub = history ? "בחודש הקודם: " + money(history.last) : display.sub;
-    if (sub) text.appendChild(mkText("span", "label-sub", sub));
+    /* בלי שורת "בחודש הקודם": ההיסטוריה נפתחת בלחיצה על ההוצאה */
+    if (display.sub) text.appendChild(mkText("span", "label-sub", display.sub));
     label.appendChild(text);
 
     var right = mk("div", "iright");
