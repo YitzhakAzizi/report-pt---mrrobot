@@ -1896,3 +1896,25 @@ body::before{background:#16a34a;opacity:.09}
 .flat-expense-row.is-dragging .drag-handle{color:var(--info);cursor:grabbing}
 .flat-expense-row.is-dropping{transition:transform .18s ease}
 body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:none}
+
+/* budget plan: "בחר" above each mode, each part as name (right edge) and amount (left edge) */
+#calculator-app .allocation-mode{align-items:stretch;justify-content:flex-start;gap:3px;padding:10px 8px}
+#calculator-app .allocation-mode .allocation-pick{display:block;color:var(--muted);font-size:11px;font-weight:700;text-align:center}
+#calculator-app .allocation-mode strong{display:block;margin:0 0 6px;text-align:center}
+#calculator-app .allocation-mode .allocation-part{display:flex;align-items:baseline;justify-content:space-between;gap:4px;width:100%;
+  font-size:11px;font-weight:600;line-height:1.6;color:var(--muted);white-space:nowrap}
+#calculator-app .allocation-mode .allocation-part b{font-family:'Rubik',sans-serif;font-weight:800;color:var(--text);direction:ltr}
+#calculator-app .allocation-mode.selected .allocation-part b{color:var(--info)}
+@media (max-width:700px){#calculator-app .allocation-mode{padding:9px 6px}#calculator-app .allocation-mode .allocation-part{font-size:10.5px}}
+/* buttons: "תחלק עבורי", under it a strong red "אני רוצה לחלק לבד", then "חזרה" */
+#budget-flow-calculate .budget-flow-calculate-controls{flex-direction:column-reverse;align-items:stretch}
+#budget-flow-calculate .budget-flow-calculate-controls .budget-flow-calculate-btn{width:100%;flex:none}
+.allocation-custom-strong{min-height:50px;width:100%;border:1px solid #dc2626;border-radius:18px;background:#dc2626;color:#fff;
+  font:inherit;font-size:16px;font-weight:700;cursor:pointer;box-shadow:0 8px 20px rgba(220,38,38,.18)}
+.allocation-custom-strong:hover{background:#b91c1c;border-color:#b91c1c}
+.allocation-custom-strong:focus-visible{outline:3px solid rgba(220,38,38,.35);outline-offset:2px}
+.allocation-custom-strong[hidden]{display:none}
+@media (max-width:700px){.allocation-custom-strong{border-radius:14px;font-size:17px;font-weight:600;box-shadow:none}}
+#calculator-app .allocation-mode .allocation-part>span{font-size:inherit;font-weight:600;line-height:inherit}
+@media (min-width:701px){#calculator-app .allocation-mode .allocation-part{font-size:12.5px}}
+@media (max-width:700px){#budget-flow-calculate .budget-flow-calculate-controls .budget-flow-back{background:none;border:0}}

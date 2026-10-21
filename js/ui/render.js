@@ -789,14 +789,20 @@ function renderAllocationModes() {
   if (question) question.hidden = false;
   if (el("allocation-pick-hint")) el("allocation-pick-hint").hidden = false;
   if (customButton) customButton.hidden = false;
+  /* בכל ריבוע: "בחר", שם החודש, ושורות פירוט עם הסכום בפועל (שם מימין, סכום משמאל) */
+  var balance = Math.max(0, Number(AppState.result.balance) || 0);
+  var part = function(label, percent) {
+    return '<span class="allocation-part"><span>' + label + '</span><b>' + money(percentageOf(balance, percent)) + '</b></span>';
+  };
   box.innerHTML = ALLOCATION_MODES.map(function(mode) {
     var selected = allocationsMatch(AppState.settings.allocation, mode.allocation);
     return '<button type="button" class="allocation-mode' + (selected ? ' selected' : '') + '" ' +
       'aria-pressed="' + selected + '" onclick="setAllocationMode(\'' + mode.id + '\')">' +
+      '<small class="allocation-pick">בחר</small>' +
       '<strong>' + mode.name + '</strong>' +
-      '<span>השקעות ' + mode.allocation.invest + '%</span>' +
-      '<span>איכות חיים ' + mode.allocation.qualityOfLife + '%</span>' +
-      '<span>בזבוזים ' + mode.allocation.spending + '%</span>' +
+      part("השקעות", mode.allocation.invest) +
+      part("איכות חיים", mode.allocation.qualityOfLife) +
+      part("בזבוזים", mode.allocation.spending) +
     '</button>';
   }).join("");
 }
