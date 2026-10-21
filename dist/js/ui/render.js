@@ -789,10 +789,9 @@ function renderAllocationModes() {
   if (question) question.hidden = false;
   if (el("allocation-pick-hint")) el("allocation-pick-hint").hidden = false;
   if (customButton) customButton.hidden = false;
-  /* בכל ריבוע: "בחר", שם החודש, ושורות פירוט עם הסכום בפועל (שם מימין, סכום משמאל) */
-  var balance = Math.max(0, Number(AppState.result.balance) || 0);
+  /* בכל ריבוע: "בחר", שם החודש, ושורות פירוט: שם מימין, אחוז משמאל (הסכומים מוצגים בסוף, אחרי החלוקה) */
   var part = function(label, percent) {
-    return '<span class="allocation-part"><span>' + label + '</span><b>' + money(percentageOf(balance, percent)) + '</b></span>';
+    return '<span class="allocation-part"><span>' + label + '</span><b>' + percent + '%</b></span>';
   };
   box.innerHTML = ALLOCATION_MODES.map(function(mode) {
     var selected = allocationsMatch(AppState.settings.allocation, mode.allocation);
