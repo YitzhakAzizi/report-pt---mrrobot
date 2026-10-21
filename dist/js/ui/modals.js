@@ -915,7 +915,7 @@ function openCustomExpenseCategoryModal(collection, index) {
 function openDreamsModal() {
   el("gen-modal-title").textContent = "קרן איכות חיים";
   var body = el("gen-modal-body");
-  body.innerHTML = '<div class="goal-idea"><strong>מה הרעיון?</strong><p>כסף לדברים שעושים טוב: חופשה, חוויה או קנייה גדולה. מסדרים לפי עדיפות, והכסף הולך קודם לראשון.</p></div>';
+  body.innerHTML = '<div class="goal-idea"><strong>מה הרעיון?</strong><p>קופת חיסכון לחלומות יקרים (חופשות, חוויות, טיפולים קוסמטיים או קנייה גדולה).</p><p class="goal-idea-hint">הגדירו חלום, סכום ועדיפות (בגרירה).</p></div>';
 
   var list = document.createElement("div");
   list.className = "dream-list";

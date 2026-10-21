@@ -37,6 +37,10 @@ function enableRowReorder(list, rowSelector, onDone) {
     event.preventDefault();
     startRowDrag(list, row, event, rowSelector, onDone);
   });
+  /* באייפון: נגיעה בידית לא מגלגלת את הדף או את החלון שמאחור */
+  list.addEventListener("touchstart", function(event) {
+    if (event.target.closest(".drag-handle")) event.preventDefault();
+  }, {passive: false});
 }
 
 function startRowDrag(list, row, event, rowSelector, onDone) {
@@ -52,6 +56,9 @@ function startRowDrag(list, row, event, rowSelector, onDone) {
   var scrollTimer = null;
 
   rows.forEach(function(item) { item.classList.add("reorder-active"); });
+  /* כל עוד גוררים, שום דבר אחר לא נגלל */
+  var blockScroll = function(touchEvent) { touchEvent.preventDefault(); };
+  document.addEventListener("touchmove", blockScroll, {passive: false});
   row.classList.add("is-dragging");
 
   var layout = function() {
@@ -76,7 +83,9 @@ function startRowDrag(list, row, event, rowSelector, onDone) {
   var autoScroll = function() {
     var edge = 90;
     var speed = lastClientY < edge ? -8 : lastClientY > window.innerHeight - edge ? 8 : 0;
-    if (speed) { window.scrollBy(0, speed); layout(); }
+    /* בתוך חלון גוללים את החלון, לא את הדף */
+    var scroller = list.closest(".modal-body");
+    if (speed && !scroller) { window.scrollBy(0, speed); layout(); }
     scrollTimer = requestAnimationFrame(autoScroll);
   };
   scrollTimer = requestAnimationFrame(autoScroll);
@@ -93,6 +102,7 @@ function startRowDrag(list, row, event, rowSelector, onDone) {
     document.removeEventListener("pointerup", onEnd);
     document.removeEventListener("pointercancel", onEnd);
     cancelAnimationFrame(scrollTimer);
+    document.removeEventListener("touchmove", blockScroll, {passive: false});
     /* "נחיתה" במקום החדש, ואז הסדר נקבע במסמך */
     var target = 0;
     if (to > from) for (var a = from + 1; a <= to; a++) target += heights[a];

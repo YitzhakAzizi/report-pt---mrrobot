@@ -2191,3 +2191,8 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 
 .overlay-no-footer .modal-ftr{display:none}
 #gen-modal-body>.add-row-btn{width:100%;margin:12px 0 4px;background:transparent;font-family:inherit;font-size:15px}
+
+.goal-idea .goal-idea-hint{margin-top:6px;color:var(--text);font-weight:600}
+/* bigger touch area for the ☰ handle */
+.flat-expense-row .drag-handle,.dream-row .drag-handle{min-width:36px;height:44px;touch-action:none}
+.custom-allocation-row{cursor:pointer}

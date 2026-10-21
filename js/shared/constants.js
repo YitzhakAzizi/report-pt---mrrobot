@@ -64,7 +64,7 @@ var LEGACY_DEFAULT_EXPENSES = [
 
 /* 3 goals only. auto=true means target is auto-calculated from expenses × multiplier */
 var GOAL_DEFS = [
-  {id: "checking", emoji: "account_balance", name: "עובר ושב", auto: true, multiplier: 2, desc: "מכסת שני חודשי מחייה ללא הכנסות", horizon: "טווח קצר", headline: "ביטחון לטווח הקצר", idea: "כסף זמין בעו״ש שמכסה שני חודשי מחייה, כך שהוצאה לא צפויה לא מכניסה למינוס."},
+  {id: "checking", emoji: "account_balance", name: "עובר ושב", auto: true, multiplier: 2, desc: "מכסת שני חודשי מחייה ללא הכנסות", horizon: "טווח קצר", headline: "ביטחון לטווח הקצר", idea: "בשלב הראשון נקצה סכום כסף זמין בעו״ש שמכסה שני חודשי מחייה גם ללא הכנסות כלל (מקרה של פיטורים וכדו׳), ומיועד להוצאות לא צפויות (תיקון לרכב, טכנאי, תרופות וכדו׳), כך שברגע האמת לא ניכנס למינוס וחובות."},
   {id: "fund",     emoji: "shield", name: "קרן חירום", auto: true, multiplier: 4, desc: "מכסת ארבעה חודשי מחייה ללא הכנסות", horizon: "טווח בינוני", headline: "ביטחון לטווח הבינוני", idea: "קרן נזילה שמכסה ארבעה חודשי מחייה, לימים שבהם ההכנסה נעצרת."},
   {id: "invest",   emoji: "trending_up", name: "קרן השקעות", auto: true, multiplier: 300, desc: "יציאה לחופש כלכלי", horizon: "טווח ארוך", headline: "חופש כלכלי לטווח הארוך", idea: "כסף שעובד בשבילכם לאורך שנים, עד שהתשואה מממנת את המחייה."}
 ];

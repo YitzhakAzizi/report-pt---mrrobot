@@ -685,9 +685,9 @@ function renderActions(d) {
 
   /* 3. חלוקת היתרה */
   if (AppState.customAllocation.active) {
-    addCustomAllocationRow("trending_up", "השקעות", "invest");
-    addCustomAllocationRow("spa", "קרן איכות חיים", "qualityOfLife");
-    addCustomAllocationRow("credit_card", "בזבוזים", "spending");
+    addCustomAllocationRow("trending_up", "השקעות", "invest", openInvestGoalsModal);
+    addCustomAllocationRow("spa", "קרן איכות חיים", "qualityOfLife", openDreamsModal);
+    addCustomAllocationRow("credit_card", "בזבוזים", "spending", openSpendingModal);
     addDonationRow();
     return;
   }
@@ -698,11 +698,15 @@ function renderActions(d) {
   addDonationRow();
 
   /* הגדרה אישית: כל סעיף עם שדה סכום, מתחיל מ־0, וסך הכול לא עובר את היתרה */
-  function addCustomAllocationRow(iconName, title, key) {
-    var row = mk("div", "action-row custom-allocation-row");
+  function addCustomAllocationRow(iconName, title, key, openDetails) {
+    var row = mk("div", "action-row custom-allocation-row action-row-link");
     var left = mk("div", "act-left");
-    var icon = mkText("span", "act-icon material-symbols-rounded", iconName);
-    icon.setAttribute("aria-hidden", "true");
+    /* גם בחלוקה עצמאית: לחיצה על הסעיף (לא על השדה) פותחת את הפירוט שלו */
+    var icon = mkText("button", "act-icon act-icon-btn material-symbols-rounded", iconName);
+    icon.type = "button";
+    icon.setAttribute("aria-label", "פירוט " + title);
+    icon.onclick = openDetails;
+    row.onclick = function(event) { if (!event.target.closest("input, button")) openDetails(); };
     left.appendChild(icon);
     left.appendChild(mkText("span", "act-title", title));
     row.appendChild(left);
