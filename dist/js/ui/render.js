@@ -216,11 +216,10 @@ function renderFields() {
   var partner2Row = el("income-partner-2-row");
   if (partner1Row) partner1Row.hidden = isSalaryHidden(1);
   if (partner2Row) partner2Row.hidden = AppState.profile.single === true || isSalaryHidden(2);
+  /* משכורת שנמחקה לא מוצעת שוב למטה: מחיקה היא מחיקה */
   [1, 2].forEach(function(person) {
     var restore = el("restore-salary-" + person);
-    if (!restore) return;
-    restore.hidden = !isSalaryHidden(person) || (person === 2 && AppState.profile.single === true);
-    restore.innerHTML = '<span class="material-symbols-rounded" aria-hidden="true">add</span><span>' + escapeHtml(salaryLabel(person)) + '</span>';
+    if (restore) restore.hidden = true;
   });
   renderAdditionalIncomeRows();
 
