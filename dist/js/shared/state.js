@@ -91,6 +91,7 @@ function resetToDefaults() {
   AppState.recoveryPayment = null;
   AppState.customAllocation = emptyCustomAllocation();
   if (AppState.maaser) AppState.maaser.enabled = false;
+  if (AppState.settings) AppState.settings.maaserPercent = 0;
 }
 
 /* ברירת המחדל בכל חודש: "חלוקה עצמאית" מסומנת */

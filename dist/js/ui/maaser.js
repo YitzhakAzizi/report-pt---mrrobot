@@ -53,7 +53,7 @@ function maaserPercentValues(current) {
   /* רק אחוזים שהסכום שלהם לא עולה על הסה״כ שנשאר */
   var total = Number(AppState.result.total) || 0;
   var max = maxDonationAmount();
-  var values = MAASER_PRESETS.filter(function(value) { return Math.floor(percentageOf(total, value)) <= max; });
+  var values = [0].concat(MAASER_PRESETS.filter(function(value) { return Math.floor(percentageOf(total, value)) <= max; }));
   if (values.indexOf(current) < 0) values.push(current);
   return values.sort(function(a, b) { return a - b; });
 }
@@ -215,9 +215,7 @@ function setMaaserPercentagePreset(percentage, keepCustom) {
   _maaserCustomOpen = !!keepCustom;
   AppState.settings.maaserPercent = percentage;
   saveMaaserPercentage();
-  calculate();
-  render();
-  flashSaved();
+  pipeline(); /* נשמר גם בנתוני החודש */
 }
 
 /* האחוז שמוצג: לפי התרומה בפועל, שאינה עולה על הסה״כ שנשאר */
@@ -247,9 +245,7 @@ function saveMainMaaserAmount(value) {
 
   AppState.settings.maaserPercent = AppState.result.total > 0 ? (amount / AppState.result.total) * 100 : 0;
   saveMaaserPercentage();
-  calculate();
-  render();
-  flashSaved();
+  pipeline(); /* נשמר גם בנתוני החודש */
 }
 
 function maaserInlineSettingsHtml(d) {
@@ -454,7 +450,5 @@ function saveInlineMaaserSetting(source) {
 
   AppState.settings.maaserPercent = percentage;
   saveMaaserPercentage();
-  calculate();
-  render();
-  flashSaved();
+  pipeline(); /* נשמר גם בנתוני החודש */
 }

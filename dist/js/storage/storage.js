@@ -248,6 +248,7 @@ function saveData() {
       insurances: AppState.insurances,
       recoveryPayment: AppState.recoveryPayment,
       maaserEnabled: !!AppState.maaser.enabled,
+      maaserPercent: Number(AppState.settings.maaserPercent) || 0,
       customAllocation: AppState.customAllocation,
       summary: currentMonthSummary()
     };
@@ -280,6 +281,8 @@ function loadData(month, year) {
     AppState.recoveryPayment = parseNonNegativeNumber(p.recoveryPayment);
     /* תרומה נבחרת בכל חודש מחדש: ברירת המחדל היא "לא מעוניינים" */
     AppState.maaser.enabled = p.maaserEnabled === true;
+    /* אחוז התרומה נבחר בכל חודש מחדש; ברירת המחדל 0% */
+    AppState.settings.maaserPercent = typeof p.maaserPercent === "number" ? p.maaserPercent : 0;
     AppState.customAllocation = normalizeCustomAllocation(p.customAllocation);
     AppState.monthHasRecord = true;
     return true;
@@ -329,6 +332,7 @@ function startMonthFromPrevious(month, year) {
   AppState.oneTimeExpenses = clone(DEFAULT_ONE_TIME_EXPENSES);
   AppState.recoveryPayment = null;
   AppState.maaser.enabled = false;
+  AppState.settings.maaserPercent = 0;
   AppState.customAllocation = emptyCustomAllocation();
   return true;
 }
