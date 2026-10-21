@@ -542,8 +542,8 @@ function livingEstimateFieldsHtml(type) {
 
 /* חישוב ההערכה מהשדות שבחלונית "עזור לי להעריך" (משותף לחלון ולרשימה) */
 function livingEstimateAmount(container, type) {
-  var primary = toAmount(container.querySelector(".living-estimate-primary").value);
-  if (type === "food" || type === "fuel") return primary * toAmount(container.querySelector(".living-estimate-secondary").value);
+  var primary = parseNonNegativeNumber(container.querySelector(".living-estimate-primary").value) || 0;
+  if (type === "food" || type === "fuel") return primary * (parseNonNegativeNumber(container.querySelector(".living-estimate-secondary").value) || 0);
   if (type === "bill") return primary / (parseFloat(container.querySelector(".living-estimate-frequency").value) || 1);
   return primary;
 }

@@ -26,7 +26,7 @@ function calculate() {
   var availableBeforeMaaser = total - expenseTotal - liabilityPayments;
   /* התרומה מחושבת מההכנסה נטו, אך לעולם אינה גדולה מהיתרה שנשארה, כך שאינה יוצרת גירעון */
   /* בשקלים שלמים, בלי אגורות; התקרה מעוגלת למטה כדי שגם אחרי העיגול לא ייווצר מינוס */
-  var maaserRequested = maaserEnabled ? Math.round(percentageOf(total, AppState.settings.maaserPercent)) : 0;
+  var maaserRequested = maaserEnabled ? Math.floor(percentageOf(total, AppState.settings.maaserPercent)) : 0;
   var maaser = Math.min(maaserRequested, Math.max(0, Math.floor(availableBeforeMaaser)));
   var balance = total - expenseTotal - liabilityPayments - maaser;
   AppState.result = {

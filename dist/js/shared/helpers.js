@@ -35,8 +35,9 @@ function sumArr(arr) {
 }
 
 /* סכום שהוזן בשדה: מספר סופי שאינו שלילי, אחרת 0 */
+/* סכום כספי: שקלים שלמים בלבד, מעוגל כלפי מטה */
 function toAmount(value) {
-  return parseNonNegativeNumber(value) || 0;
+  return Math.floor(parseNonNegativeNumber(value) || 0);
 }
 
 function parseNonNegativeNumber(value) {

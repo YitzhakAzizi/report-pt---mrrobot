@@ -12,6 +12,17 @@ function registerEvents() {
     var opener = row.querySelector(".row-icon-btn");
     if (opener && row.querySelector("input[readonly]")) opener.click();
   });
+  /* שדות סכום: שקלים שלמים בלבד. מקלדת בלי נקודה, ואם בכל זאת הוקלדו אגורות מעגלים כלפי מטה ביציאה */
+  document.addEventListener("focusin", function(event) {
+    if (isWholeShekelInput(event.target)) event.target.inputMode = "numeric";
+  });
+  document.addEventListener("focusout", function(event) {
+    var input = event.target;
+    if (!isWholeShekelInput(input) || input.value === "" || Number.isInteger(Number(input.value))) return;
+    input.value = Math.floor(Number(input.value) || 0);
+    input.dispatchEvent(new Event("input", {bubbles: true}));
+    input.dispatchEvent(new Event("change", {bubbles: true}));
+  });
   /* שדה סכום שמציג 0: בכניסה אליו ה־0 נעלם, כך שמקלידים מיד בלי למחוק */
   document.addEventListener("focusin", function(event) {
     var input = event.target;
@@ -130,4 +141,12 @@ function removeAdditionalIncome(person, index) {
   if (index < 1 || !items[index]) return;
   items.splice(index, 1);
   pipeline();
+}
+
+var WHOLE_SHEKEL_INPUTS = "#inp-s1, #inp-s2, .additional-income-amount, .exp-amt, .dream-amt, .maaser-charity-amount, .maaser-summary-input input, " +
+  ".flat-expense-row input[type=number], .liability-monthly, .liability-balance, .insurance-monthly-amount, #debt-overdraft-input, " +
+  "#recovery-payment-input, #financial-personal, #financial-employer, #financial-balance";
+
+function isWholeShekelInput(input) {
+  return !!input && input.tagName === "INPUT" && input.type === "number" && !input.readOnly && input.matches(WHOLE_SHEKEL_INPUTS);
 }

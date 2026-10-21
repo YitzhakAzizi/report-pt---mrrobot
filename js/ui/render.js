@@ -187,8 +187,8 @@ function renderFields() {
   }, 0));
   var s1el = el("inp-s1");
   var s2el = el("inp-s2");
-  if (s1el) s1el.value = Number(AppState.income1[0] && AppState.income1[0].val) || "";
-  if (s2el) s2el.value = Number(AppState.income2[0] && AppState.income2[0].val) || "";
+  if (s1el && document.activeElement !== s1el) s1el.value = Math.floor(Number(AppState.income1[0] && AppState.income1[0].val)) || "";
+  if (s2el && document.activeElement !== s2el) s2el.value = Math.floor(Number(AppState.income2[0] && AppState.income2[0].val)) || "";
   /* כותרת שורת המשכורת היא שדה טקסט אחד שנערך בלחיצה */
   [1, 2].forEach(function(person) {
     var labelInput = el("income-partner-" + person + "-name");

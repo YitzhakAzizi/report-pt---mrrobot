@@ -5,8 +5,9 @@
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━ */
 function el(id) { return document.getElementById(id); }
 
+/* סכומים מוצגים בשקלים שלמים בלי אגורות, מעוגלים כלפי מטה (גירעון: החלק השלם שלו) */
 function money(n) {
-  var r = Math.round(n);
+  var r = Math.trunc(Number(n) || 0);
   var neg = r < 0;
   var s = Math.abs(r).toString();
   var res = "", c = 0;

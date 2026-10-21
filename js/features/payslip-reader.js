@@ -206,7 +206,7 @@ function renderPayslipFindings(container, result, person, errorDetail) {
     var use = mkText("button", "payslip-use-btn", "השתמש בסכום כ" + salaryLabel(person));
     use.type = "button";
     use.onclick = function() {
-      updateState((person === 2 ? "income2" : "income1") + ".0.val", result.bank);
+      updateState((person === 2 ? "income2" : "income1") + ".0.val", Math.floor(result.bank));
       use.textContent = "✓ עודכן: " + salaryLabel(person) + " " + money(result.bank);
       use.disabled = true;
     };
@@ -241,8 +241,8 @@ function applyPayslipToInvestments(result) {
   [["pension", result.pensionEmployee, result.pensionEmployer], ["training", result.studyEmployee, result.studyEmployer]].forEach(function(entry) {
     if (entry[1] === null && entry[2] === null) return;
     var record = AppState.investments[entry[0]] || normalizeInvestmentOverview({});
-    if (entry[1] !== null) record.personalDeposit = entry[1];
-    if (entry[2] !== null) record.employerDeposit = entry[2];
+    if (entry[1] !== null) record.personalDeposit = Math.floor(entry[1]);
+    if (entry[2] !== null) record.employerDeposit = Math.floor(entry[2]);
     AppState.investments[entry[0]] = record;
   });
   saveInvestmentsOverview();

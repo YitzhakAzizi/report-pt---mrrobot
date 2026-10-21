@@ -510,7 +510,7 @@ function normalizeLoan(loan) {
     name: String(loan && loan.name || ""),
     balance: Math.max(0, Number(loan && loan.balance) || 0),
     interest: Math.max(0, Number(loan && loan.interest) || 0),
-    monthlyPayment: Math.max(0, Number(loan && loan.monthlyPayment) || 0),
+    monthlyPayment: Math.max(0, Math.floor(Number(loan && loan.monthlyPayment) || 0)),
     endDate: String(loan && loan.endDate || ""),
     earlyPayoff: !!(loan && loan.earlyPayoff)
   };
@@ -521,7 +521,7 @@ function normalizeDebt(debt) {
     name: String(debt && debt.name || ""),
     balance: Math.max(0, Number(debt && debt.balance) || 0),
     interest: Math.max(0, Number(debt && debt.interest) || 0),
-    minimumPayment: Math.max(0, Number(debt && debt.minimumPayment) || 0),
+    minimumPayment: Math.max(0, Math.floor(Number(debt && debt.minimumPayment) || 0)),
     targetDate: String(debt && debt.targetDate || "")
   };
 }

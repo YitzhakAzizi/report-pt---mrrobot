@@ -137,7 +137,14 @@ test("סכומים שליליים או לא תקינים נקראים כ־0", fu
   assert.strictEqual(app.toAmount("-3000"), 0);
   assert.strictEqual(app.toAmount("abc"), 0);
   assert.strictEqual(app.toAmount("1e400"), 0);
-  assert.strictEqual(app.toAmount("1250.5"), 1250.5);
+  assert.strictEqual(app.toAmount("1250.5"), 1250); /* בלי אגורות: מעוגל כלפי מטה */
+  assert.strictEqual(app.toAmount("1250.99"), 1250);
+});
+
+test("סכומים מוצגים בלי אגורות, מעוגלים כלפי מטה", function() {
+  var app = createApp();
+  assert.ok(app.money(1234.99).indexOf("1,234") >= 0 && app.money(1234.99).indexOf("1,235") < 0);
+  assert.ok(app.money(-50.7).indexOf("50") >= 0 && app.money(-50.7).indexOf("51") < 0);
 });
 
 test("מספר רץ לחודש אינו תלוי ברשימת שנים קבועה", function() {
