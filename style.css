@@ -2086,3 +2086,10 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 .balance-fx i:nth-child(6){right:66%;top:50%;animation-delay:6s}
 @keyframes balanceFloat{0%,100%{opacity:0;transform:translateY(6px) scale(.85)}30%,60%{opacity:.32;transform:translateY(0) scale(1)}80%{opacity:0;transform:translateY(-6px) scale(.95)}}
 @media (prefers-reduced-motion:reduce){.balance-fx i{animation:none;opacity:.18}}
+/* "סה״כ יתרה": icons spread over the whole bar, also behind the text */
+.balance-fx i:nth-child(1){right:5%;top:20%}
+.balance-fx i:nth-child(2){right:21%;top:54%}
+.balance-fx i:nth-child(3){right:38%;top:18%}
+.balance-fx i:nth-child(4){right:55%;top:56%}
+.balance-fx i:nth-child(5){right:72%;top:22%}
+.balance-fx i:nth-child(6){right:89%;top:52%}
