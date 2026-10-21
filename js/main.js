@@ -1,7 +1,7 @@
 "use strict";
 
 /* דיווח שגיאות על המסך: באייפון אין כלי מפתחים, כך שהשגיאה מוצגת למשתמש וניתנת לצילום */
-var APP_VERSION = "48";
+var APP_VERSION = "49";
 function showErrorReport(message) {
   var bar = el("error-report");
   if (!bar) {

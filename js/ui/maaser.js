@@ -15,7 +15,6 @@ function renderMaaser(d) {
   var afterDonation = (Number(d.availableBeforeMaaser) || 0) - (effectiveEnabled ? Number(d.maaser) || 0 : 0);
   if (balanceBox) {
     balanceBox.innerHTML = '<span>סה״כ יתרה</span><strong>' + money(Math.max(0, afterDonation)) + '</strong>';
-    if (typeof addBalanceFx === "function") addBalanceFx(balanceBox);
   }
   /* "לא מעוניינים": נשארים רק שני ריבועי הבחירה */
   if (card) {
