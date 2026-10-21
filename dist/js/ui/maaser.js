@@ -29,13 +29,13 @@ function renderMaaser(d) {
 
   box.innerHTML = '<p class="pick-hint maaser-desktop-only"><span class="material-symbols-rounded" aria-hidden="true">touch_app</span><span>לחצו לבחירה</span></p>' +
     '<div class="maaser-desktop-only">' + maaserPercentageChoicesHtml() + '</div>' +
-    /* סכום לתרומה, ומימינו אחוז (גלגלת). שניהם ניתנים לעריכה */
-    '<div class="maaser-amount-row">' +
-      '<label class="maaser-percent-wheel"><select aria-label="אחוז לתרומה" onchange="setMaaserPercentagePreset(Number(this.value))">' +
-        maaserPercentOptionsHtml(AppState.settings.maaserPercent) + '</select></label>' +
-      '<label class="maaser-summary"><span>סכום לתרומה</span><div class="maaser-summary-input"><input type="number" value="' +
+    /* שורה אחת: "הגדר", משמאלו אחוז (גלגלת) והכי משמאל הסכום. שניהם ניתנים לעריכה */
+    '<div class="maaser-summary maaser-amount-row"><span>הגדר</span>' +
+      '<select class="maaser-percent-wheel" aria-label="אחוז לתרומה" onchange="setMaaserPercentagePreset(Number(this.value))">' +
+        maaserPercentOptionsHtml(AppState.settings.maaserPercent) + '</select>' +
+      '<div class="maaser-summary-input"><input type="number" value="' +
         formatMaaserSettingsNumber(d.maaserRequested) + '" min="0" step="any" inputmode="decimal" aria-label="סכום לתרומה" ' +
-        'onchange="saveMainMaaserAmount(this.value)" /><b>₪</b></div></label>' +
+        'onchange="saveMainMaaserAmount(this.value)" /><b>₪</b></div>' +
     '</div>' +
     (d.maaserCapped ? '<p class="maaser-capped-note maaser-desktop-only" role="status">' + escapeHtml(maaserCappedText(d)) + '</p>' : '') +
     '<div class="maaser-validation" id="maaser-validation">' + getMaaserValidationMessage() + '</div>';
