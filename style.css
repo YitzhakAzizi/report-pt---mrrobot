@@ -2054,3 +2054,9 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 #calculator-app .custom-allocation-input{width:110px;min-height:44px;padding:8px 10px;border:1.5px solid var(--border);border-radius:12px;background:#fff;
   color:var(--text);font:700 17px Rubik,Heebo,sans-serif;text-align:center;direction:ltr}
 #calculator-app .custom-allocation-input:focus{border-color:var(--border-f);outline:none}
+
+/* percentages only inside the chosen plan */
+#calculator-app .allocation-mode .allocation-parts{display:flex;flex-direction:column;width:100%;margin-top:4px;padding-top:6px;border-top:1px solid rgba(22,58,95,.12);animation:historyFade .2s ease}
+#calculator-app .allocation-mode .allocation-part{font-size:11px}
+@media (max-width:380px){#calculator-app .allocation-mode .allocation-part{font-size:10px}}
+#calculator-app .allocation-mode:not(.allocation-mode-custom){justify-content:flex-start}

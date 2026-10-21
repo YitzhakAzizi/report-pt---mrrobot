@@ -133,6 +133,11 @@ function calculateBudgetFlow() {
     renderPreAllocation(AppState.result);
     return;
   }
+  /* חלוקה עצמאית: עוברים ישר להזנת הסכומים, בלי מסך ההכנה */
+  if (AppState.customAllocation && AppState.customAllocation.active) {
+    goToBudgetFlowStep(BUDGET_FLOW_STEP_IDS.indexOf("budget-flow-result"));
+    return;
+  }
   calculation.setAttribute("aria-busy", "true");
   button.disabled = true;
   button.hidden = true;

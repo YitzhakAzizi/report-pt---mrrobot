@@ -836,20 +836,27 @@ function renderAllocationModes() {
   if (question) question.hidden = false;
   if (el("allocation-pick-hint")) el("allocation-pick-hint").hidden = false;
   if (customButton) customButton.hidden = false;
-  /* ריבועים נקיים: אימוג׳י ושם בלבד, ועוד ריבוע "הגדרה אישית" שפותח חלוקה עצמאית */
+  /* ריבועים נקיים: אימוג׳י ושם; האחוזים מופיעים רק בריבוע שנבחר. ומתחת "חלוקה עצמאית" */
   var current = AppState.settings.allocation;
   var customActive = !!(AppState.customAllocation && AppState.customAllocation.active);
   box.innerHTML = ALLOCATION_MODES.map(function(mode) {
     var selected = !customActive && allocationsMatch(current, mode.allocation);
     return '<button type="button" class="allocation-mode' + (selected ? ' selected' : '') + '" ' +
       'aria-pressed="' + selected + '" onclick="setAllocationMode(\'' + mode.id + '\')">' +
-      '<span class="allocation-emoji" aria-hidden="true">' + mode.emoji + '</span><strong>' + mode.name + '</strong></button>';
+      '<span class="allocation-emoji" aria-hidden="true">' + mode.emoji + '</span><strong>' + mode.name + '</strong>' +
+      (selected ? '<span class="allocation-parts">' + allocationPart("השקעות", mode.allocation.invest) +
+        allocationPart("קרן איכות חיים", mode.allocation.qualityOfLife) + allocationPart("בזבוזים", mode.allocation.spending) + '</span>' : '') +
+      '</button>';
   }).join("") +
     '<button type="button" class="allocation-mode allocation-mode-custom' + (customActive ? ' selected' : '') + '" aria-pressed="' + customActive + '" onclick="selectCustomAllocation()">' +
-      '<span class="allocation-emoji" aria-hidden="true">✏️</span><strong>הגדרה אישית</strong></button>';
+      '<span class="allocation-emoji" aria-hidden="true">✏️</span><strong>חלוקה עצמאית</strong></button>';
 }
 
-/* "הגדרה אישית" רק מסומנת כאן; הסכומים מוזנים במסך הבא */
+function allocationPart(label, percent) {
+  return '<span class="allocation-part"><span>' + label + '</span><b>' + percent + '%</b></span>';
+}
+
+/* "חלוקה עצמאית" רק מסומנת כאן; הסכומים מוזנים במסך הבא */
 function selectCustomAllocation() {
   AppState.customAllocation.active = true;
   pipeline();
