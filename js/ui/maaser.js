@@ -150,8 +150,8 @@ function maaserCappedText(d) {
 }
 
 function maaserToggleHtml(enabled, canDonate) {
-  var interestedLabel = audienceText("מעוניין לתרום החודש", "מעוניינים לתרום החודש");
-  var notInterestedLabel = audienceText("לא מעוניין לתרום החודש", "לא מעוניינים לתרום החודש");
+  var interestedLabel = audienceText("מעוניין לתרום", "מעוניינים לתרום");
+  var notInterestedLabel = audienceText("לא מעוניין לתרום", "לא מעוניינים לתרום");
   return '<div class="maaser-toggle" role="radiogroup" aria-label="בחירת מצב תרומות">' +
       '<label class="maaser-radio' + (enabled ? ' active' : '') + (!canDonate ? ' disabled' : '') + '">' +
         '<input type="radio" name="maaser-mode" value="on"' + (enabled ? ' checked' : '') + (!canDonate ? ' disabled' : '') + ' onchange="setMaaserEnabled(true)" />' +

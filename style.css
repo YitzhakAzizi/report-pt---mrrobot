@@ -2100,3 +2100,5 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 .balance-fx i:nth-child(4){animation-duration:12s;animation-delay:-10s}
 .balance-fx i:nth-child(5){animation-duration:15.5s;animation-delay:-0.5s}
 .balance-fx i:nth-child(6){animation-duration:12.5s;animation-delay:-6s}
+/* donation choice: white background, also when chosen (the dot and frame show the choice) */
+#calculator-app .maaser-radio,#calculator-app .maaser-radio.active{background:#fff}
