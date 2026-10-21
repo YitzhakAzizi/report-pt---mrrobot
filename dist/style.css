@@ -2145,3 +2145,11 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
   border:1px solid rgba(22,58,95,.16);border-radius:12px;background:var(--info-bg);color:var(--info);font-size:15px;font-weight:700}
 .charity-remove{align-self:center;padding:6px 8px}
 .allocation-balance-summary[hidden]{display:none !important}
+
+/* windows opened from the monthly budget open in the middle of the screen (not as a bottom sheet) */
+.overlay.overlay-center{align-items:center;justify-content:center;padding:16px}
+.overlay.overlay-center .modal{width:min(100%,460px);max-height:min(82vh,640px);border-radius:22px;margin:0 auto;animation:modalPop .22s ease}
+.overlay.overlay-center .modal::before{display:none}
+@keyframes modalPop{from{opacity:0;transform:scale(.96)}to{opacity:1;transform:scale(1)}}
+.goal-modal-sub{display:block;margin-top:3px;color:var(--muted);font-size:13px;font-weight:600;line-height:1.4}
+#investment-goal-footer{grid-template-columns:1fr 1fr}

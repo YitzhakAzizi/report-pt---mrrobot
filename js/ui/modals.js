@@ -80,7 +80,7 @@ function openSpendingModal() {
   var apply = el("gen-apply-btn");
   apply.textContent = "סגור";
   apply.onclick = function() { closeGenModal(); };
-  el("gen-overlay").className = "overlay open";
+  el("gen-overlay").className = "overlay open overlay-center";
 }
 
 /* ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
@@ -91,7 +91,7 @@ var _visibleInvestmentGoalIndex = null;
 
 function openInvestGoalsModal() {
   el("gen-modal-title").textContent = "השקעות";
-  _visibleInvestmentGoalIndex = firstIncompleteInvestmentGoalIndex();
+  _visibleInvestmentGoalIndex = 0;
   _expandedInvestmentGoalId = null;
   renderInvestGoalsModal();
 
@@ -102,7 +102,7 @@ function openInvestGoalsModal() {
   apply.hidden = true;
   el("investment-goal-footer").hidden = false;
 
-  el("gen-overlay").className = "overlay open";
+  el("gen-overlay").className = "overlay open overlay-center";
 }
 
 function renderInvestGoalsModal() {
@@ -113,10 +113,10 @@ function renderInvestGoalsModal() {
   var goalIndex = Math.max(0, Math.min(_visibleInvestmentGoalIndex, GOAL_DEFS.length - 1));
   var gd = GOAL_DEFS[goalIndex];
   var completed = !!AppState.goals[gd.id].completed;
-  var html = '<div class="investment-goals-intro" aria-label="הסבר על היעד">' +
-    '<p><strong>' + gd.horizon + ' · ' + gd.name + '</strong><span>' + gd.desc + '</span></p>' +
-    '</div><div class="goal-accordion-list">' + buildGoalCardHtml(gd) + '</div>';
-  body.innerHTML = html;
+  /* הכותרת אומרת מה היעד נותן, למשל "ביטחון לטווח הקצר (מכסת שני חודשי מחייה ללא הכנסות)" */
+  var title = el("gen-modal-title");
+  title.innerHTML = escapeHtml(gd.headline) + '<small class="goal-modal-sub">(' + escapeHtml(gd.desc) + ')</small>';
+  body.innerHTML = '<div class="goal-accordion-list">' + buildGoalCardHtml(gd) + '</div>';
   renderInvestmentGoalFooter(goalIndex, completed);
 }
 
@@ -128,12 +128,8 @@ function renderInvestmentGoalFooter(goalIndex, completed) {
     '<button type="button" class="investment-goal-footer-nav" onclick="showPreviousInvestmentGoal()"' +
       (goalIndex === 0 ? ' disabled' : '') + '>' +
       '<span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזור</span></button>' +
-    '<div class="investment-goal-status-choices" role="group" aria-label="סטטוס היעד">' +
-      investmentGoalStatusChoice(false, completed) +
-      investmentGoalStatusChoice(true, completed) +
-    '</div>' +
     '<button type="button" class="investment-goal-footer-nav investment-goal-footer-next" onclick="showNextInvestmentGoal()"' +
-      (!completed || goalIndex === GOAL_DEFS.length - 1 ? ' disabled' : '') + '>' +
+      (goalIndex === GOAL_DEFS.length - 1 ? ' disabled' : '') + '>' +
       '<span>הבא</span><span class="material-symbols-rounded" aria-hidden="true">arrow_back</span></button>';
 }
 
@@ -937,7 +933,7 @@ function openDreamsModal() {
   el("gen-apply-btn").textContent = "עדכן ושמור ✓";
   el("gen-apply-btn").onclick = function() { applyDreamsModal(); };
   updateDreamsTotal();
-  el("gen-overlay").className = "overlay open";
+  el("gen-overlay").className = "overlay open overlay-center";
 }
 
 function buildDreamRow(item) {

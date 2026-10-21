@@ -64,9 +64,9 @@ var LEGACY_DEFAULT_EXPENSES = [
 
 /* 3 goals only. auto=true means target is auto-calculated from expenses × multiplier */
 var GOAL_DEFS = [
-  {id: "checking", emoji: "account_balance", name: "עובר ושב", auto: true, multiplier: 2, desc: "מכסת שני חודשי מחיה ללא הכנסות", horizon: "טווח קצר"},
-  {id: "fund",     emoji: "shield", name: "קרן חירום", auto: true, multiplier: 4, desc: "מכסת ארבעה חודשי מחיה ללא הכנסות", horizon: "טווח בינוני"},
-  {id: "invest",   emoji: "trending_up", name: "קרן השקעות", auto: true, multiplier: 300, desc: "יציאה לחופש כלכלי", horizon: "טווח ארוך"}
+  {id: "checking", emoji: "account_balance", name: "עובר ושב", auto: true, multiplier: 2, desc: "מכסת שני חודשי מחייה ללא הכנסות", horizon: "טווח קצר", headline: "ביטחון לטווח הקצר"},
+  {id: "fund",     emoji: "shield", name: "קרן חירום", auto: true, multiplier: 4, desc: "מכסת ארבעה חודשי מחייה ללא הכנסות", horizon: "טווח בינוני", headline: "ביטחון לטווח הבינוני"},
+  {id: "invest",   emoji: "trending_up", name: "קרן השקעות", auto: true, multiplier: 300, desc: "יציאה לחופש כלכלי", horizon: "טווח ארוך", headline: "חופש כלכלי לטווח הארוך"}
 ];
 
 var FINANCIAL_INSTITUTIONS = [
