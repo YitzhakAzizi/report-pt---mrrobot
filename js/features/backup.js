@@ -12,6 +12,8 @@ var BACKUP_KEYS = [
   ALLOCATION_PERCENTAGES_KEY, LIABILITIES_KEY, PROFILE_SETTINGS_KEY, INVESTMENTS_OVERVIEW_KEY
 ];
 
+var BACKUP_MIGRATION_FLAGS = ["addedCarTest_v1", "addedPlainFixedItems_v1", "fixedDefaults_v2"];
+
 function buildBackup() {
   var data = {};
   BACKUP_KEYS.forEach(function(key) {
@@ -161,6 +163,9 @@ function restoreBackupData(data) {
       if (Object.prototype.hasOwnProperty.call(data, key)) localStorage.setItem(key, data[key]);
       else localStorage.removeItem(key);
     });
+    /* נתונים משוחזרים כבר משקפים את מה שהמשתמשים בחרו: עדכוני ברירת מחדל חד־פעמיים לא ירוצו עליהם
+       (אחרת סעיף שנמחק, כמו "טסט לרכב", היה חוזר) */
+    BACKUP_MIGRATION_FLAGS.forEach(function(flag) { localStorage.setItem(flag, "1"); });
     return true;
   } catch(e) {
     BACKUP_KEYS.forEach(function(key) {

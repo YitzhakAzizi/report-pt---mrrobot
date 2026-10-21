@@ -1,7 +1,7 @@
 "use strict";
 
 /* דיווח שגיאות על המסך: באייפון אין כלי מפתחים, כך שהשגיאה מוצגת למשתמש וניתנת לצילום */
-var APP_VERSION = "65";
+var APP_VERSION = "66";
 function showErrorReport(message) {
   var bar = el("error-report");
   if (!bar) {
@@ -26,6 +26,7 @@ window.addEventListener("unhandledrejection", function(event) {
 
   registerEvents();
   renderNextMeetingLabel();
+  loadSeedDataOnce();
 
   loadGoals();
   loadMaaserAccount();
@@ -70,4 +71,13 @@ function applyFixedDefaultsOnce() {
   });
   if (AppState.monthHasRecord) saveData();
   writeStorage(flag, "1");
+}
+
+/* נתוני הפתיחה האישיים (seed-data.js) נטענים רק כשאין עדיין שום נתוני תקציב במכשיר */
+function loadSeedDataOnce() {
+  if (typeof SEED_BACKUP === "undefined") return;
+  try { if (localStorage.getItem(STORAGE_KEY) || localStorage.getItem("seedLoaded_v1")) return; } catch(e) { return; }
+  var checked = validateBackup(SEED_BACKUP);
+  if (checked.error) return;
+  if (restoreBackupData(checked.data)) writeStorage("seedLoaded_v1", "1");
 }
