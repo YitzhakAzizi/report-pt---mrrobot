@@ -1964,3 +1964,38 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 .allocation-balance-summary.balance-hero.is-deficit{background:linear-gradient(120deg,#7f1d1d,#b91c1c 55%,#dc2626);box-shadow:0 12px 28px rgba(185,28,28,.28)}
 @keyframes balanceShine{0%,55%{left:-60%}100%{left:130%}}
 @media (prefers-reduced-motion:reduce){.allocation-balance-summary.balance-hero::after{animation:none;display:none}}
+
+/* calmer effects: fewer, smaller, fainter, slower, and away from the text */
+.tile-fx i{font-size:11px !important}
+.tile-fx i:nth-child(n+5){display:none}
+.tile-fx-rain i{animation-duration:6.5s}
+.tile-fx-fly i{animation-duration:7.5s}
+.tile-fx i:nth-child(1){right:4%}
+.tile-fx i:nth-child(2){right:88%}
+.tile-fx i:nth-child(3){right:14%}
+.tile-fx i:nth-child(4){right:78%}
+@keyframes moneyRain{
+  0%{transform:translateY(-18px) rotate(-12deg);opacity:0}
+  15%{opacity:.22}
+  80%{opacity:.18}
+  100%{transform:translateY(76px) rotate(18deg);opacity:0}
+}
+@keyframes moneyFly{
+  0%{transform:translateY(72px) rotate(0);opacity:0}
+  20%{opacity:.2}
+  100%{transform:translateY(-20px) translateX(5px) rotate(10deg);opacity:0}
+}
+.summary-tile>span:not(.tile-fx),.summary-tile>strong{text-shadow:none}
+
+/* summary tiles open one by one, as the steps are reached */
+.summary-tile{transition:opacity .35s ease,transform .35s ease}
+.summary-tile:not(.is-revealed){visibility:hidden;opacity:0;transform:translateY(6px)}
+
+/* "סה״כ יתרה" as a tile, like the summary tiles */
+.allocation-balance-summary.balance-hero{width:min(64%,240px);min-height:0;margin:0 auto 16px;padding:12px 10px 10px;flex-direction:column;justify-content:center;gap:2px;
+  color:var(--text);background:linear-gradient(180deg,#eef6fb,#fff 75%);border:1px solid var(--border);border-top:3px solid #163a5f;border-radius:14px;box-shadow:var(--shadow)}
+.allocation-balance-summary.balance-hero::before,.allocation-balance-summary.balance-hero::after{display:none}
+.allocation-balance-summary.balance-hero span{font-size:12px;font-weight:700;color:var(--muted)}
+.allocation-balance-summary.balance-hero strong{font-size:20px;font-weight:800;color:#163a5f;text-shadow:none}
+.allocation-balance-summary.balance-hero.is-deficit{background:linear-gradient(180deg,#fef2f2,#fff 75%);border-top-color:#dc2626;box-shadow:var(--shadow)}
+.allocation-balance-summary.balance-hero.is-deficit strong{color:#dc2626}

@@ -123,7 +123,23 @@ function ensureSnapshotSlots() {
   });
 }
 
+/* משבצות הסיכום נפתחות בהדרגה: כל משבצת מופיעה כשמגיעים לשלב שלה, ובכל כניסה מתחילים מחדש */
+var SUMMARY_TILE_STEPS = [
+  {tile: "summary-income", step: "budget-flow-income"},
+  {tile: "summary-fixed", step: "budget-flow-expenses"},
+  {tile: "summary-variable", step: "budget-flow-variable-expenses"}
+];
+function revealSummaryTiles() {
+  var furthest = typeof budgetFlowFurthestStep === "number" ? budgetFlowFurthestStep : 0;
+  SUMMARY_TILE_STEPS.forEach(function(item) {
+    var amount = el(item.tile);
+    var tile = amount && amount.closest(".summary-tile");
+    if (tile) tile.classList.toggle("is-revealed", furthest >= BUDGET_FLOW_STEP_IDS.indexOf(item.step));
+  });
+}
+
 function updateTopbarDonationVisibility() {
+  revealSummaryTiles();
   ensureSnapshotSlots();
   var snapshotContainer = document.querySelector(".topbar-financial-snapshot");
   var currentStep = typeof budgetFlowCurrentStep === "number" ? budgetFlowCurrentStep : 0;
