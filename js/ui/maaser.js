@@ -32,9 +32,9 @@ function renderMaaser(d) {
     /* שורה אחת: "הגדר", משמאלו אחוז (גלגלת) והכי משמאל הסכום. שניהם ניתנים לעריכה */
     '<div class="maaser-summary maaser-amount-row"><span>הגדר</span>' +
       '<button type="button" class="maaser-percent-wheel" aria-label="בחירת אחוז לתרומה" onclick="openPercentPicker()">' +
-        formatMaaserSettingsNumber(Math.round((Number(AppState.settings.maaserPercent) || 0) * 100) / 100) + '%</button>' +
+        effectiveMaaserPercent() + '%</button>' +
       '<div class="maaser-summary-input"><input type="number" value="' +
-        formatMaaserSettingsNumber(d.maaserRequested) + '" min="0" step="any" inputmode="decimal" aria-label="סכום לתרומה" ' +
+        formatMaaserSettingsNumber(d.maaser) + '" min="0" max="' + maxDonationAmount() + '" step="1" inputmode="numeric" aria-label="סכום לתרומה" ' +
         'onchange="saveMainMaaserAmount(this.value)" /><b>₪</b></div>' +
     '</div>' +
     (d.maaserCapped ? '<p class="maaser-capped-note maaser-desktop-only" role="status">' + escapeHtml(maaserCappedText(d)) + '</p>' : '') +
@@ -46,14 +46,17 @@ function renderMaaser(d) {
 var PERCENT_DRUM_ROW = 40;
 
 function maaserPercentValues(current) {
-  var values = MAASER_PRESETS.slice();
+  /* רק אחוזים שהסכום שלהם לא עולה על הסה״כ שנשאר */
+  var total = Number(AppState.result.total) || 0;
+  var max = maxDonationAmount();
+  var values = MAASER_PRESETS.filter(function(value) { return Math.floor(percentageOf(total, value)) <= max; });
   if (values.indexOf(current) < 0) values.push(current);
   return values.sort(function(a, b) { return a - b; });
 }
 
 function openPercentPicker() {
   closePercentPicker();
-  var current = Math.round((Number(AppState.settings.maaserPercent) || 0) * 100) / 100;
+  var current = effectiveMaaserPercent();
   var values = maaserPercentValues(current);
   var overlay = mk("div", "picker-overlay");
   overlay.id = "percent-picker";
@@ -173,8 +176,9 @@ function maaserPercentageChoicesHtml() {
   return '<div class="maaser-percentage-choices" role="group" aria-label="בחירת אחוז תרומה">' +
     MAASER_PRESETS.map(function(value) {
       var selected = !customSelected && Math.abs(value - current) < 0.000001;
+      var tooMuch = Math.floor(percentageOf(Number(AppState.result.total) || 0, value)) > maxDonationAmount();
       return '<button type="button" class="maaser-percentage-choice' + (selected ? ' selected' : '') + '" ' +
-        'aria-pressed="' + selected + '" onclick="setMaaserPercentagePreset(' + value + ')">' + value + '%</button>';
+        'aria-pressed="' + selected + '"' + (tooMuch ? ' disabled title="גבוה מהסה״כ שנשאר"' : '') + ' onclick="setMaaserPercentagePreset(' + value + ')">' + value + '%</button>';
     }).join('') +
     '<button type="button" class="maaser-percentage-choice maaser-custom-choice' + (customSelected ? ' selected' : '') + '" ' +
       'aria-pressed="' + customSelected + '" onclick="openMaaserCustomPercent()">הגדר לבד</button>' +
@@ -197,6 +201,9 @@ function setMaaserCustomPercent(value) {
     showMaaserValidation("יש להזין אחוז בין 0 ל־100");
     return;
   }
+  /* לא יותר מהסה״כ שנשאר */
+  var total = Number(AppState.result.total) || 0;
+  if (total > 0 && percentageOf(total, percentage) > maxDonationAmount()) percentage = (maxDonationAmount() / total) * 100;
   setMaaserPercentagePreset(percentage, true);
 }
 
@@ -209,8 +216,22 @@ function setMaaserPercentagePreset(percentage, keepCustom) {
   flashSaved();
 }
 
+/* האחוז שמוצג: לפי התרומה בפועל, שאינה עולה על הסה״כ שנשאר */
+function effectiveMaaserPercent() {
+  var total = Number(AppState.result.total) || 0;
+  var percent = total > 0 && AppState.result.maaserCapped ? (AppState.result.maaser / total) * 100 : Number(AppState.settings.maaserPercent) || 0;
+  return Math.round(percent * 100) / 100;
+}
+
+/* הסכום הגבוה ביותר שאפשר לתרום: מה שנשאר אחרי ההוצאות (בשקלים שלמים) */
+function maxDonationAmount() {
+  return Math.max(0, Math.floor(Number(AppState.result.availableBeforeMaaser) || 0));
+}
+
 function saveMainMaaserAmount(value) {
   var amount = parseNonNegativeNumber(value);
+  /* לא יותר מהסה״כ שנשאר */
+  if (amount !== null) amount = Math.min(Math.floor(amount), maxDonationAmount());
   if (amount === null) {
     showMaaserValidation("יש להזין סכום מספרי שאינו שלילי");
     return;

@@ -1886,3 +1886,4 @@ body::before{background:#16a34a;opacity:.09}
   color:#8e8e93;font:400 20px -apple-system,BlinkMacSystemFont,Rubik,sans-serif;direction:ltr;transition:color .12s}
 .percent-drum-item.is-center{color:#000;font-size:22px;font-weight:500}
 @keyframes pickerUp{from{transform:translateY(100%)}to{transform:translateY(0)}}
+.maaser-percentage-choice:disabled{opacity:.4;cursor:not-allowed}
