@@ -2032,3 +2032,25 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 .allocation-balance-summary.balance-hero::after{content:"✨";bottom:8px;left:8px;top:auto;width:auto;background:none;animation-delay:2.2s}
 @keyframes balanceTwinkle{0%,100%{opacity:0;transform:scale(.8) translateY(2px)}40%,60%{opacity:.35;transform:scale(1) translateY(0)}}
 @media (prefers-reduced-motion:reduce){.allocation-balance-summary.balance-hero::before,.allocation-balance-summary.balance-hero::after{animation:none;opacity:.2}}
+
+/* "הגדירו תקציב": three squares in a row, "הגדרה אישית" as a wide, short bar below */
+#calculator-app .allocation-mode-box{grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+@media (max-width:700px){#calculator-app .allocation-mode-box{grid-template-columns:repeat(3,minmax(0,1fr));gap:8px}
+  #calculator-app .allocation-mode:not(.allocation-mode-custom){min-height:84px;padding:10px 4px}
+  #calculator-app .allocation-mode strong{font-size:14px}}
+#calculator-app .allocation-mode.allocation-mode-custom{grid-column:1 / -1;min-height:48px;padding:8px 14px;flex-direction:row;gap:8px}
+#calculator-app .allocation-mode.allocation-mode-custom .allocation-emoji{font-size:18px}
+
+/* "סה״כ יתרה" back to a wide bar, in the same calm card style as the rest of the app */
+.allocation-balance-summary.balance-hero{width:auto;min-width:0;margin:0 0 14px;padding:14px 18px;flex-direction:row;justify-content:space-between;align-items:center;
+  background:var(--card);border:1px solid var(--border);border-radius:16px;box-shadow:var(--shadow)}
+.allocation-balance-summary.balance-hero span{font-size:15px;font-weight:700;color:var(--text)}
+.allocation-balance-summary.balance-hero strong{font-size:22px;font-weight:800;color:#163a5f}
+.allocation-balance-summary.balance-hero::before{top:50%;right:auto;left:42%;margin-top:-7px}
+.allocation-balance-summary.balance-hero::after{bottom:auto;top:10px;left:auto;right:46%}
+
+/* custom split rows: an amount field instead of a fixed amount */
+.custom-allocation-row{cursor:default}
+#calculator-app .custom-allocation-input{width:110px;min-height:44px;padding:8px 10px;border:1.5px solid var(--border);border-radius:12px;background:#fff;
+  color:var(--text);font:700 17px Rubik,Heebo,sans-serif;text-align:center;direction:ltr}
+#calculator-app .custom-allocation-input:focus{border-color:var(--border-f);outline:none}

@@ -248,6 +248,7 @@ function saveData() {
       insurances: AppState.insurances,
       recoveryPayment: AppState.recoveryPayment,
       maaserEnabled: !!AppState.maaser.enabled,
+      customAllocation: AppState.customAllocation,
       summary: currentMonthSummary()
     };
     var saved = writeStorage(STORAGE_KEY, JSON.stringify(all));
@@ -279,6 +280,7 @@ function loadData(month, year) {
     AppState.recoveryPayment = parseNonNegativeNumber(p.recoveryPayment);
     /* תרומה נבחרת בכל חודש מחדש: ברירת המחדל היא "לא מעוניינים" */
     AppState.maaser.enabled = p.maaserEnabled === true;
+    AppState.customAllocation = normalizeCustomAllocation(p.customAllocation);
     AppState.monthHasRecord = true;
     return true;
   } catch(e) {
@@ -327,6 +329,7 @@ function startMonthFromPrevious(month, year) {
   AppState.oneTimeExpenses = clone(DEFAULT_ONE_TIME_EXPENSES);
   AppState.recoveryPayment = null;
   AppState.maaser.enabled = false;
+  AppState.customAllocation = emptyCustomAllocation();
   return true;
 }
 
@@ -539,4 +542,13 @@ function normalizeMortgage(mortgage) {
     yearsRemaining: Math.max(0, Number(mortgage && mortgage.yearsRemaining) || 0),
     nextRateChange: String(mortgage && mortgage.nextRateChange || "")
   };
+}
+
+function normalizeCustomAllocation(saved) {
+  var custom = emptyCustomAllocation();
+  if (!saved || typeof saved !== "object") return custom;
+  custom.active = saved.active === true;
+  var amounts = saved.amounts || {};
+  ["invest", "qualityOfLife", "spending"].forEach(function(key) { custom.amounts[key] = toAmount(amounts[key]); });
+  return custom;
 }

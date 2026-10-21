@@ -143,7 +143,7 @@ function removeAdditionalIncome(person, index) {
   pipeline();
 }
 
-var WHOLE_SHEKEL_INPUTS = "#inp-s1, #inp-s2, .additional-income-amount, .exp-amt, .dream-amt, .maaser-charity-amount, .maaser-summary-input input, " +
+var WHOLE_SHEKEL_INPUTS = "#inp-s1, #inp-s2, .custom-allocation-input, .additional-income-amount, .exp-amt, .dream-amt, .maaser-charity-amount, .maaser-summary-input input, " +
   ".flat-expense-row input[type=number], .liability-monthly, .liability-balance, .insurance-monthly-amount, #debt-overdraft-input, " +
   "#recovery-payment-input, #financial-personal, #financial-employer, #financial-balance";
 

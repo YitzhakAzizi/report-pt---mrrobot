@@ -66,9 +66,10 @@ function exportPDF() {
     amountLine("שולם החודש", result.mortgagePayments) +
     amountLine("יתרת משכנתא", mortgageRemaining);
 
-  var investmentAmount = percentageOf(balance, allocation.invest);
-  var qualityAmount = percentageOf(balance, allocation.qualityOfLife);
-  var spendingAmount = percentageOf(balance, allocation.spending);
+  var amounts = allocationAmounts(balance);
+  var investmentAmount = amounts.invest;
+  var qualityAmount = amounts.qualityOfLife;
+  var spendingAmount = amounts.spending;
   var css = [
     "@page{size:A4 landscape;margin:10mm}",
     "*{box-sizing:border-box}",

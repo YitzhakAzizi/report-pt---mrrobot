@@ -71,7 +71,7 @@ function renderTopbarSnapshot() {
   if (el("topbar-special-part")) el("topbar-special-part").hidden = !(r.oneTimeExpenses > 0);
   if (donations) renderSnapshotAmount(donations, AppState.result.maaser || 0);
   updateTopbarDonationVisibility();
-  if (allocationBalance) allocationBalance.textContent = money(Math.max(0, AppState.result.balance || 0));
+  renderResultBalance();
   /* כותרת שלב החלוקה: "תקציב" ושם החודש שנבחר */
   if (el("result-stage-title")) el("result-stage-title").textContent = "תקציב " + MONTHS[AppState.period.month];
 }
@@ -682,11 +682,40 @@ function renderActions(d) {
   }
 
   /* 3. חלוקת היתרה */
-  var allocation = AppState.settings.allocation;
-  addRow("trending_up", "השקעות", "", percentageOf(d.balance, allocation.invest), openInvestGoalsModal);
-  addRow("spa", "קרן איכות חיים", "", percentageOf(d.balance, allocation.qualityOfLife), openDreamsModal);
-  addRow("credit_card", "בזבוזים", "", percentageOf(d.balance, allocation.spending), openSpendingModal);
+  if (AppState.customAllocation.active) {
+    addCustomAllocationRow("trending_up", "השקעות", "invest");
+    addCustomAllocationRow("spa", "קרן איכות חיים", "qualityOfLife");
+    addCustomAllocationRow("credit_card", "בזבוזים", "spending");
+    addDonationRow();
+    return;
+  }
+  var amounts = allocationAmounts(d.balance);
+  addRow("trending_up", "השקעות", "", amounts.invest, openInvestGoalsModal);
+  addRow("spa", "קרן איכות חיים", "", amounts.qualityOfLife, openDreamsModal);
+  addRow("credit_card", "בזבוזים", "", amounts.spending, openSpendingModal);
   addDonationRow();
+
+  /* הגדרה אישית: כל סעיף עם שדה סכום, מתחיל מ־0, וסך הכול לא עובר את היתרה */
+  function addCustomAllocationRow(iconName, title, key) {
+    var row = mk("div", "action-row custom-allocation-row");
+    var left = mk("div", "act-left");
+    var icon = mkText("span", "act-icon material-symbols-rounded", iconName);
+    icon.setAttribute("aria-hidden", "true");
+    left.appendChild(icon);
+    left.appendChild(mkText("span", "act-title", title));
+    row.appendChild(left);
+    var input = document.createElement("input");
+    input.type = "number";
+    input.min = "0";
+    input.inputMode = "numeric";
+    input.placeholder = "0";
+    input.className = "custom-allocation-input";
+    input.value = AppState.customAllocation.amounts[key] || "";
+    input.setAttribute("aria-label", "סכום ל" + title);
+    input.oninput = function() { setCustomAllocationAmount(key, input); };
+    row.appendChild(input);
+    box.appendChild(row);
+  }
 }
 
 function renderPreAllocation(d) {
@@ -809,16 +838,21 @@ function renderAllocationModes() {
   if (customButton) customButton.hidden = false;
   /* ריבועים נקיים: אימוג׳י ושם בלבד, ועוד ריבוע "הגדרה אישית" שפותח חלוקה עצמאית */
   var current = AppState.settings.allocation;
-  var anySelected = false;
+  var customActive = !!(AppState.customAllocation && AppState.customAllocation.active);
   box.innerHTML = ALLOCATION_MODES.map(function(mode) {
-    var selected = allocationsMatch(current, mode.allocation);
-    if (selected) anySelected = true;
+    var selected = !customActive && allocationsMatch(current, mode.allocation);
     return '<button type="button" class="allocation-mode' + (selected ? ' selected' : '') + '" ' +
       'aria-pressed="' + selected + '" onclick="setAllocationMode(\'' + mode.id + '\')">' +
       '<span class="allocation-emoji" aria-hidden="true">' + mode.emoji + '</span><strong>' + mode.name + '</strong></button>';
   }).join("") +
-    '<button type="button" class="allocation-mode allocation-mode-custom' + (anySelected ? '' : ' selected') + '" aria-pressed="' + !anySelected + '" onclick="openAllocationSettingsModal()">' +
+    '<button type="button" class="allocation-mode allocation-mode-custom' + (customActive ? ' selected' : '') + '" aria-pressed="' + customActive + '" onclick="selectCustomAllocation()">' +
       '<span class="allocation-emoji" aria-hidden="true">✏️</span><strong>הגדרה אישית</strong></button>';
+}
+
+/* "הגדרה אישית" רק מסומנת כאן; הסכומים מוזנים במסך הבא */
+function selectCustomAllocation() {
+  AppState.customAllocation.active = true;
+  pipeline();
 }
 
 function formatPercent(value) {
@@ -842,6 +876,7 @@ function setAllocationMode(modeId) {
   if (!selectedMode) return;
 
   AppState.settings.allocation = clone(selectedMode.allocation);
+  AppState.customAllocation.active = false;
   saveAllocationPercentages();
   calculate();
   render();
@@ -973,4 +1008,31 @@ function addFixedExpense() {
   pipeline();
   var names = document.querySelectorAll("#flat-fixed-expenses-list .additional-income-name");
   if (names.length) names[names.length - 1].focus();
+}
+
+/* בשלב החלוקה: היתרה שלמעלה יורדת לפי מה שכבר חולק בהגדרה אישית */
+function customAllocationTotal() {
+  var amounts = AppState.customAllocation.amounts;
+  return (amounts.invest || 0) + (amounts.qualityOfLife || 0) + (amounts.spending || 0);
+}
+
+function renderResultBalance() {
+  var allocationBalance = el("allocation-balance-total");
+  if (!allocationBalance) return;
+  var balance = Math.max(0, AppState.result.balance || 0);
+  var used = AppState.customAllocation && AppState.customAllocation.active ? customAllocationTotal() : 0;
+  allocationBalance.textContent = money(Math.max(0, balance - used));
+}
+
+function setCustomAllocationAmount(key, input) {
+  var amounts = AppState.customAllocation.amounts;
+  var balance = Math.max(0, Math.floor(AppState.result.balance || 0));
+  var others = customAllocationTotal() - (amounts[key] || 0);
+  var amount = Math.min(toAmount(input.value), Math.max(0, balance - others));
+  amounts[key] = amount;
+  /* לא עוקפים את הסכום: מה שמעבר ליתרה נחתך מיד */
+  if (input.value !== "" && Number(input.value) !== amount) input.value = amount;
+  renderResultBalance();
+  saveData();
+  flashSaved();
 }
