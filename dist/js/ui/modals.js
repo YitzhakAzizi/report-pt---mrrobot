@@ -577,18 +577,41 @@ function appendInsuranceList(body, items) {
   body.appendChild(list);
 }
 
+/* שורת ביטוח: שם וסכום בלבד. ספק ותאריך סיום נערכים בעמוד הביטוחים שבתפריט ("לפרטים") */
 function buildInsuranceRow(item) {
   var row = document.createElement("section");
-  row.className = "insurance-edit-row";
+  row.className = "exp-row expense-detail-row insurance-row";
+  row._insurance = item;
   row.innerHTML =
-    '<span class="row-icon material-symbols-rounded insurance-edit-icon" aria-hidden="true">shield</span>' +
-    '<button type="button" class="custom-category-remove material-symbols-rounded insurance-edit-delete" aria-label="מחיקת ביטוח" title="מחיקת ביטוח">delete</button>' +
-    '<label class="insurance-edit-field"><span>סוג הביטוח</span><input type="text" class="insurance-type" placeholder="ביטוח רכב, חיים..." value="' + escapeHtml(item.name || "") + '"></label>' +
-    '<label class="insurance-edit-field"><span>איפה</span><input type="text" class="insurance-provider" placeholder="שם חברת הביטוח" value="' + escapeHtml(item.provider || "") + '"></label>' +
-    '<label class="insurance-edit-field"><span>תאריך סיום</span><input type="date" class="insurance-end-date" value="' + escapeHtml(item.endDate || "") + '"></label>' +
-    '<label class="insurance-edit-field"><span>סכום חודשי</span><input type="number" class="insurance-monthly-amount" min="0" inputmode="decimal" placeholder="0" value="' + (Number(item.val) || 0) + '"></label>';
-  row.querySelector(".insurance-edit-delete").onclick = function() { row.remove(); };
+    '<span class="row-icon material-symbols-rounded expense-detail-icon" aria-hidden="true">shield</span>' +
+    '<input type="text" class="exp-name insurance-type" placeholder="שם הביטוח" aria-label="שם הביטוח" value="' + escapeHtml(item.name || "") + '">' +
+    '<input type="number" class="exp-amt insurance-monthly-amount" min="0" inputmode="decimal" placeholder="0" aria-label="סכום חודשי" value="' + (Number(item.val) || 0) + '">' +
+    '<button type="button" class="row-details-btn">לפרטים</button>' +
+    '<button type="button" class="custom-category-remove material-symbols-rounded expense-detail-remove" aria-label="מחיקת ביטוח" title="מחיקת ביטוח">delete</button>';
+  row.querySelector(".expense-detail-remove").onclick = function() { row.remove(); updateGenTotal(); };
+  row.querySelector(".exp-amt").oninput = updateGenTotal;
+  row.querySelector(".row-details-btn").onclick = function() {
+    var name = row.querySelector(".insurance-type").value.trim();
+    saveInsuranceRows();
+    closeGenModal();
+    showFinancialPage("insurances", insurancePageType({name: name}));
+  };
   return row;
+}
+
+function saveInsuranceRows() {
+  var insurances = [];
+  document.querySelectorAll("#gen-modal-body .insurance-row").forEach(function(row) {
+    var previous = row._insurance || {};
+    var insurance = {
+      name: row.querySelector(".insurance-type").value.trim(),
+      provider: previous.provider || "",
+      endDate: previous.endDate || "",
+      val: toAmount(row.querySelector(".insurance-monthly-amount").value)
+    };
+    if (insurance.name || insurance.provider || insurance.endDate || insurance.val > 0) insurances.push(insurance);
+  });
+  updateState("insurances", insurances);
 }
 
 function appendExpenseGroup(body, title, description, items, collection, addLabel) {
@@ -671,18 +694,7 @@ function updateGenTotal() {
 
 function applyGenModal() {
   if (_genCollection === "insurances") {
-    var insuranceRows = document.querySelectorAll("#gen-modal-body .insurance-edit-row");
-    var insurances = [];
-    insuranceRows.forEach(function(row) {
-      var insurance = {
-        name: row.querySelector(".insurance-type").value.trim(),
-        provider: row.querySelector(".insurance-provider").value.trim(),
-        endDate: row.querySelector(".insurance-end-date").value,
-        val: toAmount(row.querySelector(".insurance-monthly-amount").value)
-      };
-      if (insurance.name || insurance.provider || insurance.endDate || insurance.val > 0) insurances.push(insurance);
-    });
-    updateState("insurances", insurances);
+    saveInsuranceRows();
     closeGenModal();
     return;
   }
@@ -800,9 +812,22 @@ function confirmExpenseDelete() {
   if (opener && opener.isConnected) opener.focus();
 }
 
+/* מחיקת קטגוריה קבועה: הסכומים נמחקים והשורה יורדת מהרשימה. אפשר להחזיר אותה בכפתור שמתחת */
 function confirmClearExpenseCategory(key, name) {
   if (key === "loans" && AppState.profile.debtStatus) name = "הלוואות";
-  askDeleteExpenseCategory(name, function() { clearExpenseCategory(key); }, key === "loans" || key === "mortgage");
+  askDeleteExpenseCategory(name, function() {
+    if (FIXED_CATEGORY_LABELS[key]) {
+      AppState.profile.hiddenFixedCategories[key] = true;
+      saveProfileSettings();
+    }
+    clearExpenseCategory(key);
+  }, key === "loans" || key === "mortgage");
+}
+
+function restoreFixedCategory(key) {
+  delete AppState.profile.hiddenFixedCategories[key];
+  saveProfileSettings();
+  pipeline();
 }
 
 function clearExpenseCategory(key) {
@@ -1014,8 +1039,6 @@ var _payslipOpener = null;
 function openPayslipModal(person) {
   _payslipPerson = person === 2 ? 2 : 1;
   _payslipOpener = document.activeElement;
-  var context = el("payslip-context");
-  context.textContent = "תלוש עבור " + salaryLabel(_payslipPerson);
   el("payslip-file-input").value = "";
   clearPayslipPreview();
   el("payslip-overlay").className = "overlay open";
@@ -1032,7 +1055,7 @@ function uploadPayslipFile(file) {
   if (!file) return;
   var allowedTypes = ["application/pdf", "image/jpeg", "image/png", "image/webp"];
   if (allowedTypes.indexOf(file.type) === -1 && !/\.(pdf|jpe?g|png|webp)$/i.test(file.name || "")) {
-    showPayslipMessage("אפשר להעלות PDF או תמונה מסוג JPG, PNG או WEBP.", true);
+    showPayslipMessage("אפשר להעלות קובץ PDF.", true);
     return;
   }
   if (file.size > 15 * 1024 * 1024) {
@@ -1057,7 +1080,6 @@ function renderPayslipStatus() {
     status.innerHTML = "";
     status.className = "payslip-status";
     if (!record) {
-      status.appendChild(mkText("p", "payslip-empty", "עדיין לא נשמר תלוש לחודש הזה."));
       showPayslipFindings(null, _payslipPerson);
       return;
     }

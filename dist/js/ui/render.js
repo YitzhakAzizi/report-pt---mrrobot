@@ -238,6 +238,7 @@ function renderFields() {
   if (mortgageRow) mortgageRow.hidden = AppState.profile.mortgage !== true;
   if (liabilitiesEl) liabilitiesEl.value = Math.round(AppState.result.loanPayments + (AppState.profile.debtStatus ? 0 : AppState.result.debtPayments));
   if (mortgageEl) mortgageEl.value = Math.round(AppState.result.mortgagePayments);
+  renderFixedCategoryVisibility();
   renderCustomExpenseCategories();
   renderFlatVariableExpenses();
 
@@ -844,4 +845,24 @@ function flashSaved() {
   clearTimeout(_saveTimer);
   /* הודעת כשל נשארת גלויה עד לשמירה מוצלחת הבאה */
   if (!failed) _saveTimer = setTimeout(function() { dot.classList.remove("show"); }, 1800);
+}
+
+/* קטגוריה קבועה שנמחקה יורדת מהרשימה, אלא אם יש בה סכום (כסף לא מוסתר לעולם) */
+function renderFixedCategoryVisibility() {
+  var hidden = AppState.profile.hiddenFixedCategories || {};
+  var restoreList = el("restore-fixed-categories");
+  var restoreHtml = "";
+  document.querySelectorAll("#budget-flow-expenses .irow[data-fixed-category]").forEach(function(row) {
+    var key = row.getAttribute("data-fixed-category");
+    var input = row.querySelector("input");
+    var hasAmount = input && Number(String(input.value).replace(/[^\d.-]/g, "")) > 0;
+    var available = !(key === "children" && AppState.profile.children !== true) && !(key === "mortgage" && AppState.profile.mortgage !== true);
+    var isHidden = hidden[key] === true && !hasAmount;
+    if (available) row.hidden = isHidden;
+    if (available && isHidden) {
+      restoreHtml += '<button type="button" class="additional-income-add restore-salary" onclick="restoreFixedCategory(\'' + key + '\')">' +
+        '<span class="material-symbols-rounded" aria-hidden="true">add</span><span>' + FIXED_CATEGORY_LABELS[key] + '</span></button>';
+    }
+  });
+  if (restoreList) restoreList.innerHTML = restoreHtml;
 }

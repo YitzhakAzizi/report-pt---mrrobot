@@ -22,11 +22,11 @@ function closeLiabilitiesModal() {
 function renderLiabilitiesModal() {
   var body = el("liabilities-modal-body");
   if (!body || !_liabilityDraft) return;
-  el("liabilities-modal-title").textContent = _liabilityView === "debts" ? "חובות" : "הלוואות";
+  el("liabilities-modal-title").textContent = _liabilityView === "debts" ? "חובות" : "החזר הלוואה קבוע";
   body.innerHTML =
     '<p class="liability-guidance">' + (_liabilityView === "debts"
       ? "יש להזין כאן חובות שאינם הלוואה מסודרת או משכנתא. תשלום מינימלי ייכלל בהוצאות החודש."
-      : _liabilityView === "loans"
+      : _liabilityView === "loans" || !_liabilityDraft.debts.length
         ? audienceText("הזן כאן החזרי הלוואות כדי שלא ייספרו פעמיים בהוצאות הקבועות.", "הזינו כאן החזרי הלוואות כדי שלא ייספרו פעמיים בהוצאות הקבועות.")
         : audienceText("הזן כאן החזרי הלוואות וחובות כדי שלא ייספרו פעמיים בתוך ההוצאות הקבועות.", "הזינו כאן החזרי הלוואות וחובות כדי שלא ייספרו פעמיים בתוך ההוצאות הקבועות.")) + '</p>' +
     (_liabilityView === "debts" ? "" : liabilitySectionHtml(
@@ -36,8 +36,8 @@ function renderLiabilitiesModal() {
       _liabilityDraft.loans,
       loanEditorRowHtml
     )) +
-    (_liabilityView === "all" ? '<div class="liability-section-divider" aria-hidden="true"></div>' : '') +
-    (_liabilityView === "loans" ? "" : liabilitySectionHtml(
+    (_liabilityView === "all" && _liabilityDraft.debts.length ? '<div class="liability-section-divider" aria-hidden="true"></div>' : '') +
+    (_liabilityView === "loans" || (_liabilityView === "all" && !_liabilityDraft.debts.length) ? "" : liabilitySectionHtml(
       "חובות לסגירה",
       _liabilityView === "debts" ? "חובות לצמצום שאינם הלוואה מסודרת או משכנתא." : audienceText("חובות שמטרתך לפרוע במהירות. היתרה תופנה קודם לריבית הגבוהה ביותר.", "חובות שמטרתכם לפרוע במהירות. היתרה תופנה קודם לריבית הגבוהה ביותר."),
       "debt",
@@ -58,28 +58,37 @@ function liabilitySectionHtml(title, description, kind, items, rowBuilder) {
     '<div class="liability-editor-list">' + rows + '</div></section>';
 }
 
+/* שורת הלוואה או חוב: שם וסכום חודשי בלבד, כמו שאר ההוצאות. שאר הפרטים בעמוד ההלוואות ("לפרטים") */
 function loanEditorRowHtml(loan, index) {
-  return '<div class="liability-editor-row loan-editor-row" data-index="' + index + '">' +
-    liabilityRemoveButtonHtml("loan", index, "הלוואה") +
-    liabilityFieldHtml("שם ההלוואה", "text", "liability-name", loan.name, "") +
-    liabilityFieldHtml("יתרה לסילוק", "number", "liability-balance", loan.balance, "₪") +
-    liabilityFieldHtml("ריבית שנתית", "number", "liability-interest", loan.interest, "%") +
-    liabilityFieldHtml("תשלום חודשי", "number", "liability-monthly", loan.monthlyPayment, "₪") +
-    liabilityFieldHtml("תאריך סיום", "date", "liability-end-date", loan.endDate, "") +
-    '<label class="liability-checkbox"><input type="checkbox" class="liability-early"' +
-      (loan.earlyPayoff ? " checked" : "") + '><span>מיועדת לפירעון מוקדם</span></label>' +
-  '</div>';
+  return liabilitySimpleRowHtml("loan", index, loan.name, loan.monthlyPayment, "שם ההלוואה", "הלוואה");
 }
 
 function debtEditorRowHtml(debt, index) {
-  return '<div class="liability-editor-row debt-editor-row" data-index="' + index + '">' +
-    liabilityRemoveButtonHtml("debt", index, "חוב") +
-    liabilityFieldHtml("שם החוב", "text", "liability-name", debt.name, "") +
-    liabilityFieldHtml("יתרת החוב", "number", "liability-balance", debt.balance, "₪") +
-    liabilityFieldHtml("ריבית או עמלה", "number", "liability-interest", debt.interest, "%") +
-    liabilityFieldHtml("תשלום מינימלי", "number", "liability-monthly", debt.minimumPayment, "₪") +
-    liabilityFieldHtml("תאריך יעד", "date", "liability-target-date", debt.targetDate, "") +
+  return liabilitySimpleRowHtml("debt", index, debt.name, debt.minimumPayment, "שם החוב", "חוב");
+}
+
+function liabilitySimpleRowHtml(kind, index, name, monthly, placeholder, itemLabel) {
+  return '<div class="exp-row expense-detail-row ' + kind + '-editor-row" data-index="' + index + '">' +
+    '<span class="row-icon material-symbols-rounded expense-detail-icon" aria-hidden="true">account_balance</span>' +
+    '<input type="text" class="exp-name liability-name" placeholder="' + placeholder + '" aria-label="' + placeholder + '" value="' + escapeHtml(name || "") + '">' +
+    '<input type="number" class="exp-amt liability-monthly" min="0" step="any" inputmode="decimal" placeholder="0" aria-label="תשלום חודשי" value="' + (Number(monthly) || 0) + '" oninput="updateLiabilityEditorTotals()">' +
+    '<button type="button" class="row-details-btn" onclick="openLiabilityDetailsFromModal(\'' + kind + '\',' + index + ')">לפרטים</button>' +
+    '<button type="button" class="custom-category-remove material-symbols-rounded expense-detail-remove" ' +
+      'onclick="removeLiabilityEditorRow(\'' + kind + '\',' + index + ')" aria-label="מחיקת ' + itemLabel + '">delete</button>' +
   '</div>';
+}
+
+/* שומרים את מה שהוזן ועוברים לפרטי ההלוואה בעמוד ההלוואות */
+function openLiabilityDetailsFromModal(kind, index) {
+  var rows = kind === "debt" ? collectDebtEditorRows(false) : collectLoanEditorRows(false);
+  var target = rows[index];
+  applyLiabilitiesModal();
+  var saved = kind === "debt" ? AppState.liabilities.debts : AppState.liabilities.loans;
+  var position = -1;
+  for (var i = 0; i < saved.length; i++) {
+    if (JSON.stringify(saved[i]) === JSON.stringify(target)) { position = i; break; }
+  }
+  openLoanDetails(kind, position);
 }
 
 function liabilityFieldHtml(label, type, className, value, suffix) {
@@ -123,27 +132,22 @@ function syncLiabilityDraftFromEditor() {
 
 function collectLoanEditorRows(removeEmpty) {
   var rows = Array.from(document.querySelectorAll("#liabilities-modal-body .loan-editor-row")).map(function(row) {
-    return normalizeLoan({
+    var previous = _liabilityDraft.loans[Number(row.getAttribute("data-index"))] || {};
+    return normalizeLoan(Object.assign({}, previous, {
       name: row.querySelector(".liability-name").value.trim(),
-      balance: row.querySelector(".liability-balance").value,
-      interest: row.querySelector(".liability-interest").value,
-      monthlyPayment: row.querySelector(".liability-monthly").value,
-      endDate: row.querySelector(".liability-end-date").value,
-      earlyPayoff: row.querySelector(".liability-early").checked
-    });
+      monthlyPayment: row.querySelector(".liability-monthly").value
+    }));
   });
   return removeEmpty === false ? rows : rows.filter(hasMeaningfulLoan);
 }
 
 function collectDebtEditorRows(removeEmpty) {
   var rows = Array.from(document.querySelectorAll("#liabilities-modal-body .debt-editor-row")).map(function(row) {
-    return normalizeDebt({
+    var previous = _liabilityDraft.debts[Number(row.getAttribute("data-index"))] || {};
+    return normalizeDebt(Object.assign({}, previous, {
       name: row.querySelector(".liability-name").value.trim(),
-      balance: row.querySelector(".liability-balance").value,
-      interest: row.querySelector(".liability-interest").value,
-      minimumPayment: row.querySelector(".liability-monthly").value,
-      targetDate: row.querySelector(".liability-target-date").value
-    });
+      minimumPayment: row.querySelector(".liability-monthly").value
+    }));
   });
   return removeEmpty === false ? rows : rows.filter(hasMeaningfulDebt);
 }

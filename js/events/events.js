@@ -12,6 +12,11 @@ function registerEvents() {
     var opener = row.querySelector(".row-icon-btn");
     if (opener && row.querySelector("input[readonly]")) opener.click();
   });
+  /* שדה סכום שמציג 0: בכניסה אליו ה־0 נעלם, כך שמקלידים מיד בלי למחוק */
+  document.addEventListener("focusin", function(event) {
+    var input = event.target;
+    if (input.tagName === "INPUT" && input.type === "number" && !input.readOnly && Number(input.value) === 0 && input.value !== "") input.value = "";
+  });
   el("inp-s1").oninput = onIncome1Input;
   el("inp-s2").oninput = onIncome2Input;
   document.addEventListener("keydown", function(event) {

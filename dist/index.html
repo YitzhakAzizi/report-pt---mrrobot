@@ -145,6 +145,11 @@
           <span class="side-menu-item-label">ביטוחים</span>
           <span class="side-menu-current-badge" hidden>נוכחי</span>
         </button>
+        <button type="button" class="side-menu-item" id="menu-loans" onclick="showFinancialPage('loans')">
+          <span class="side-menu-item-icon material-symbols-rounded" aria-hidden="true">account_balance</span>
+          <span class="side-menu-item-label">הלוואות</span>
+          <span class="side-menu-current-badge" hidden>נוכחי</span>
+        </button>
       </nav>
       <section class="side-menu-data" aria-labelledby="side-menu-data-title">
         <h3 id="side-menu-data-title">הנתונים שלי</h3>
@@ -161,7 +166,7 @@
           <span class="side-menu-item-label">שחזור מגיבוי</span>
         </button>
         <input type="file" id="backup-file-input" class="payslip-file-input" accept=".json,application/json" aria-label="בחירת קובץ גיבוי" onchange="importBackupFile(this.files[0])">
-        <p class="side-menu-version">גרסה 15</p>
+        <p class="side-menu-version">גרסה 16</p>
         <p class="side-menu-data-note">הנתונים נשמרים רק בדפדפן הזה. כדאי לגבות מדי פעם. הגיבוי כולל את התקציב וההגדרות, ללא תלושי שכר.</p>
       </section>
     </aside>
@@ -219,38 +224,41 @@
       <h2 class="budget-flow-stage-title">הזינו הוצאות קבועות</h2>
       <div class="expense-cards-stack">
       <section class="card inputs-card expense-section-card">
-        <div class="irow">
+        <div class="irow" data-fixed-category="housing">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openModal('exp')" aria-label="עריכת הוצאות דיור" title="עריכת הוצאות דיור">home</button><div><span class="label-main">דיור</span></div></div>
           <div class="iright"><input type="number" id="inp-exp" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('housing','דיור')" aria-label="מחיקת הוצאות דיור" title="מחיקת הוצאות דיור">delete</button></div>
         </div>
-        <div class="irow">
+        <div class="irow" data-fixed-category="subscriptions">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openSubscriptionsModal()" aria-label="עריכת מנויים ותקשורת" title="עריכת מנויים ותקשורת">subscriptions</button><div><span class="label-main">מנויים ותקשורת</span></div></div>
           <div class="iright"><input type="number" id="inp-subscriptions" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('subscriptions','מנויים ותקשורת')" aria-label="מחיקת מנויים ותקשורת" title="מחיקת מנויים ותקשורת">delete</button></div>
         </div>
-        <div class="irow">
+        <div class="irow" data-fixed-category="healthBeauty">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openHealthBeautyModal()" aria-label="עריכת בריאות וטיפוח" title="עריכת בריאות וטיפוח">spa</button><div><span class="label-main">בריאות וטיפוח</span></div></div>
           <div class="iright"><input type="number" id="inp-health-beauty" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('healthBeauty','בריאות וטיפוח')" aria-label="מחיקת בריאות וטיפוח" title="מחיקת בריאות וטיפוח">delete</button></div>
         </div>
-        <div class="irow" id="children-expenses-row" hidden>
+        <div class="irow" data-fixed-category="children" id="children-expenses-row" hidden>
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openChildrenExpensesModal()" aria-label="עריכת הוצאות ילדים" title="עריכת הוצאות ילדים">family_restroom</button><div><span class="label-main">הוצאות ילדים</span></div></div>
           <div class="iright"><input type="number" id="inp-children-expenses" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('children','הוצאות ילדים')" aria-label="מחיקת הוצאות ילדים" title="מחיקת הוצאות ילדים">delete</button></div>
         </div>
-        <div class="irow">
+        <div class="irow" data-fixed-category="insurances">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openInsuranceModal()" aria-label="עריכת ביטוחים" title="עריכת ביטוחים">shield</button><div><span class="label-main">ביטוחים</span></div></div>
           <div class="iright"><input type="number" id="inp-insurance" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('insurances','ביטוחים')" aria-label="מחיקת ביטוחים" title="מחיקת ביטוחים">delete</button></div>
         </div>
-        <div class="irow">
-          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openLiabilitiesModal()" aria-label="עריכת הלוואות" title="עריכת הלוואות">account_balance</button><div><span class="label-main">הלוואות</span></div></div>
+        <div class="irow" data-fixed-category="loans">
+          <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openLiabilitiesModal()" aria-label="עריכת החזר הלוואה קבוע" title="עריכת החזר הלוואה קבוע">account_balance</button><div><span class="label-main">החזר הלוואה קבוע</span></div></div>
           <div class="iright"><input type="number" id="inp-liabilities" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" id="clear-loans-button" onclick="confirmClearExpenseCategory('loans','הלוואות וחובות')" aria-label="מחיקת הלוואות וחובות" title="מחיקת הלוואות וחובות">delete</button></div>
         </div>
-        <div class="irow" id="mortgage-expense-row">
+        <div class="irow" data-fixed-category="mortgage" id="mortgage-expense-row">
           <div class="ilabel"><button type="button" class="row-icon row-icon-btn material-symbols-rounded" onclick="openMortgageModal()" aria-label="עריכת משכנתא" title="עריכת משכנתא">home</button><div><span class="label-main">משכנתא</span></div></div>
           <div class="iright"><input type="number" id="inp-mortgage" placeholder="0" min="0" inputmode="decimal" readonly/><button type="button" class="custom-category-remove material-symbols-rounded" onclick="confirmClearExpenseCategory('mortgage','משכנתא')" aria-label="מחיקת משכנתא" title="מחיקת משכנתא">delete</button></div>
         </div>
         <div id="custom-fixed-expenses-list"></div>
       </section>
       </div>
+      <div class="income-add-actions">
       <button type="button" class="additional-income-add" onclick="addCustomExpenseCategory('expenses')"><span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף קטגוריה</span></button>
+      <div class="restore-category-list" id="restore-fixed-categories"></div>
+      </div>
       <div class="budget-flow-controls">
         <button type="button" class="budget-flow-back" onclick="previousBudgetFlowStep()"><span class="material-symbols-rounded" aria-hidden="true">arrow_forward</span><span>חזרה</span></button>
         <button type="button" class="budget-flow-next" onclick="nextBudgetFlowStep()">הבא</button>
@@ -392,6 +400,14 @@
     <p class="financial-page-note">הביטוחים המוצגים כאן הם אותם ביטוחים הכלולים בהוצאות החודשיות, ללא חיוב כפול.</p>
   </main>
 
+  <main class="financial-page" id="loans-page" aria-labelledby="loans-page-title" hidden>
+    <div class="financial-page-heading">
+      <div class="financial-page-heading-row"><h2 id="loans-page-title" tabindex="-1">הלוואות</h2><button type="button" onclick="showFinancialPage('cashflow')">חזרה לתזרים</button></div>
+      <p>היתרה, הריבית ותאריך הסיום של כל הלוואה. ההחזר החודשי נספר בהוצאות הקבועות.</p>
+    </div>
+    <section class="financial-detail card" id="loans-detail" tabindex="-1" aria-live="polite"></section>
+  </main>
+
   <!-- Expenses Modal -->
   <div class="overlay" id="gen-overlay" onclick="if(event.target===this)closeGenModal()">
     <div class="modal" role="dialog" aria-modal="true" aria-labelledby="gen-modal-title">
@@ -435,12 +451,11 @@
         <button type="button" class="close-btn material-symbols-rounded" onclick="closePayslipModal()" aria-label="סגירה">close</button>
       </div>
       <div class="modal-body payslip-modal-body">
-        <p class="payslip-context" id="payslip-context"></p>
-        <label class="payslip-upload" for="payslip-file-input">
+                <label class="payslip-upload" for="payslip-file-input">
           <span class="payslip-upload-icon material-symbols-rounded" aria-hidden="true">add</span>
-          <span><strong>העלה תמונה או קובץ</strong><small>PDF, JPG, PNG או WEBP</small></span>
+          <span><strong>העלה קובץ PDF</strong></span>
         </label>
-        <input type="file" id="payslip-file-input" class="payslip-file-input" accept=".pdf,.jpg,.jpeg,.png,.webp,application/pdf,image/jpeg,image/png,image/webp" onchange="uploadPayslipFile(this.files[0])">
+        <input type="file" id="payslip-file-input" class="payslip-file-input" accept=".pdf,application/pdf" onchange="uploadPayslipFile(this.files[0])">
         <p class="payslip-privacy"><span class="material-symbols-rounded" aria-hidden="true">lock</span><span>התלוש נשמר ונקרא רק במכשיר הזה, ואינו נשלח לשרת.</span></p>
         <div class="payslip-status" id="payslip-status" aria-live="polite"></div>
         <div class="payslip-preview" id="payslip-preview"></div>
@@ -453,7 +468,7 @@
   <div class="overlay" id="liabilities-overlay" onclick="if(event.target===this)closeLiabilitiesModal()">
     <div class="modal liabilities-modal" role="dialog" aria-modal="true" aria-labelledby="liabilities-modal-title">
       <div class="modal-hdr">
-        <h2 class="modal-title" id="liabilities-modal-title">הלוואות</h2>
+        <h2 class="modal-title" id="liabilities-modal-title">החזר הלוואה קבוע</h2>
         <button class="close-btn material-symbols-rounded" onclick="closeLiabilitiesModal()" aria-label="סגירה">close</button>
       </div>
       <div class="modal-body liabilities-modal-body" id="liabilities-modal-body"></div>

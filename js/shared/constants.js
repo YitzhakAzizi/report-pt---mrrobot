@@ -119,3 +119,9 @@ var ALLOCATION_MODES = [
 var FLAT_VARIABLE_EXPENSES = true;
 
 var DEFAULT_DEBT_PLAN_PERCENTAGES = {debt: 70, spending: 30};
+
+/* קטגוריות קבועות שאפשר למחוק מהרשימה (ולהחזיר בכפתור שמתחת) */
+var FIXED_CATEGORY_LABELS = {
+  housing: "דיור", subscriptions: "מנויים ותקשורת", healthBeauty: "בריאות וטיפוח", children: "הוצאות ילדים",
+  insurances: "ביטוחים", loans: "החזר הלוואה קבוע", mortgage: "משכנתא"
+};

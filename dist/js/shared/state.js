@@ -31,7 +31,7 @@ var AppState = {
   },
   maaser: {enabled: false, charities: []},
   maaserAccount: {branch: "", account: "", bank: "", owner: ""},
-  profile: {single: false, renting: false, mortgage: false, children: false, loans: false, debtStatus: false, names: {1: "", 2: ""}, incomeLabels: {1: "", 2: ""}, hiddenSalaries: {1: false, 2: false}},
+  profile: {single: false, renting: false, mortgage: false, children: false, loans: false, debtStatus: false, names: {1: "", 2: ""}, incomeLabels: {1: "", 2: ""}, hiddenSalaries: {1: false, 2: false}, hiddenFixedCategories: {}},
   settings: {
     maaserPercent: DEFAULT_MAASER_PERCENTAGE,
     allocation: clone(DEFAULT_ALLOCATION_PERCENTAGES)

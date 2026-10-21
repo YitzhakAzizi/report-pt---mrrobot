@@ -27,6 +27,14 @@ function swipeTarget(element) {
   return null;
 }
 
+function isEditingText(target) {
+  var active = document.activeElement;
+  if (!active || !/^(INPUT|TEXTAREA)$/.test(active.tagName) || active.readOnly) return false;
+  if (active.tagName === "INPUT" && ["text", "search", ""].indexOf(active.type) < 0) return false;
+  var row = active.closest(SWIPE_ROWS.map(function(item) { return item.row; }).join(","));
+  return target === active || (row && row.contains(target));
+}
+
 function setSwipeOffset(row, offset) {
   row.style.setProperty("--swipe", offset + "px");
   row.classList.toggle("swipe-active", offset > 0);
@@ -53,6 +61,8 @@ document.addEventListener("touchstart", function(event) {
     }
     closeOpenSwipe();
   }
+  /* בזמן עריכת שם (בחירת טקסט בשדה) הגרירה לא מוחקת */
+  if (isEditingText(event.target)) { _swipe = null; return; }
   var found = swipeTarget(event.target);
   _swipe = found ? {row: found.row, x: touch.clientX, y: touch.clientY, horizontal: null, offset: 0} : null;
 }, {passive: true});

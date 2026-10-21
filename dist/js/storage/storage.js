@@ -39,6 +39,11 @@ function loadProfileSettings() {
     AppState.profile.incomeLabels = {1: String(labels[1] || "").slice(0, 40), 2: String(labels[2] || "").slice(0, 40)};
     var hidden = saved.hiddenSalaries && typeof saved.hiddenSalaries === "object" ? saved.hiddenSalaries : {};
     AppState.profile.hiddenSalaries = {1: hidden[1] === true, 2: hidden[2] === true};
+    var hiddenCategories = saved.hiddenFixedCategories && typeof saved.hiddenFixedCategories === "object" ? saved.hiddenFixedCategories : {};
+    AppState.profile.hiddenFixedCategories = {};
+    Object.keys(FIXED_CATEGORY_LABELS).forEach(function(key) {
+      if (hiddenCategories[key] === true) AppState.profile.hiddenFixedCategories[key] = true;
+    });
   } catch(e) {}
 }
 

@@ -4,17 +4,19 @@ var currentFinancialPage = "cashflow";
 var selectedInvestmentProduct = null;
 var selectedInvestmentTab = "details";
 var selectedInsuranceType = null;
+var FINANCIAL_PAGES = ["cashflow", "investments", "insurances", "loans"];
 
 function showFinancialPage(page, productId, tab) {
-  if (["cashflow", "investments", "insurances"].indexOf(page) < 0) return;
+  if (FINANCIAL_PAGES.indexOf(page) < 0) return;
   closeSideMenu();
   currentFinancialPage = page;
   el("budget-main").hidden = page !== "cashflow";
   el("investments-page").hidden = page !== "investments";
   el("insurances-page").hidden = page !== "insurances";
+  el("loans-page").hidden = page !== "loans";
   el("calculator-app").classList.toggle("finance-page-open", page !== "cashflow");
 
-  ["cashflow", "investments", "insurances"].forEach(function(name) {
+  FINANCIAL_PAGES.forEach(function(name) {
     var button = el("menu-" + name);
     if (!button) return;
     var active = name === page;
@@ -31,7 +33,10 @@ function showFinancialPage(page, productId, tab) {
     else if (selectedInvestmentProduct) renderInvestmentDetail();
   } else if (page === "insurances") {
     renderInsuranceCards();
+    if (productId) { openInsuranceType(productId); return; }
     if (selectedInsuranceType) renderInsuranceDetail();
+  } else if (page === "loans") {
+    renderLoansPage();
   }
   if (page === "investments" && productId) return;
   window.scrollTo(0, 0);
@@ -44,6 +49,8 @@ function renderFinancialPages() {
     renderInsuranceCards();
     if (selectedInsuranceType) renderInsuranceDetail();
   }
+  /* לא בונים מחדש בזמן הקלדה, כדי שהשדה הבא לא יאבד את הפוקוס */
+  if (currentFinancialPage === "loans" && !el("loans-detail").contains(document.activeElement)) renderLoansPage();
 }
 
 function investmentProduct(id) {
@@ -319,11 +326,15 @@ function renderInsuranceDetail() {
   section.hidden = false;
   var html = '<div class="financial-detail-heading"><h3>' + type.name + '</h3>' +
     '<button type="button" class="financial-detail-close material-symbols-rounded" onclick="closeInsuranceDetail()" aria-label="סגירת הפרטים">close</button></div>';
+  /* שם וסכום נערכים בהוצאות הקבועות; כאן משלימים את הפרטים */
   html += items.length ? '<div class="financial-insurance-list">' + items.map(function(item) {
+    var index = AppState.insurances.indexOf(item);
     return '<div class="financial-insurance-item"><strong>' + escapeHtml(item.name || type.name) + '</strong>' +
-      '<span>' + escapeHtml(item.provider || "לא הוזן גוף מבטח") + '</span>' +
       '<span>תשלום חודשי: ' + money(Number(item.val) || 0) + '</span>' +
-      (item.endDate ? '<span>תאריך סיום: ' + escapeHtml(item.endDate) + '</span>' : '') + '</div>';
+      '<div class="financial-insurance-fields">' +
+      '<label class="liability-field"><span>איפה</span><div class="liability-input-wrap"><input type="text" placeholder="שם חברת הביטוח" value="' + escapeHtml(item.provider || "") + '" onchange="updateInsuranceDetail(' + index + ',\'provider\',this.value)"></div></label>' +
+      '<label class="liability-field"><span>תאריך סיום</span><div class="liability-input-wrap"><input type="date" value="' + escapeHtml(item.endDate || "") + '" onchange="updateInsuranceDetail(' + index + ',\'endDate\',this.value)"></div></label>' +
+      '</div></div>';
   }).join("") + '</div>' : '<p class="financial-detail-note">לא הוזנו ביטוחים מסוג זה לחודש הנוכחי.</p>';
   html += '<button type="button" class="financial-save-btn" onclick="openInsuranceModal()">הוסף או ערוך ביטוחים</button>';
   if (type.id === "disability") {
@@ -338,4 +349,79 @@ function closeInsuranceDetail() {
   el("insurance-detail").hidden = true;
   renderInsuranceCards();
   el("insurances-page-title").focus({preventScroll: true});
+}
+
+function updateInsuranceDetail(index, field, value) {
+  var item = AppState.insurances[index];
+  if (!item || ["provider", "endDate"].indexOf(field) < 0) return;
+  item[field] = String(value || "").trim();
+  saveData();
+  flashSaved();
+}
+
+/* עמוד ההלוואות: הפרטים המלאים של כל הלוואה. ההחזר החודשי מוזן גם בהוצאות הקבועות */
+function renderLoansPage() {
+  var section = el("loans-detail");
+  if (!section) return;
+  var loans = AppState.liabilities.loans || [];
+  var debts = AppState.liabilities.debts || [];
+  var html = loans.length ? loans.map(function(loan, index) { return loanDetailCardHtml(loan, index); }).join("")
+    : '<p class="financial-detail-note">עדיין לא הוזנו הלוואות. אפשר להוסיף אותן בהוצאות הקבועות, בשורה "החזר הלוואה קבוע".</p>';
+  if (debts.length) {
+    html += '<h3 class="loan-detail-group-title">חובות</h3>' + debts.map(function(debt, index) { return debtDetailCardHtml(debt, index); }).join("");
+  }
+  html += '<button type="button" class="financial-save-btn" onclick="showFinancialPage(\'cashflow\');openLiabilitiesModal()">הוסף או ערוך הלוואות</button>';
+  section.innerHTML = html;
+}
+
+function loanDetailField(kind, index, field, label, type, value, suffix) {
+  var safeValue = type === "number" ? (Number(value) || "") : escapeHtml(value || "");
+  return '<label class="liability-field"><span>' + label + '</span><div class="liability-input-wrap">' +
+    '<input type="' + type + '" value="' + safeValue + '"' + (type === "number" ? ' min="0" step="any" inputmode="decimal"' : "") +
+    ' onchange="updateLiabilityDetail(\'' + kind + '\',' + index + ',\'' + field + '\',this.value)">' +
+    (suffix ? '<b>' + suffix + '</b>' : "") + '</div></label>';
+}
+
+function loanDetailCardHtml(loan, index) {
+  return '<div class="financial-insurance-item loan-detail-card" id="loan-detail-' + index + '" tabindex="-1">' +
+    '<strong>' + escapeHtml(loan.name || "הלוואה") + '</strong>' +
+    '<span>החזר חודשי: ' + money(loan.monthlyPayment) + '</span>' +
+    '<div class="financial-insurance-fields">' +
+      loanDetailField("loan", index, "balance", "יתרה לסילוק", "number", loan.balance, "₪") +
+      loanDetailField("loan", index, "interest", "ריבית שנתית", "number", loan.interest, "%") +
+      loanDetailField("loan", index, "endDate", "תאריך סיום", "date", loan.endDate, "") +
+    '</div>' +
+    '<label class="liability-checkbox"><input type="checkbox"' + (loan.earlyPayoff ? " checked" : "") +
+      ' onchange="updateLiabilityDetail(\'loan\',' + index + ',\'earlyPayoff\',this.checked)"><span>מיועדת לפירעון מוקדם</span></label>' +
+  '</div>';
+}
+
+function debtDetailCardHtml(debt, index) {
+  return '<div class="financial-insurance-item loan-detail-card" id="debt-detail-' + index + '" tabindex="-1">' +
+    '<strong>' + escapeHtml(debt.name || "חוב") + '</strong>' +
+    '<span>תשלום מינימלי: ' + money(debt.minimumPayment) + '</span>' +
+    '<div class="financial-insurance-fields">' +
+      loanDetailField("debt", index, "balance", "יתרת החוב", "number", debt.balance, "₪") +
+      loanDetailField("debt", index, "interest", "ריבית או עמלה", "number", debt.interest, "%") +
+      loanDetailField("debt", index, "targetDate", "תאריך יעד", "date", debt.targetDate, "") +
+    '</div></div>';
+}
+
+function updateLiabilityDetail(kind, index, field, value) {
+  var list = kind === "debt" ? AppState.liabilities.debts : AppState.liabilities.loans;
+  if (!list || !list[index]) return;
+  var next = clone(list[index]);
+  next[field] = value;
+  list[index] = kind === "debt" ? normalizeDebt(next) : normalizeLoan(next);
+  saveLiabilities();
+  pipeline();
+}
+
+function openLoanDetails(kind, index) {
+  showFinancialPage("loans");
+  var card = el((kind === "debt" ? "debt-detail-" : "loan-detail-") + index);
+  if (card) {
+    card.scrollIntoView({block: "center"});
+    card.focus({preventScroll: true});
+  }
 }

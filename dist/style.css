@@ -1803,3 +1803,20 @@ input[type=number],.exp-amt,.dream-rank,.maaser-field input,.maaser-field textar
 .maaser-radio{font-weight:800;border-width:1.5px}
 .maaser-radio .maaser-radio-label{font-weight:800}
 .maaser-radio.active{border-width:2px;border-color:var(--info);box-shadow:0 4px 12px rgba(22,58,95,.12)}
+
+/* inside a category the trash is not needed on phones: swipe right deletes a row */
+@media (max-width:700px){.expense-detail-row .expense-detail-remove{display:none}}
+/* insurance and loan rows: name, amount and a "לפרטים" link, like every other expense row */
+.row-details-btn{flex:0 0 auto;min-height:32px;padding:5px 10px;border:0;border-radius:10px;background:var(--info-bg);color:var(--info);font:inherit;font-size:12px;font-weight:800;cursor:pointer;white-space:nowrap}
+.row-details-btn:hover{filter:brightness(.96)}
+.liability-editor-list:has(.expense-detail-row){gap:0}
+.insurance-edit-list:has(.expense-detail-row){gap:0}
+@media (max-width:700px){.insurance-row,.loan-editor-row,.debt-editor-row{flex-wrap:nowrap}.insurance-row .exp-name,.loan-editor-row .exp-name,.debt-editor-row .exp-name{flex:1 1 auto}}
+/* deleted fixed categories can be brought back */
+.restore-category-list{display:flex;flex-direction:column;gap:8px}
+.restore-category-list:empty{display:none}
+/* details pages (insurance, loans) */
+.financial-insurance-fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:10px;width:100%}
+.loan-detail-card{margin-bottom:10px;outline:none}
+.loan-detail-card:focus{box-shadow:0 0 0 2px var(--border-f)}
+.loan-detail-group-title{margin:14px 0 8px;font-size:15px;color:var(--text)}
