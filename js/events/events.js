@@ -24,6 +24,7 @@ function registerEvents() {
     var deleteDialog = el("expense-delete-overlay");
     if (deleteDialog && !deleteDialog.hidden) return; /* לדיאלוג המחיקה יש טיפול משלו */
     if (el("history-overlay")) { closePaymentHistory(); return; }
+    if (el("percent-picker")) { closePercentPicker(); return; }
     var closers = {
       "payslip-overlay": closePayslipModal, "gen-overlay": closeGenModal, "inc-overlay": closeIncomeModal,
       "liabilities-overlay": closeLiabilitiesModal, "mortgage-overlay": closeMortgageModal, "calendar-overlay": closeCalendarModal
