@@ -139,7 +139,7 @@ function charityDetailsHtml() {
       (mode ? ' inputmode="' + mode + '"' : '') + ' oninput="updateMaaserCharity(0,\'' + key + '\',this.value,this)" /></label>';
   };
   return '<details class="charity-details"' + (_charityDetailsOpen ? ' open' : '') + ' ontoggle="_charityDetailsOpen=this.open">' +
-    '<summary><span>הזינו פרטי עמותה</span><span class="material-symbols-rounded" aria-hidden="true">expand_more</span></summary>' +
+    '<summary><span>פרטי עמותה</span><span class="material-symbols-rounded" aria-hidden="true">expand_more</span></summary>' +
     '<div class="charity-fields">' + field("bank", "בנק") + field("branch", "סניף", "numeric") +
       field("account", "מספר חשבון", "numeric") + field("owner", "ע\"ש") + '</div></details>';
 }

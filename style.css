@@ -2102,3 +2102,20 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 .balance-fx i:nth-child(6){animation-duration:12.5s;animation-delay:-6s}
 /* donation choice: white background, also when chosen (the dot and frame show the choice) */
 #calculator-app .maaser-radio,#calculator-app .maaser-radio.active{background:#fff}
+
+/* donation choice: both options look the same (white, bold dark text); only the dot shows the choice */
+#calculator-app .maaser-mode-box .maaser-radio,#calculator-app .maaser-mode-box .maaser-radio.active{
+  background:#fff !important;color:var(--text) !important;border:1.5px solid var(--border) !important;box-shadow:none !important;opacity:1}
+#calculator-app .maaser-mode-box .maaser-radio .maaser-radio-label{color:var(--text);font-weight:800}
+
+/* "הגדר" row: one card only (no inner rounded box), equal heights, ₪ inside the amount box */
+#calculator-app .maaser-summary.maaser-amount-row{background:none;border:0;border-radius:0;padding:0;margin:0;box-shadow:none;gap:10px;color:var(--text)}
+#calculator-app .maaser-amount-row>span{font-size:16px;font-weight:700;color:var(--text)}
+#calculator-app .maaser-amount-row .maaser-percent-wheel{flex:0 0 88px;width:88px;height:48px;border-radius:12px;font-size:17px}
+#calculator-app .maaser-amount-row .maaser-summary-input{flex:0 0 132px;width:132px;height:48px;display:flex;align-items:center;gap:4px;padding:0 12px;
+  background:#fff;border:1.5px solid var(--border);border-radius:12px;direction:ltr}
+#calculator-app .maaser-amount-row .maaser-summary-input:focus-within{border-color:var(--border-f)}
+#calculator-app .maaser-amount-row .maaser-summary-input input{flex:1;width:100%;min-width:0;height:auto;padding:0;border:0;background:none;box-shadow:none;outline:none;
+  color:var(--text);font:800 17px Rubik,Heebo,sans-serif;text-align:center}
+#calculator-app .maaser-amount-row .maaser-summary-input b{order:-1;color:var(--muted);font-size:15px;font-weight:700}
+#budget-flow-donations .maaser-box{padding:14px 16px}
