@@ -1889,12 +1889,12 @@ body::before{background:#16a34a;opacity:.09}
 .maaser-percentage-choice:disabled{opacity:.4;cursor:not-allowed}
 
 /* reorder like the iPhone: hold ☰ on the right, lift the row, the others slide to make room */
-.flat-expense-row .drag-handle{flex:0 0 28px;width:28px;height:44px;margin-inline-end:-4px;display:flex;align-items:center;justify-content:center;
+.flat-expense-row .drag-handle,.dream-row .drag-handle{flex:0 0 28px;width:28px;height:44px;margin-inline-end:-4px;display:flex;align-items:center;justify-content:center;
   color:#b0b7c3;font-size:22px;cursor:grab;touch-action:none;user-select:none;-webkit-user-select:none}
-.flat-expense-row.reorder-active{position:relative;transition:transform .18s ease}
-.flat-expense-row.is-dragging{z-index:5;transition:none;background:var(--card);border-radius:14px;box-shadow:0 14px 34px rgba(15,23,42,.22)}
+.flat-expense-row.reorder-active,.dream-row.reorder-active{position:relative;transition:transform .18s ease}
+.flat-expense-row.is-dragging,.dream-row.is-dragging{z-index:5;transition:none;background:var(--card);border-radius:14px;box-shadow:0 14px 34px rgba(15,23,42,.22)}
 .flat-expense-row.is-dragging .drag-handle{color:var(--info);cursor:grabbing}
-.flat-expense-row.is-dropping{transition:transform .18s ease}
+.flat-expense-row.is-dropping,.dream-row.is-dropping{transition:transform .18s ease}
 body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:none}
 
 /* budget plan: "בחר" above each mode, each part as name (right edge) and amount (left edge) */
@@ -2167,3 +2167,27 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 .overlay.overlay-center .modal{padding-bottom:0}
 .overlay.overlay-center .modal-ftr{padding-bottom:14px}
 .overlay.overlay-center .modal-total-row[style*="none"]+.investment-goal-footer{margin-top:0}
+
+/* "מה הרעיון?": a soft, minimal grey rounded box (goals and dreams) */
+.goal-idea{margin:4px 0 12px;padding:12px 14px;background:#f4f6f9;border-radius:14px}
+.goal-idea strong{font-size:14px}
+.goal-idea p{font-size:13.5px}
+
+/* dreams: ☰ handle, priority number, name, amount */
+.dream-list{display:flex;flex-direction:column}
+#gen-modal-body .dream-row{flex-wrap:nowrap;gap:8px;padding:8px 0}
+#gen-modal-body .dream-row .dream-rank{flex:0 0 26px;width:26px;height:26px;padding:0;display:flex;align-items:center;justify-content:center;
+  border:0;border-radius:50%;background:var(--info);color:#fff;font:800 13px Rubik,Heebo,sans-serif}
+#gen-modal-body .dream-row .dream-name{flex:1 1 auto;min-width:0}
+#gen-modal-body .dream-row .dream-amt{flex:0 0 96px;width:96px;margin:0}
+@media (max-width:700px){#gen-modal-body .dream-row .del-btn{display:none}}
+
+/* every "add" button in the app's blue, not green */
+.add-row-btn{color:var(--info);border-color:rgba(22,58,95,.22)}
+.add-row-btn:hover{border-color:var(--info);background:var(--info-bg)}
+.liability-add-btn{color:var(--info);background:var(--info-bg);border-color:rgba(22,58,95,.18)}
+/* same gap under "סה״כ יתרה" as under the summary tiles */
+.allocation-balance-summary.balance-hero{margin-bottom:30px}
+
+.overlay-no-footer .modal-ftr{display:none}
+#gen-modal-body>.add-row-btn{width:100%;margin:12px 0 4px;background:transparent;font-family:inherit;font-size:15px}

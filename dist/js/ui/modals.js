@@ -910,59 +910,77 @@ function openCustomExpenseCategoryModal(collection, index) {
 }
 
 
+/* קרן איכות חיים: "מה הרעיון?", ורשימת חלומות לפי עדיפות. גוררים בידית ☰, והמספר מתעדכן לבד.
+   הכול נשמר אוטומטית, בלי כפתור שמירה */
 function openDreamsModal() {
   el("gen-modal-title").textContent = "קרן איכות חיים";
   var body = el("gen-modal-body");
-  body.innerHTML = "";
+  body.innerHTML = '<div class="goal-idea"><strong>מה הרעיון?</strong><p>כסף לדברים שעושים טוב: חופשה, חוויה או קנייה גדולה. מסדרים לפי עדיפות, והכסף הולך קודם לראשון.</p></div>';
 
+  var list = document.createElement("div");
+  list.className = "dream-list";
   var arr = sortDreams(AppState.dreams.length ? AppState.dreams : [{rank: 1, name: "", val: 0}]);
-  arr.forEach(function(item) { body.appendChild(buildDreamRow(item)); });
+  arr.forEach(function(item) { list.appendChild(buildDreamRow(item)); });
+  body.appendChild(list);
+  enableRowReorder(list, ".dream-row", saveDreamsFromModal);
 
-  var add = document.createElement("div");
+  var add = document.createElement("button");
+  add.type = "button";
   add.className = "add-row-btn";
-  add.id = "gen-add-btn";
-  add.innerHTML = '<span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף יעד</span>';
+  add.innerHTML = '<span class="material-symbols-rounded" aria-hidden="true">add</span><span>הוסף חלום</span>';
   add.onclick = function() {
-    body.insertBefore(buildDreamRow({rank: nextDreamRank(), name: "", val: 0}), el("gen-add-btn"));
-    updateDreamsTotal();
+    list.appendChild(buildDreamRow({name: "", val: 0}));
+    renumberDreams();
+    var names = list.querySelectorAll(".dream-name");
+    names[names.length - 1].focus();
   };
   body.appendChild(add);
 
   var totalRow = el("gen-modal-total-row");
-  if (totalRow) totalRow.style.display = "";
-  el("gen-apply-btn").textContent = "עדכן ושמור ✓";
-  el("gen-apply-btn").onclick = function() { applyDreamsModal(); };
+  if (totalRow) totalRow.style.display = "none";
+  el("gen-apply-btn").hidden = true;
+  renumberDreams();
   updateDreamsTotal();
-  el("gen-overlay").className = "overlay open overlay-center";
+  /* נשמר אוטומטית, ולכן אין צורך בשורת כפתורים למטה */
+  el("gen-overlay").className = "overlay open overlay-center overlay-no-footer";
 }
 
 function buildDreamRow(item) {
   var row = document.createElement("div");
   row.className = "exp-row dream-row";
 
-  var del = document.createElement("button");
-  del.className = "del-btn";
-  del.innerHTML = '<span class="material-symbols-rounded" aria-hidden="true">delete</span>';
-  del.onclick = function() { row.remove(); updateDreamsTotal(); };
-
-  var ri = document.createElement("input");
-  ri.type = "number"; ri.className = "dream-rank"; ri.value = item.rank || "";
-  ri.min = 1; ri.inputMode = "numeric"; ri.placeholder = "דירוג"; ri.oninput = updateDreamsTotal;
-  ri.setAttribute("aria-label", "דירוג");
+  var handle = dragHandle(item.name || "החלום");
+  var rank = mkText("span", "dream-rank", "");
+  rank.setAttribute("aria-hidden", "true");
 
   var ni = document.createElement("input");
   ni.type = "text"; ni.className = "exp-name dream-name"; ni.value = item.name || "";
-  ni.placeholder = "שם החלום"; ni.oninput = updateDreamsTotal;
+  ni.placeholder = "שם החלום"; ni.setAttribute("aria-label", "שם החלום"); ni.oninput = saveDreamsFromModal;
 
   var ai = document.createElement("input");
   ai.type = "number"; ai.className = "exp-amt dream-amt"; ai.value = item.val || "";
-  ai.min = 0; ai.inputMode = "decimal"; ai.placeholder = "סכום נדרש"; ai.oninput = updateDreamsTotal;
+  ai.min = 0; ai.inputMode = "numeric"; ai.placeholder = "סכום"; ai.setAttribute("aria-label", "סכום נדרש"); ai.oninput = saveDreamsFromModal;
 
-  row.appendChild(del);
-  row.appendChild(ri);
+  var del = document.createElement("button");
+  del.type = "button";
+  del.className = "del-btn";
+  del.setAttribute("aria-label", "מחיקת החלום");
+  del.innerHTML = '<span class="material-symbols-rounded" aria-hidden="true">delete</span>';
+  del.onclick = function() { row.remove(); saveDreamsFromModal(); };
+
+  row.appendChild(handle);
+  row.appendChild(rank);
   row.appendChild(ni);
   row.appendChild(ai);
+  row.appendChild(del);
   return row;
+}
+
+/* המספר של כל חלום הוא המקום שלו ברשימה */
+function renumberDreams() {
+  document.querySelectorAll("#gen-modal-body .dream-row .dream-rank").forEach(function(rank, index) {
+    rank.textContent = index + 1;
+  });
 }
 
 function updateDreamsTotal() {
@@ -972,18 +990,17 @@ function updateDreamsTotal() {
   el("gen-modal-total").textContent = money(t);
 }
 
-function applyDreamsModal() {
-  var rows = document.querySelectorAll("#gen-modal-body .dream-row");
+function saveDreamsFromModal() {
+  renumberDreams();
   var arr = [];
-  rows.forEach(function(r) {
-    var rank = parseInt(r.querySelector(".dream-rank").value, 10) || 0;
+  document.querySelectorAll("#gen-modal-body .dream-row").forEach(function(r) {
     var name = r.querySelector(".dream-name").value.trim();
     var amount = toAmount(r.querySelector(".dream-amt").value);
-    if (rank > 0 || name || amount > 0) arr.push({rank: rank || nextDreamRank(), name: name || "חלום", val: amount});
+    if (name || amount > 0) arr.push({rank: arr.length + 1, name: name || "חלום", val: amount});
   });
-  AppState.dreams = sortDreams(arr);
+  AppState.dreams = arr;
   saveDreams();
-  closeGenModal();
+  updateDreamsTotal();
   flashSaved();
 }
 

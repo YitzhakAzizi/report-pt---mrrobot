@@ -24,21 +24,23 @@ function dragHandle(label) {
 }
 
 /* כל שורה ברשימה מחזיקה את הפריט שלה ב־row._item */
-function enableRowReorder(list) {
+/* rowSelector: אילו שורות נגררות (ברירת מחדל שורות ההוצאות); onDone: מה לעשות אחרי שינוי סדר */
+function enableRowReorder(list, rowSelector, onDone) {
   if (list._reorderReady) return;
   list._reorderReady = true;
+  rowSelector = rowSelector || ".flat-expense-row";
   list.addEventListener("pointerdown", function(event) {
     var handle = event.target.closest(".drag-handle");
     if (!handle || !list.contains(handle)) return;
-    var row = handle.closest(".flat-expense-row");
+    var row = handle.closest(rowSelector);
     if (!row) return;
     event.preventDefault();
-    startRowDrag(list, row, event);
+    startRowDrag(list, row, event, rowSelector, onDone);
   });
 }
 
-function startRowDrag(list, row, event) {
-  var rows = Array.prototype.slice.call(list.querySelectorAll(".flat-expense-row"));
+function startRowDrag(list, row, event, rowSelector, onDone) {
+  var rows = Array.prototype.slice.call(list.querySelectorAll(rowSelector));
   var from = rows.indexOf(row);
   /* מיקומים במסמך (לא במסך), כדי שגלילה תוך כדי גרירה לא תשבש את החישוב */
   var tops = rows.map(function(item) { return item.getBoundingClientRect().top + window.scrollY; });
@@ -105,7 +107,8 @@ function startRowDrag(list, row, event) {
       if (to === from) return;
       var reference = to > from ? rows[to].nextSibling : rows[to];
       list.insertBefore(row, reference);
-      Array.prototype.forEach.call(list.querySelectorAll(".flat-expense-row"), function(item, index) {
+      if (onDone) { onDone(); return; }
+      Array.prototype.forEach.call(list.querySelectorAll(rowSelector), function(item, index) {
         if (item._item) item._item.order = index;
       });
       saveData();
