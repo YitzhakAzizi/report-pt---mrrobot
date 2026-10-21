@@ -111,8 +111,8 @@ var DEFAULT_MAASER_PERCENTAGE = 10;
 var DEFAULT_ALLOCATION_PERCENTAGES = {invest: 50, qualityOfLife: 20, spending: 30};
 var ALLOCATION_MODES = [
   {id: "today", name: "חודש מפנק", emoji: "🎉", allocation: {invest: 30, qualityOfLife: 30, spending: 40}},
-  {id: "balanced", name: "חודש מאוזן", emoji: "⚖️", allocation: {invest: 50, qualityOfLife: 20, spending: 30}},
-  {id: "future", name: "חודש מחושב", emoji: "📈", allocation: {invest: 70, qualityOfLife: 15, spending: 15}}
+  {id: "future", name: "חודש מחושב", emoji: "📈", allocation: {invest: 70, qualityOfLife: 15, spending: 15}},
+  {id: "balanced", name: "חודש מאוזן", emoji: "⚖️", allocation: {invest: 50, qualityOfLife: 20, spending: 30}}
 ];
 /* הוצאות משתנות כרשימה אחת (כל פריט בשורה משלו, עם עריכה ישירה) במקום קטגוריות.
    false מחזיר את התצוגה הקודמת בקטגוריות (חיובי דיור, דלק, סופר) */

@@ -2021,3 +2021,14 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 .allocation-balance-summary.balance-hero strong{font-family:'Rubik',sans-serif;font-size:16px;font-weight:800;color:#163a5f}
 .allocation-balance-summary.balance-hero.is-deficit{background:var(--card);border-top-color:var(--border)}
 @media (max-width:380px){.allocation-balance-summary.balance-hero span{font-size:11px}.allocation-balance-summary.balance-hero strong{font-size:14px}}
+
+/* result step: no summary tiles on top */
+#budget-main:has(#budget-flow-result:not([hidden])) .summary-tiles{display:none}
+/* "סה״כ יתרה" tile: soft twinkle of a coin bag and sparkles in the corners */
+.allocation-balance-summary.balance-hero{position:relative;overflow:hidden}
+.allocation-balance-summary.balance-hero::before,.allocation-balance-summary.balance-hero::after{display:block;position:absolute;font-family:inherit;font-size:13px;line-height:1;
+  color:inherit;pointer-events:none;opacity:0;animation:balanceTwinkle 4.5s ease-in-out infinite}
+.allocation-balance-summary.balance-hero::before{content:"💰";top:8px;right:8px;left:auto;bottom:auto;width:auto;background:none}
+.allocation-balance-summary.balance-hero::after{content:"✨";bottom:8px;left:8px;top:auto;width:auto;background:none;animation-delay:2.2s}
+@keyframes balanceTwinkle{0%,100%{opacity:0;transform:scale(.8) translateY(2px)}40%,60%{opacity:.35;transform:scale(1) translateY(0)}}
+@media (prefers-reduced-motion:reduce){.allocation-balance-summary.balance-hero::before,.allocation-balance-summary.balance-hero::after{animation:none;opacity:.2}}

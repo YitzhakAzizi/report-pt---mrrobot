@@ -72,6 +72,8 @@ function renderTopbarSnapshot() {
   if (donations) renderSnapshotAmount(donations, AppState.result.maaser || 0);
   updateTopbarDonationVisibility();
   if (allocationBalance) allocationBalance.textContent = money(Math.max(0, AppState.result.balance || 0));
+  /* כותרת שלב החלוקה: "תקציב" ושם החודש שנבחר */
+  if (el("result-stage-title")) el("result-stage-title").textContent = "תקציב " + MONTHS[AppState.period.month];
 }
 
 function renderSnapshotAmount(element, amount) {
@@ -797,7 +799,6 @@ function renderAllocationModes() {
     if (question) question.hidden = true;
     if (el("allocation-pick-hint")) el("allocation-pick-hint").hidden = true;
     if (customButton) customButton.hidden = true;
-    if (el("allocation-split-line")) el("allocation-split-line").hidden = true;
     box.innerHTML = "";
     return;
   }
@@ -806,8 +807,7 @@ function renderAllocationModes() {
   if (question) question.hidden = false;
   if (el("allocation-pick-hint")) el("allocation-pick-hint").hidden = false;
   if (customButton) customButton.hidden = false;
-  /* ריבועים נקיים: אימוג׳י ושם בלבד, ועוד ריבוע "אני רוצה לחלק לבד".
-     פירוט האחוזים מוצג בשורה אחת מתחת, רק לבחירה הנוכחית */
+  /* ריבועים נקיים: אימוג׳י ושם בלבד, ועוד ריבוע "הגדרה אישית" שפותח חלוקה עצמאית */
   var current = AppState.settings.allocation;
   var anySelected = false;
   box.innerHTML = ALLOCATION_MODES.map(function(mode) {
@@ -818,13 +818,7 @@ function renderAllocationModes() {
       '<span class="allocation-emoji" aria-hidden="true">' + mode.emoji + '</span><strong>' + mode.name + '</strong></button>';
   }).join("") +
     '<button type="button" class="allocation-mode allocation-mode-custom' + (anySelected ? '' : ' selected') + '" aria-pressed="' + !anySelected + '" onclick="openAllocationSettingsModal()">' +
-      '<span class="allocation-emoji" aria-hidden="true">✏️</span><strong>אני רוצה לחלק לבד</strong></button>';
-  var splitLine = el("allocation-split-line");
-  if (splitLine) {
-    splitLine.textContent = "השקעות " + formatPercent(current.invest) + " · קרן איכות חיים " + formatPercent(current.qualityOfLife) +
-      " · בזבוזים " + formatPercent(current.spending);
-    splitLine.hidden = false;
-  }
+      '<span class="allocation-emoji" aria-hidden="true">✏️</span><strong>הגדרה אישית</strong></button>';
 }
 
 function formatPercent(value) {
