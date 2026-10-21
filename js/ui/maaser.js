@@ -11,7 +11,9 @@ function renderMaaser(d) {
   var effectiveEnabled = state.enabled && canDonate;
   if (noBalance) noBalance.hidden = canDonate;
   var balanceBox = el("donation-balance");
-  if (balanceBox) balanceBox.innerHTML = '<span>סה״כ יתרה</span><strong>' + money(Math.max(0, Number(d.availableBeforeMaaser) || 0)) + '</strong>';
+  /* היתרה אחרי התרומה: סכום שמוגדר למטה יורד מהסה״כ שלמעלה */
+  var afterDonation = (Number(d.availableBeforeMaaser) || 0) - (effectiveEnabled ? Number(d.maaser) || 0 : 0);
+  if (balanceBox) balanceBox.innerHTML = '<span>סה״כ יתרה</span><strong>' + money(Math.max(0, afterDonation)) + '</strong>';
   /* "לא מעוניינים": נשארים רק שני ריבועי הבחירה */
   if (card) {
     card.className = "card maaser-card";
