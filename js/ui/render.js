@@ -849,7 +849,7 @@ function renderAllocationModes() {
       '</button>';
   }).join("") +
     '<button type="button" class="allocation-mode allocation-mode-custom' + (customActive ? ' selected' : '') + '" aria-pressed="' + customActive + '" onclick="selectCustomAllocation()">' +
-      '<span class="allocation-emoji" aria-hidden="true">✏️</span><strong>חלוקה עצמאית</strong></button>';
+      '<strong>חלוקה עצמאית</strong></button>';
 }
 
 function allocationPart(label, percent) {
