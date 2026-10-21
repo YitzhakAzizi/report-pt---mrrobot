@@ -731,6 +731,7 @@ function renderPreAllocation(d) {
   /* גירעון מוצג בסכומו האמיתי ולא כאפס */
   var value = mkText("strong", "", money(d.balance));
   box.appendChild(value);
+  addBalanceFx(box);
 
   var hasSpecialExpenseDeficit = d.balance <= 0 && d.oneTimeExpenses > 0 && d.balance + d.oneTimeExpenses > 0;
   if (warningBox) {
@@ -1042,4 +1043,10 @@ function setCustomAllocationAmount(key, input) {
   renderResultBalance();
   saveData();
   flashSaved();
+}
+
+/* אייקונים עדינים שמנצנצים לאורך כל מלבן "סה״כ יתרה" */
+var BALANCE_FX_HTML = '<span class="tile-fx balance-fx" aria-hidden="true"><i>💰</i><i>✨</i><i>🪙</i><i>✨</i><i>💵</i><i>✨</i></span>';
+function addBalanceFx(box) {
+  if (box && !box.querySelector(".balance-fx")) box.insertAdjacentHTML("beforeend", BALANCE_FX_HTML);
 }

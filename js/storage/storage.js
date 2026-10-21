@@ -547,7 +547,7 @@ function normalizeMortgage(mortgage) {
 function normalizeCustomAllocation(saved) {
   var custom = emptyCustomAllocation();
   if (!saved || typeof saved !== "object") return custom;
-  custom.active = saved.active === true;
+  custom.active = saved.active !== false;
   var amounts = saved.amounts || {};
   ["invest", "qualityOfLife", "spending"].forEach(function(key) { custom.amounts[key] = toAmount(amounts[key]); });
   return custom;

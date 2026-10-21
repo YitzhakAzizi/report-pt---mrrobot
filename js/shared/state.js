@@ -18,7 +18,7 @@ var AppState = {
   liabilities: {loans: [], debts: [], mortgages: [], overdraft: 0},
   recoveryPayment: null,
   /* "הגדרה אישית": חלוקה בסכומים שמוזנים ידנית, לכל חודש בנפרד */
-  customAllocation: {active: false, amounts: {invest: 0, qualityOfLife: 0, spending: 0}},
+  customAllocation: {active: true, amounts: {invest: 0, qualityOfLife: 0, spending: 0}},
   monthHasRecord: false,
   dreams: [],
   goals: {
@@ -93,8 +93,9 @@ function resetToDefaults() {
   if (AppState.maaser) AppState.maaser.enabled = false;
 }
 
+/* ברירת המחדל בכל חודש: "חלוקה עצמאית" מסומנת */
 function emptyCustomAllocation() {
-  return {active: false, amounts: {invest: 0, qualityOfLife: 0, spending: 0}};
+  return {active: true, amounts: {invest: 0, qualityOfLife: 0, spending: 0}};
 }
 
 /* סכומי החלוקה בפועל: בהגדרה אישית הסכומים שהוזנו, אחרת לפי האחוזים של הבחירה */

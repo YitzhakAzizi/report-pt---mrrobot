@@ -2060,3 +2060,18 @@ body:has(.flat-expense-row.is-dragging){user-select:none;-webkit-user-select:non
 #calculator-app .allocation-mode .allocation-part{font-size:11px}
 @media (max-width:380px){#calculator-app .allocation-mode .allocation-part{font-size:10px}}
 #calculator-app .allocation-mode:not(.allocation-mode-custom){justify-content:flex-start}
+
+/* "סה״כ יתרה": small icons spread along the whole bar, each twinkling softly in turn */
+.allocation-balance-summary.balance-hero::before,.allocation-balance-summary.balance-hero::after{display:none}
+.allocation-balance-summary.balance-hero>span:not(.tile-fx),.allocation-balance-summary.balance-hero>strong{position:relative;z-index:1}
+.balance-fx i{font-size:12px;animation:balanceTwinkle 6s ease-in-out infinite}
+.balance-fx i:nth-child(1){right:30%;top:14%;animation-delay:0s}
+.balance-fx i:nth-child(2){right:44%;top:58%;animation-delay:1s;font-size:10px}
+.balance-fx i:nth-child(3){right:56%;top:20%;animation-delay:2s}
+.balance-fx i:nth-child(4){right:66%;top:62%;animation-delay:3s;font-size:10px}
+.balance-fx i:nth-child(5){right:8%;top:66%;animation-delay:4s}
+.balance-fx i:nth-child(6){right:90%;top:12%;animation-delay:5s;font-size:10px}
+.balance-fx i:nth-child(n){display:block}
+@keyframes balanceTwinkle{0%,100%{opacity:0;transform:scale(.7) translateY(3px)}35%,65%{opacity:.4;transform:scale(1) translateY(0)}}
+@media (prefers-reduced-motion:reduce){.balance-fx i{animation:none;opacity:.2}}
+.allocation-balance-summary.balance-hero span.tile-fx{position:absolute;inset:0;z-index:0;font-size:inherit}
